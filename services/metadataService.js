@@ -6,12 +6,21 @@ const {
   findMetadataPda,
   TokenStandard,
 } = require("@metaplex-foundation/mpl-token-metadata");
-const { publicKey, percentAmount } = require("@metaplex-foundation/umi");
 const {
-  Transaction,
+  publicKey,
+  percentAmount,
+  createNoopSigner,
+  signerIdentity,
+} = require("@metaplex-foundation/umi");
+const {
+  toWeb3JsInstruction,
+} = require("@metaplex-foundation/umi-web3js-adapters");
+const {
   Connection,
-  PublicKey,
   clusterApiUrl,
+  Transaction,
+  PublicKey,
+  TransactionInstruction,
 } = require("@solana/web3.js");
 require("dotenv").config();
 
@@ -21,12 +30,10 @@ require("dotenv").config();
  */
 class MetadataService {
   constructor() {
-    this.umi = createUmi(
-      process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com"
-    )
-      .use(mplTokenMetadata())
-      .use(mplToolbox());
-    this.connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+    this.connection = new Connection(
+      process.env.SOLANA_RPC_URL || clusterApiUrl("devnet"),
+      "confirmed"
+    );
   }
 
   /**
@@ -35,7 +42,7 @@ class MetadataService {
    * @param {string} payerAddress - Payer address (base58) - will sign the transaction
    * @param {string} updateAuthorityAddress - Update authority address (base58) - defaults to payer
    * @param {Object} metadata - Metadata object with name, symbol, uri
-   * @param {number} sellerFeeBasisPoints - Royalty percentage (0-100, where 100 = 100%)
+   * @param {number} sellerFeeBasisPoints - Royalty percentage (0-10000, where 10000 = 100%)
    * @returns {Promise<Object>} Transaction data ready for frontend signing
    */
   async createMetadataTransaction(
@@ -46,71 +53,94 @@ class MetadataService {
     sellerFeeBasisPoints = 0
   ) {
     try {
+      // Create Umi instance
+      const umi = createUmi(
+        process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com"
+      )
+        .use(mplTokenMetadata())
+        .use(mplToolbox());
+
       const mint = publicKey(mintAddress);
       const payer = publicKey(payerAddress);
       const updateAuthority = updateAuthorityAddress
         ? publicKey(updateAuthorityAddress)
         : payer;
 
+      // Create a noop signer for the payer (won't actually sign, just placeholder)
+      const noopSigner = createNoopSigner(payer);
+      umi.use(signerIdentity(noopSigner));
+
       // Derive metadata account address
-      const metadataAccountAddress = await findMetadataPda(this.umi, {
+      const [metadataAccountAddress] = findMetadataPda(umi, {
         mint: mint,
       });
 
-      // Create metadata transaction builder
-      const builder = createV1(this.umi, {
+      // Create metadata instruction builder
+      const builder = createV1(umi, {
         mint,
-        authority: payer, // Mint authority (payer)
-        payer: payer,
+        authority: noopSigner,
+        payer: noopSigner,
         updateAuthority: updateAuthority,
         name: metadata.name,
         symbol: metadata.symbol,
         uri: metadata.uri,
-        sellerFeeBasisPoints: percentAmount(sellerFeeBasisPoints / 100),
+        sellerFeeBasisPoints: percentAmount(sellerFeeBasisPoints, 2),
         tokenStandard: TokenStandard.Fungible,
       });
+
+      // Get the instructions from the builder
+      const instructions = builder.getInstructions();
+
+      console.log(
+        `Creating metadata transaction with ${instructions.length} instruction(s)`
+      );
 
       // Get recent blockhash
       const { blockhash, lastValidBlockHeight } =
         await this.connection.getLatestBlockhash("confirmed");
 
-      // Build the transaction
-      const umiTransaction = await builder.buildWithLatestBlockhash({
-        transactions: this.umi.transactions,
-        rpc: this.umi.rpc,
-        payer: this.umi.payer,
-      });
-
-      // Get the message from UMI transaction
-      const message = umiTransaction.message;
-
-      // Convert UMI transaction to standard Solana Transaction
-      const solanaTransaction = new Transaction({
+      // Create a standard Solana web3.js transaction
+      const transaction = new Transaction({
         feePayer: new PublicKey(payerAddress),
         blockhash: blockhash,
         lastValidBlockHeight: lastValidBlockHeight,
       });
 
-      // Add instructions from UMI transaction message
-      if (message && message.instructions) {
-        message.instructions.forEach((instruction) => {
-          solanaTransaction.add({
-            keys: instruction.keys.map((key) => ({
-              pubkey: new PublicKey(key.pubkey),
-              isSigner: key.isSigner,
-              isWritable: key.isWritable,
-            })),
-            programId: new PublicKey(instruction.programId),
-            data: Buffer.from(instruction.data),
+      // Convert Umi instructions to web3.js instructions
+      for (const umiIx of instructions) {
+        try {
+          // Try using the adapter first
+          const web3Ix = toWeb3JsInstruction(umiIx);
+          transaction.add(web3Ix);
+        } catch (adapterError) {
+          console.log("Adapter failed, using manual conversion");
+
+          // Fallback: Manual conversion
+          const keys = (umiIx.keys || []).map((key) => ({
+            pubkey: new PublicKey(key.pubkey.toString()),
+            isSigner: key.isSigner || false,
+            isWritable: key.isWritable || false,
+          }));
+
+          const web3Ix = new TransactionInstruction({
+            keys,
+            programId: new PublicKey(umiIx.programId.toString()),
+            data: Buffer.from(umiIx.data),
           });
-        });
+
+          transaction.add(web3Ix);
+        }
       }
 
-      // Serialize the transaction
-      const serializedTransaction = solanaTransaction.serialize({
+      // Serialize the transaction (unsigned)
+      const serializedTransaction = transaction.serialize({
         requireAllSignatures: false,
         verifySignatures: false,
       });
+
+      console.log("✅ Metadata transaction created successfully");
+      console.log("Transaction size:", serializedTransaction.length, "bytes");
+      console.log("Metadata Account:", metadataAccountAddress.toString());
 
       return {
         transaction: serializedTransaction.toString("base64"),
@@ -120,12 +150,49 @@ class MetadataService {
         updateAuthority: updateAuthority.toString(),
         blockhash: blockhash,
         lastValidBlockHeight: lastValidBlockHeight,
+        readyToCreate: true,
       };
     } catch (error) {
       console.error("Metadata transaction creation error:", error);
+      console.error("Error stack:", error.stack);
       throw new Error(
         `Failed to create metadata transaction: ${error.message}`
       );
+    }
+  }
+
+  /**
+   * Verify if metadata exists for a mint
+   */
+  async verifyMetadata(mintAddress) {
+    try {
+      const umi = createUmi(
+        process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com"
+      ).use(mplTokenMetadata());
+
+      const mint = publicKey(mintAddress);
+      const [metadataAddress] = findMetadataPda(umi, { mint });
+
+      const accountInfo = await this.connection.getAccountInfo(
+        new PublicKey(metadataAddress.toString())
+      );
+
+      if (accountInfo) {
+        console.log("✅ Metadata account exists!");
+        return {
+          exists: true,
+          metadataAccount: metadataAddress.toString(),
+        };
+      } else {
+        console.log("❌ Metadata account does not exist");
+        return {
+          exists: false,
+          metadataAccount: metadataAddress.toString(),
+        };
+      }
+    } catch (error) {
+      console.error("Error verifying metadata:", error);
+      return { exists: false, error: error.message };
     }
   }
 }
