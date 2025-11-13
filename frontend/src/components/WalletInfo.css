@@ -1,0 +1,27 @@
+.wallet-info {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.wallet-address {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.875rem;
+}
+
+.wallet-address .label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.wallet-address .address {
+  color: #667eea;
+  font-weight: 600;
+  word-break: break-all;
+  font-family: 'Courier New', monospace;
+}
+

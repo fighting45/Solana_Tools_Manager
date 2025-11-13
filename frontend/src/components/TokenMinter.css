@@ -1,0 +1,153 @@
+.token-minter-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.token-minter-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.card-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.title-icon {
+  font-size: 2.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.card-subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.wallet-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.wallet-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  padding: 12px 24px !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+
+.wallet-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4) !important;
+}
+
+.card-footer {
+  text-align: center;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.footer-text {
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+.success-result {
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border-radius: 12px;
+  border: 1px solid #10b981;
+}
+
+.result-title {
+  color: #065f46;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.result-label {
+  color: #047857;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.result-value {
+  color: #064e3b;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  word-break: break-all;
+}
+
+.result-value.signature {
+  font-size: 0.75rem;
+}
+
+.result-link {
+  color: #059669;
+  text-decoration: none;
+  font-size: 0.875rem;
+  word-break: break-all;
+  transition: color 0.2s;
+}
+
+.result-link:hover {
+  color: #047857;
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .token-minter-card {
+    padding: 24px;
+  }
+
+  .card-title {
+    font-size: 2rem;
+  }
+}
+

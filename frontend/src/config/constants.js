@@ -1,0 +1,46 @@
+// API Configuration
+export const API_BASE_URL = 'http://localhost:3001';
+
+// API Endpoints
+export const API_ENDPOINTS = {
+  CREATE_MINT: '/mint/createMint',
+  HEALTH: '/health',
+};
+
+// Transaction Status Types
+export const STATUS_TYPES = {
+  SUCCESS: 'success',
+  ERROR: 'error',
+  INFO: 'info',
+  WARNING: 'warning',
+};
+
+// Default Form Values
+export const DEFAULT_FORM_VALUES = {
+  recipientAddress: '',
+  amount: '',
+  decimals: '9',
+  mintAuthorityAddress: '',
+  name: '',
+  symbol: '',
+  image: null,
+};
+
+// Validation Messages
+export const VALIDATION_MESSAGES = {
+  WALLET_NOT_CONNECTED: 'Please connect your wallet first',
+  REQUIRED_FIELDS: 'Please fill in all required fields',
+  INVALID_ADDRESS: 'Please enter a valid Solana address',
+  INVALID_AMOUNT: 'Amount must be greater than 0',
+  INVALID_DECIMALS: 'Decimals must be between 0 and 18',
+};
+
+// Status Messages
+export const STATUS_MESSAGES = {
+  TRANSACTION_CREATED: 'Transaction created! Signing...',
+  APPROVE_TRANSACTION: 'Please approve the transaction in your wallet...',
+  SENDING_TRANSACTION: 'Sending transaction to network...',
+  CONFIRMING_TRANSACTION: 'Confirming transaction...',
+  TRANSACTION_SUCCESS: (signature) => `Success! Transaction confirmed. Signature: ${signature}`,
+};
+
