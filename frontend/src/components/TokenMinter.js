@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { useMintTransaction } from '../hooks/useMintTransaction';
-import { DEFAULT_FORM_VALUES } from '../config/constants';
-import StatusMessage from './StatusMessage';
-import WalletInfo from './WalletInfo';
-import MintForm from './MintForm';
-import './TokenMinter.css';
+import React, { useState } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useMintTransaction } from "../hooks/useMintTransaction";
+import { DEFAULT_FORM_VALUES } from "../config/constants";
+import StatusMessage from "./StatusMessage";
+import WalletInfo from "./WalletInfo";
+import MintForm from "./MintForm";
+import "./TokenMinter.css";
 
 const TokenMinter = () => {
   const { publicKey } = useWallet();
@@ -17,9 +17,9 @@ const TokenMinter = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -28,10 +28,10 @@ const TokenMinter = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           image: file,
-          imagePreview: reader.result
+          imagePreview: reader.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -81,49 +81,59 @@ const TokenMinter = () => {
             <div className="result-info">
               <div className="result-item">
                 <span className="result-label">Mint Address:</span>
-                <span className="result-value">{result.transactionData?.mintAddress || 'N/A'}</span>
+                <span className="result-value">
+                  {result.transactionData?.mintAddress || "N/A"}
+                </span>
               </div>
               <div className="result-item">
-                <span className="result-label">Mint Transaction Signature:</span>
-                <span className="result-value signature">{result.signature}</span>
+                <span className="result-label">Metadata Account:</span>
+                <span className="result-value">
+                  {result.transactionData?.metadataAccount || "N/A"}
+                </span>
               </div>
-              {result.metadataSignature && (
-                <div className="result-item">
-                  <span className="result-label">Metadata Transaction Signature:</span>
-                  <span className="result-value signature">{result.metadataSignature}</span>
-                </div>
-              )}
-              {result.transactionData?.metadata && (
+              <div className="result-item">
+                <span className="result-label">
+                  Mint Transaction Signature:
+                </span>
+                <span className="result-value signature">
+                  {result.signature}
+                </span>
+              </div>
+              {result.transactionData?.tokenInfo && (
                 <>
                   <div className="result-item">
                     <span className="result-label">Token Name:</span>
-                    <span className="result-value">{result.transactionData.metadata.name}</span>
+                    <span className="result-value">
+                      {result.transactionData.tokenInfo.name}
+                    </span>
                   </div>
                   <div className="result-item">
                     <span className="result-label">Token Symbol:</span>
-                    <span className="result-value">{result.transactionData.metadata.symbol}</span>
+                    <span className="result-value">
+                      {result.transactionData.tokenInfo.symbol}
+                    </span>
                   </div>
                   <div className="result-item">
-                    <span className="result-label">Metadata URI:</span>
-                    <a 
-                      href={result.transactionData.metadata.metadataUri} 
-                      target="_blank" 
+                    <span className="result-label">Metadata URL:</span>
+                    <a
+                      href={result.transactionData.ipfs.metadataUrl}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="result-link"
                     >
-                      {result.transactionData.metadata.metadataUri}
+                      {result.transactionData.ipfs.metadataUrl}
                     </a>
                   </div>
-                  {result.transactionData.metadata.imageUri && (
+                  {result.transactionData.ipfs.imageUrl && (
                     <div className="result-item">
-                      <span className="result-label">Image URI:</span>
-                      <a 
-                        href={result.transactionData.metadata.imageUri} 
-                        target="_blank" 
+                      <span className="result-label">Image URL:</span>
+                      <a
+                        href={result.transactionData.ipfs.imageUrl}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="result-link"
                       >
-                        {result.transactionData.metadata.imageUri}
+                        {result.transactionData.ipfs.imageUrl}
                       </a>
                     </div>
                   )}
@@ -144,4 +154,3 @@ const TokenMinter = () => {
 };
 
 export default TokenMinter;
-
