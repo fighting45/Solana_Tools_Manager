@@ -25,12 +25,8 @@ app.listen(PORT, () => {
 // Better error handling - log but don't exit immediately during development
 process.on("uncaughtException", (error) => {
   console.error("Uncaught Exception:", error);
-  // Only exit in production, or comment out for debugging
-  // process.exit(1);
 });
 
 process.on("unhandledRejection", (reason, promise) => {
   console.error("Unhandled Rejection at:", promise, "reason:", reason);
-  // Only exit in production, or comment out for debugging
-  // process.exit(1);
 });

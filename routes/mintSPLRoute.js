@@ -2,7 +2,6 @@ const express = require("express");
 const multer = require("multer");
 const router = express.Router();
 const {
-  createMintTransaction,
   createCombinedMintTransaction,
 } = require("../controllers/mintController");
 
@@ -14,10 +13,7 @@ const upload = multer({
   },
 });
 
-// Original endpoint - creates separate mint and metadata transactions
-router.post("/createMint", upload.single("image"), createMintTransaction);
-
-// NEW endpoint - creates a single combined transaction (RECOMMENDED)
+//creates a single combined transaction for metadata and mint
 router.post(
   "/createCombinedMint",
   upload.single("image"),
