@@ -53,6 +53,26 @@ class MetadataService {
     sellerFeeBasisPoints = 0
   ) {
     try {
+      // Validate required parameters
+      if (!mintAddress) {
+        throw new Error("mintAddress is required");
+      }
+      if (!payerAddress) {
+        throw new Error("payerAddress is required");
+      }
+      if (!metadata || !metadata.name || !metadata.symbol || !metadata.uri) {
+        throw new Error("metadata must include name, symbol, and uri");
+      }
+
+      // Default updateAuthority to payer if not provided
+      const finalUpdateAuthority = updateAuthorityAddress || payerAddress;
+
+      console.log("Creating metadata transaction with:");
+      console.log("  Mint:", mintAddress);
+      console.log("  Payer:", payerAddress);
+      console.log("  Update Authority:", finalUpdateAuthority);
+      console.log("  Metadata:", JSON.stringify(metadata, null, 2));
+
       // Create Umi instance
       const umi = createUmi(
         process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com"
@@ -62,9 +82,7 @@ class MetadataService {
 
       const mint = publicKey(mintAddress);
       const payer = publicKey(payerAddress);
-      const updateAuthority = updateAuthorityAddress
-        ? publicKey(updateAuthorityAddress)
-        : payer;
+      const updateAuthority = publicKey(finalUpdateAuthority);
 
       // Create a noop signer for the payer (won't actually sign, just placeholder)
       const noopSigner = createNoopSigner(payer);

@@ -1,7 +1,7 @@
 // Example: How to use the IPFS service in your mint controller
 
 const ipfsService = require("../services/ipfsService");
-const mintService = require("../services/mintService");
+const mintService = require("../utils/mintSPL");
 const metadataService = require("../services/metadataService");
 
 /**
@@ -9,16 +9,46 @@ const metadataService = require("../services/metadataService");
  */
 async function createMintTransaction(req, res) {
   try {
-    const {
-      payerAddress,
-      recipientAddress,
-      mintAuthorityAddress,
-      amount,
-      decimals,
-      name,
-      symbol,
-      description, // Optional description
-    } = req.body;
+    // Helper function to clean form data values
+    const cleanFormValue = (value) => {
+      if (!value || value === "null" || value === "undefined" || value === "") {
+        return null;
+      }
+      return value;
+    };
+
+    // Extract and clean form data
+    const payerAddress = cleanFormValue(req.body.payerAddress);
+    const recipientAddress = cleanFormValue(req.body.recipientAddress);
+    const mintAuthorityAddress = cleanFormValue(req.body.mintAuthorityAddress);
+    const amount = req.body.amount ? parseInt(req.body.amount) : 0;
+    const decimals = req.body.decimals ? parseInt(req.body.decimals) : 6;
+    const name = cleanFormValue(req.body.name);
+    const symbol = cleanFormValue(req.body.symbol);
+    const description = cleanFormValue(req.body.description);
+
+    // Validate required fields
+    if (!payerAddress) {
+      return res.status(400).json({ error: "payerAddress is required" });
+    }
+    if (!recipientAddress) {
+      return res.status(400).json({ error: "recipientAddress is required" });
+    }
+    if (!name) {
+      return res.status(400).json({ error: "name is required" });
+    }
+    if (!symbol) {
+      return res.status(400).json({ error: "symbol is required" });
+    }
+
+    // Debug logging
+    console.log("📦 Processing mint transaction request...");
+    console.log("Request body:", JSON.stringify(req.body, null, 2));
+    console.log("Token Name:", name);
+    console.log("Token Symbol:", symbol);
+    console.log("Payer Address:", payerAddress);
+    console.log("Mint Authority Address (raw):", req.body.mintAuthorityAddress);
+    console.log("Mint Authority Address (cleaned):", mintAuthorityAddress);
 
     // Get image file from request
     const imageFile = req.file; // Using multer middleware
@@ -27,9 +57,6 @@ async function createMintTransaction(req, res) {
       return res.status(400).json({ error: "Image file is required" });
     }
 
-    console.log("📦 Processing mint transaction request...");
-    console.log("Token Name:", name);
-    console.log("Token Symbol:", symbol);
     console.log("Image:", imageFile.originalname);
 
     // Step 1: Upload image and metadata to IPFS
@@ -57,7 +84,7 @@ async function createMintTransaction(req, res) {
     // Step 2: Create mint transaction
     console.log("🔨 Creating mint transaction...");
 
-    const mintResult = await mintService.createMintTransaction(
+    const mintResult = await mintService.createMintSPLTransaction(
       payerAddress,
       recipientAddress,
       mintAuthorityAddress,
@@ -71,10 +98,27 @@ async function createMintTransaction(req, res) {
     // Step 3: Create metadata transaction
     console.log("📝 Creating metadata transaction...");
 
+    // Ensure updateAuthority is not null/undefined
+    // Check for null, undefined, empty string, or "null" string
+    let updateAuthority = mintAuthorityAddress;
+
+    if (
+      !updateAuthority ||
+      updateAuthority === "null" ||
+      updateAuthority === "undefined"
+    ) {
+      console.log(
+        "⚠️ mintAuthorityAddress is invalid, using payerAddress as update authority"
+      );
+      updateAuthority = payerAddress;
+    }
+
+    console.log("Final Update Authority:", updateAuthority);
+
     const metadataResult = await metadataService.createMetadataTransaction(
       mintResult.mintAddress,
       payerAddress,
-      mintAuthorityAddress || payerAddress,
+      updateAuthority,
       {
         name: name,
         symbol: symbol,

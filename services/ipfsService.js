@@ -1,100 +1,232 @@
-/**
- * IPFS Service for uploading files
- * Using a simple HTTP-based approach for IPFS uploads
- */
-const https = require("https");
+const axios = require("axios");
 const FormData = require("form-data");
+require("dotenv").config();
 
-class IpfsService {
+/**
+ * IPFS Service for uploading files and metadata to Pinata
+ */
+class IPFSService {
   constructor() {
-    // Using Pinata v3 Uploads API for IPFS uploads
-    this.pinataJwt = process.env.PINATA_JWT;
+    this.pinataJWT = process.env.PINATA_JWT;
     this.pinataGateway =
       process.env.PINATA_GATEWAY || "https://gateway.pinata.cloud";
+
+    if (!this.pinataJWT) {
+      console.warn("⚠️ Pinata JWT not found in environment variables");
+    }
   }
 
   /**
-   * Upload to IPFS using Pinata v3 Uploads API
-   */
-  async uploadToIPFS(fileBuffer, fileName) {
-    return new Promise((resolve, reject) => {
-      const form = new FormData();
-      form.append("file", fileBuffer, {
-        filename: fileName,
-        contentType: "application/octet-stream",
-      });
-      form.append("network", "public");
-
-      const options = {
-        hostname: "uploads.pinata.cloud",
-        port: 443,
-        path: "/v3/files",
-        method: "POST",
-        headers: form.getHeaders(),
-      };
-
-      options.headers.authorization = `Bearer ${this.pinataJwt}`;
-
-      const req = https.request(options, (res) => {
-        let data = "";
-        res.on("data", (chunk) => {
-          data += chunk;
-        });
-        res.on("end", () => {
-          try {
-            const result = JSON.parse(data);
-            const cid = result.data?.cid;
-            if (cid) {
-              resolve(`${this.pinataGateway}/ipfs/${cid}`);
-            } else {
-              reject(new Error("No CID returned from Pinata"));
-            }
-          } catch (error) {
-            reject(
-              new Error(`Failed to parse Pinata response: ${error.message}`)
-            );
-          }
-        });
-      });
-
-      req.on("error", (error) => {
-        reject(new Error(`Pinata upload failed: ${error.message}`));
-      });
-
-      form.pipe(req);
-    });
-  }
-
-  /**
-   * Upload file to IPFS
-   * @param {Buffer} fileBuffer - File buffer to upload
+   * Upload file to IPFS via Pinata
+   * @param {Buffer} fileBuffer - File buffer
    * @param {string} fileName - Name of the file
-   * @returns {Promise<string>} IPFS hash/URI
+   * @returns {Promise<Object>} IPFS upload result with hash and URL
    */
   async uploadFile(fileBuffer, fileName) {
     try {
-      return await this.uploadToIPFS(fileBuffer, fileName);
+      const formData = new FormData();
+      formData.append("file", fileBuffer, fileName);
+
+      const pinataMetadata = JSON.stringify({
+        name: fileName,
+      });
+      formData.append("pinataMetadata", pinataMetadata);
+
+      const response = await axios.post(
+        "https://api.pinata.cloud/pinning/pinFileToIPFS",
+        formData,
+        {
+          maxBodyLength: "Infinity",
+          headers: {
+            "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
+            Authorization: `Bearer ${this.pinataJWT}`,
+          },
+        }
+      );
+
+      const ipfsHash = response.data.IpfsHash;
+      const imageUrl = `${this.pinataGateway}/ipfs/${ipfsHash}`;
+
+      console.log(`✅ File uploaded to IPFS: ${imageUrl}`);
+      return {
+        hash: ipfsHash,
+        url: imageUrl,
+      };
     } catch (error) {
-      console.error("IPFS upload error:", error);
+      console.error(
+        "Error uploading file to IPFS:",
+        error.response?.data || error.message
+      );
       throw new Error(`Failed to upload file to IPFS: ${error.message}`);
     }
   }
 
   /**
-   * Upload JSON metadata to IPFS
-   * @param {Object} metadata - Metadata object
-   * @returns {Promise<string>} IPFS URI
+   * Upload token metadata to IPFS following Metaplex Token Metadata Standard
+   * @param {Object} metadata - Token metadata
+   * @param {string} metadata.name - Token name
+   * @param {string} metadata.symbol - Token symbol
+   * @param {string} metadata.description - Token description
+   * @param {string} metadata.imageUrl - Image URL (IPFS or external)
+   * @param {string} metadata.imageType - Image MIME type (e.g., "image/png")
+   * @param {Array} metadata.attributes - Optional attributes array
+   * @param {Object} metadata.externalUrl - Optional external URL
+   * @returns {Promise<Object>} IPFS upload result with hash and URL
    */
   async uploadMetadata(metadata) {
     try {
-      const metadataJson = JSON.stringify(metadata);
-      const buffer = Buffer.from(metadataJson, "utf-8");
-      return await this.uploadToIPFS(buffer, "metadata.json");
+      // Construct Metaplex-compatible metadata JSON
+      const metadataJson = {
+        name: metadata.name,
+        symbol: metadata.symbol,
+        description: metadata.description || `${metadata.name} Token`,
+        image: metadata.imageUrl, // CRITICAL: This must be present for image to show
+        external_url: metadata.externalUrl || "",
+        attributes: metadata.attributes || [],
+        properties: {
+          files: [
+            {
+              uri: metadata.imageUrl,
+              type: metadata.imageType || "image/png",
+            },
+          ],
+          category: "image",
+          creators: metadata.creators || [],
+        },
+      };
+
+      console.log(
+        "📝 Metadata JSON structure:",
+        JSON.stringify(metadataJson, null, 2)
+      );
+
+      const response = await axios.post(
+        "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+        metadataJson,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.pinataJWT}`,
+          },
+        }
+      );
+
+      const ipfsHash = response.data.IpfsHash;
+      const metadataUrl = `${this.pinataGateway}/ipfs/${ipfsHash}`;
+
+      console.log(`✅ Metadata uploaded to IPFS: ${metadataUrl}`);
+
+      // Verify the metadata can be fetched
+      await this.verifyMetadata(metadataUrl);
+
+      return {
+        hash: ipfsHash,
+        url: metadataUrl,
+        json: metadataJson,
+      };
     } catch (error) {
-      console.error("IPFS metadata upload error:", error);
+      console.error(
+        "Error uploading metadata to IPFS:",
+        error.response?.data || error.message
+      );
       throw new Error(`Failed to upload metadata to IPFS: ${error.message}`);
     }
   }
+
+  /**
+   * Verify metadata JSON is accessible and valid
+   * @param {string} metadataUrl - Metadata URL to verify
+   */
+  async verifyMetadata(metadataUrl) {
+    try {
+      const response = await axios.get(metadataUrl, { timeout: 10000 });
+      const metadata = response.data;
+
+      console.log("🔍 Verifying metadata structure...");
+
+      if (!metadata.image) {
+        console.warn("⚠️ WARNING: Metadata missing 'image' field!");
+      } else {
+        console.log("✅ Metadata has image field:", metadata.image);
+      }
+
+      if (!metadata.name) {
+        console.warn("⚠️ WARNING: Metadata missing 'name' field!");
+      }
+
+      if (!metadata.symbol) {
+        console.warn("⚠️ WARNING: Metadata missing 'symbol' field!");
+      }
+
+      return metadata;
+    } catch (error) {
+      console.error("⚠️ Could not verify metadata:", error.message);
+      // Don't throw - verification is optional
+    }
+  }
+
+  /**
+   * Upload complete token metadata package (image + metadata JSON)
+   * @param {Object} params - Upload parameters
+   * @param {Buffer} params.imageBuffer - Image file buffer
+   * @param {string} params.imageName - Image file name
+   * @param {string} params.imageType - Image MIME type
+   * @param {string} params.name - Token name
+   * @param {string} params.symbol - Token symbol
+   * @param {string} params.description - Token description
+   * @param {Array} params.attributes - Optional attributes
+   * @returns {Promise<Object>} Complete upload result
+   */
+  async uploadTokenPackage(params) {
+    try {
+      console.log("📦 Starting token package upload...");
+
+      // Step 1: Upload image
+      console.log("1️⃣ Uploading image to IPFS...");
+      const imageResult = await this.uploadFile(
+        params.imageBuffer,
+        params.imageName
+      );
+
+      // Step 2: Upload metadata JSON with image reference
+      console.log("2️⃣ Uploading metadata to IPFS...");
+      const metadataResult = await this.uploadMetadata({
+        name: params.name,
+        symbol: params.symbol,
+        description: params.description,
+        imageUrl: imageResult.url,
+        imageType: params.imageType,
+        attributes: params.attributes,
+        externalUrl: params.externalUrl,
+        creators: params.creators,
+      });
+
+      console.log("✅ Token package uploaded successfully!");
+
+      return {
+        image: imageResult,
+        metadata: metadataResult,
+      };
+    } catch (error) {
+      console.error("Error uploading token package:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get file type from buffer
+   * @param {Buffer} buffer - File buffer
+   * @returns {string} MIME type
+   */
+  getFileType(buffer) {
+    // Check magic numbers for common image types
+    if (buffer[0] === 0x89 && buffer[1] === 0x50) return "image/png";
+    if (buffer[0] === 0xff && buffer[1] === 0xd8) return "image/jpeg";
+    if (buffer[0] === 0x47 && buffer[1] === 0x49) return "image/gif";
+    if (buffer[0] === 0x52 && buffer[1] === 0x49) return "image/webp";
+
+    return "image/png"; // Default fallback
+  }
 }
 
-module.exports = new IpfsService();
+module.exports = new IPFSService();
