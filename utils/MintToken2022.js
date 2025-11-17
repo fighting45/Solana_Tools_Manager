@@ -26,6 +26,11 @@ const {
 const bs58 = require("bs58");
 require("dotenv").config();
 
+// Platform fee configuration from .env
+const PLATFORM_WALLET = new PublicKey(process.env.PLATFORM_WALLET || "A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz");
+const PLATFORM_FEE_SOL = parseFloat(process.env.PLATFORM_FEE || "0.05"); // Default 0.05 SOL
+const PLATFORM_FEE_LAMPORTS = Math.floor(PLATFORM_FEE_SOL * LAMPORTS_PER_SOL);
+
 async function createToken2022WithMetadata(
   payerAddress,
   recipientAddress,
@@ -52,6 +57,8 @@ async function createToken2022WithMetadata(
   const updateAuthority = mintAuthority;
 
   console.log(`💰 Supply calculation: ${amount} tokens × 10^${decimals} = ${supply.toString()}`);
+  console.log(`💰 Platform fee: ${PLATFORM_FEE_SOL} SOL (${PLATFORM_FEE_LAMPORTS} lamports)`);
+  console.log(`💰 Platform wallet: ${PLATFORM_WALLET.toBase58()}`);
 
   // Check payer balance
   const payerBalance = await connection.getBalance(payer);
@@ -118,7 +125,22 @@ async function createToken2022WithMetadata(
   });
 
   // ========================================
-  // CRITICAL FIX: Calculate BOTH space sizes like Solana docs
+  // INSTRUCTION 0: PLATFORM FEE TRANSFER
+  // ========================================
+  console.log("💸 Adding platform fee transfer instruction...");
+  
+  transaction.add(
+    SystemProgram.transfer({
+      fromPubkey: payer,
+      toPubkey: PLATFORM_WALLET,
+      lamports: PLATFORM_FEE_LAMPORTS,
+    })
+  );
+
+  console.log(`✅ Platform fee instruction added: ${PLATFORM_FEE_SOL} SOL to ${PLATFORM_WALLET.toBase58()}`);
+
+  // ========================================
+  // TOKEN-2022 CREATION WITH METADATA
   // ========================================
 
   console.log("📝 Calculating space for Token-2022 with on-chain metadata...");
@@ -127,7 +149,6 @@ async function createToken2022WithMetadata(
   const spaceWithoutMetadata = getMintLen([ExtensionType.MetadataPointer]);
   
   // Space calculation 2: WITH TokenMetadata extension (for rent calculation)
-  // We need to calculate the size of the metadata extension
   const metadataData = {
     updateAuthority: updateAuthority,
     mint: mint,
@@ -150,9 +171,7 @@ async function createToken2022WithMetadata(
   console.log(`   Metadata data: ${metadataLen} bytes`);
   console.log(`   Total space with metadata: ${spaceWithMetadata} bytes`);
 
-  // CRITICAL: Calculate rent based on the FINAL size (with metadata)
-  // Even though we create the account with less space initially,
-  // we need to pay rent for the full size upfront
+  // Calculate rent based on the FINAL size (with metadata)
   const mintLamports = await connection.getMinimumBalanceForRentExemption(spaceWithMetadata);
 
   console.log(`💰 Mint rent (for full size): ${mintLamports} lamports (${mintLamports / LAMPORTS_PER_SOL} SOL)`);
@@ -160,11 +179,16 @@ async function createToken2022WithMetadata(
   // Estimate total transaction cost
   const estimatedATARent = !associatedTokenAccountExists ? 0.00203928 * LAMPORTS_PER_SOL : 0;
   const estimatedFees = 10000;
-  const estimatedTotalCost = mintLamports + estimatedATARent + estimatedFees;
-  console.log(`💰 Estimated total cost: ${estimatedTotalCost / LAMPORTS_PER_SOL} SOL (${estimatedTotalCost} lamports)`);
+  const estimatedTotalCost = PLATFORM_FEE_LAMPORTS + mintLamports + estimatedATARent + estimatedFees;
+  
+  console.log(`💰 Total estimated cost: ${estimatedTotalCost / LAMPORTS_PER_SOL} SOL (${estimatedTotalCost} lamports)`);
+  console.log(`   - Platform fee: ${PLATFORM_FEE_SOL} SOL`);
+  console.log(`   - Mint rent: ${(mintLamports / LAMPORTS_PER_SOL).toFixed(6)} SOL`);
+  console.log(`   - Token account rent: ${(estimatedATARent / LAMPORTS_PER_SOL).toFixed(6)} SOL`);
+  console.log(`   - Transaction fees: ~${(estimatedFees / LAMPORTS_PER_SOL).toFixed(6)} SOL`);
   
   if (payerBalance < estimatedTotalCost) {
-    throw new Error(`Insufficient balance. Required: ${estimatedTotalCost / LAMPORTS_PER_SOL} SOL, Available: ${payerBalance / LAMPORTS_PER_SOL} SOL`);
+    throw new Error(`Insufficient balance. Required: ${(estimatedTotalCost / LAMPORTS_PER_SOL).toFixed(6)} SOL, Available: ${(payerBalance / LAMPORTS_PER_SOL).toFixed(6)} SOL`);
   }
 
   // ========================================
@@ -174,7 +198,6 @@ async function createToken2022WithMetadata(
   console.log("📝 Building Token-2022 transaction...");
 
   // Instruction 1: Create the mint account
-  // IMPORTANT: Use smaller space but pay rent for the full size
   transaction.add(
     SystemProgram.createAccount({
       fromPubkey: payer,
@@ -285,6 +308,11 @@ async function createToken2022WithMetadata(
       uri: metadata.uri,
     },
     tokenProgram: TOKEN_2022_PROGRAM_ID.toBase58(),
+    platformFee: {
+      amount: PLATFORM_FEE_SOL,
+      amountLamports: PLATFORM_FEE_LAMPORTS,
+      recipient: PLATFORM_WALLET.toBase58(),
+    },
   };
 }
 

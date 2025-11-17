@@ -5,7 +5,6 @@ const {
   Transaction,
   SystemProgram,
   LAMPORTS_PER_SOL,
-  clusterApiUrl,
 } = require("@solana/web3.js");
 const {
   TOKEN_PROGRAM_ID,
@@ -37,164 +36,10 @@ const { TransactionInstruction } = require("@solana/web3.js");
 const bs58 = require("bs58");
 require("dotenv").config();
 
-/**
- * Creates a transaction with multiple instructions to mint an SPL token
- * @param {string} payerAddress - The payer's wallet address (base58) - will sign the transaction
- * @param {string} recipientAddress - The recipient's wallet address (base58)
- * @param {string} mintAuthorityAddress - The mint authority address (base58) - defaults to payer
- * @param {number} amount - Amount of tokens to mint (will be converted to supply: amount * LAMPORTS_PER_SOL)
- * @param {number} decimals - Number of decimals for the token (variable, provided by frontend)
- * @returns {Promise<Object>} Transaction object ready for frontend signing
- */
-async function createMintSPLTransaction(
-  payerAddress,
-  recipientAddress,
-  mintAuthorityAddress = null,
-  amount,
-  decimals
-) {
-  // Use RPC from environment or fallback to reliable public RPCs
-  const rpcUrl = process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
-
-  console.log(`🔗 Connecting to Solana RPC: ${rpcUrl}`);
-
-  const connection = new Connection(rpcUrl, {
-    commitment: "confirmed",
-    confirmTransactionInitialTimeout: 60000,
-  });
-
-  const supply = amount * LAMPORTS_PER_SOL;
-  const payer = new PublicKey(payerAddress);
-  const recipient = new PublicKey(recipientAddress);
-  const mintAuthority = payer;
-
-  // Generate a new mint keypair
-  const mintKeypair = Keypair.generate();
-  const mint = mintKeypair.publicKey;
-
-  console.log(`Creating transaction for mint: ${mint.toBase58()}`);
-  console.log(`Recipient: ${recipient.toBase58()}`);
-
-  // Get the associated token account address for the recipient
-  const associatedTokenAddress = await getAssociatedTokenAddress(
-    mint,
-    recipient,
-    false,
-    TOKEN_PROGRAM_ID,
-    ASSOCIATED_TOKEN_PROGRAM_ID
-  );
-
-  // Get recent blockhash with retry logic
-  let blockhash, lastValidBlockHeight;
-  let retries = 3;
-
-  while (retries > 0) {
-    try {
-      console.log(
-        `⏳ Fetching latest blockhash (attempts remaining: ${retries})...`
-      );
-      const result = await connection.getLatestBlockhash("confirmed");
-      blockhash = result.blockhash;
-      lastValidBlockHeight = result.lastValidBlockHeight;
-      console.log(`✅ Got blockhash: ${blockhash}`);
-      break;
-    } catch (error) {
-      retries--;
-      if (retries === 0) {
-        console.error("❌ Failed to get blockhash after all retries");
-        throw new Error(
-          `Failed to connect to Solana RPC (${rpcUrl}). Please check your internet connection or try again later. Error: ${error.message}`
-        );
-      }
-      console.log(
-        `⚠️ Retry failed, waiting 2 seconds... (${retries} attempts left)`
-      );
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    }
-  }
-
-  // Create a new transaction
-  const transaction = new Transaction({
-    feePayer: payer,
-    blockhash: blockhash,
-    lastValidBlockHeight: lastValidBlockHeight,
-  });
-
-  // Instruction 1: Create the mint account
-  const mintRent = await getMinimumBalanceForRentExemptMint(connection);
-  transaction.add(
-    SystemProgram.createAccount({
-      fromPubkey: payer,
-      newAccountPubkey: mint,
-      space: MINT_SIZE,
-      lamports: mintRent,
-      programId: TOKEN_PROGRAM_ID,
-    })
-  );
-
-  // Instruction 2: Initialize the mint
-  transaction.add(
-    createInitializeMintInstruction(
-      mint,
-      decimals,
-      mintAuthority, // mint authority
-      mintAuthority, // freeze authority (can be null)
-      TOKEN_PROGRAM_ID
-    )
-  );
-
-  // Instruction 3: Create associated token account (if it doesn't exist)
-  // Note: This will fail if the account already exists, but that's okay
-  // In production, you might want to check if it exists first
-  transaction.add(
-    createAssociatedTokenAccountInstruction(
-      payer, // payer
-      associatedTokenAddress, // associatedToken
-      recipient, // owner
-      mint, // mint
-      TOKEN_PROGRAM_ID,
-      ASSOCIATED_TOKEN_PROGRAM_ID
-    )
-  );
-
-  // Instruction 4: Mint tokens to the recipient's associated token account
-  transaction.add(
-    createMintToInstruction(
-      mint, // mint
-      associatedTokenAddress, // destination
-      mintAuthority, // authority (mint authority)
-      supply, // amount
-      [], // multiSigners
-      TOKEN_PROGRAM_ID
-    )
-  );
-
-  // Partially sign the transaction with the mint keypair (required for creating the mint account)
-  transaction.partialSign(mintKeypair);
-
-  // Serialize the transaction for frontend
-  const serializedTransaction = transaction.serialize({
-    requireAllSignatures: false,
-    verifySignatures: false,
-  });
-
-  // Return transaction data for frontend
-  return {
-    transaction: serializedTransaction.toString("base64"),
-    mintAddress: mint.toBase58(),
-    recipientAddress: recipient.toBase58(),
-    associatedTokenAddress: associatedTokenAddress.toBase58(),
-    supply: supply.toString(),
-    decimals: decimals,
-    // Include the mint keypair's secret key so frontend can complete signing if needed
-    // In production, handle this more securely - the mint keypair signature is already included
-    mintSecretKey: bs58.encode(mintKeypair.secretKey),
-    payerPublicKey: payer.toBase58(),
-    mintAuthority: mintAuthority.toBase58(),
-    blockhash: blockhash,
-    lastValidBlockHeight: lastValidBlockHeight,
-  };
-}
+// Platform fee configuration from .env
+const PLATFORM_WALLET = new PublicKey(process.env.PLATFORM_WALLET || "A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz");
+const PLATFORM_FEE_SOL = parseFloat(process.env.PLATFORM_FEE || "0.05"); // Default 0.05 SOL
+const PLATFORM_FEE_LAMPORTS = Math.floor(PLATFORM_FEE_SOL * LAMPORTS_PER_SOL);
 
 /**
  * Creates a COMBINED transaction with both SPL token mint AND metadata creation
@@ -232,12 +77,18 @@ async function createCombinedMintWithMetadata(
   const recipient = new PublicKey(recipientAddress);
   const mintAuthority = payer;
 
+  // Check payer balance (ONLY for the payer, not platform wallet)
+  const payerBalance = await connection.getBalance(payer);
+  console.log(`💵 Payer balance: ${payerBalance / LAMPORTS_PER_SOL} SOL (${payerBalance} lamports)`);
+
   // Generate a new mint keypair
   const mintKeypair = Keypair.generate();
   const mint = mintKeypair.publicKey;
 
   console.log(`🎯 Creating COMBINED transaction for mint: ${mint.toBase58()}`);
   console.log(`Recipient: ${recipient.toBase58()}`);
+  console.log(`💰 Platform fee: ${PLATFORM_FEE_SOL} SOL (${PLATFORM_FEE_LAMPORTS} lamports)`);
+  console.log(`💰 Platform wallet: ${PLATFORM_WALLET.toBase58()}`);
 
   // Get the associated token account address for the recipient
   const associatedTokenAddress = await getAssociatedTokenAddress(
@@ -283,6 +134,21 @@ async function createCombinedMintWithMetadata(
     blockhash: blockhash,
     lastValidBlockHeight: lastValidBlockHeight,
   });
+
+  // ========================================
+  // INSTRUCTION 0: PLATFORM FEE TRANSFER
+  // ========================================
+  console.log("💸 Adding platform fee transfer instruction...");
+  
+  transaction.add(
+    SystemProgram.transfer({
+      fromPubkey: payer,
+      toPubkey: PLATFORM_WALLET,
+      lamports: PLATFORM_FEE_LAMPORTS,
+    })
+  );
+
+  console.log(`✅ Platform fee instruction added: ${PLATFORM_FEE_SOL} SOL to ${PLATFORM_WALLET.toBase58()}`);
 
   // ========================================
   // PART 1: SPL TOKEN CREATION INSTRUCTIONS
@@ -412,6 +278,22 @@ async function createCombinedMintWithMetadata(
 
     console.log("✅ Metadata instructions added");
 
+    // Calculate total cost
+    const mintRentSOL = mintRent / LAMPORTS_PER_SOL;
+    const estimatedMetadataRent = 0.0015; // Approximate metadata account rent
+    const estimatedFees = 0.00002; // ~20000 lamports for transaction fees
+    const totalCost = PLATFORM_FEE_SOL + mintRentSOL + estimatedMetadataRent + estimatedFees;
+    
+    console.log(`💰 Total estimated cost: ${totalCost.toFixed(6)} SOL`);
+    console.log(`   - Platform fee: ${PLATFORM_FEE_SOL} SOL`);
+    console.log(`   - Mint rent: ${mintRentSOL.toFixed(6)} SOL`);
+    console.log(`   - Metadata rent: ~${estimatedMetadataRent} SOL`);
+    console.log(`   - Transaction fees: ~${estimatedFees} SOL`);
+
+    if (payerBalance < totalCost * LAMPORTS_PER_SOL) {
+      throw new Error(`Insufficient balance. Required: ${totalCost.toFixed(6)} SOL, Available: ${(payerBalance / LAMPORTS_PER_SOL).toFixed(6)} SOL`);
+    }
+
     // Partially sign with mint keypair (required for creating the mint account)
     transaction.partialSign(mintKeypair);
 
@@ -443,6 +325,11 @@ async function createCombinedMintWithMetadata(
         symbol: metadata.symbol,
         uri: metadata.uri,
       },
+      platformFee: {
+        amount: PLATFORM_FEE_SOL,
+        amountLamports: PLATFORM_FEE_LAMPORTS,
+        recipient: PLATFORM_WALLET.toBase58(),
+      },
     };
   } catch (error) {
     console.error("❌ Error adding metadata instructions:", error);
@@ -450,8 +337,7 @@ async function createCombinedMintWithMetadata(
   }
 }
 
-// Export both functions
+// Export the function
 module.exports = {
-  createMintSPLTransaction,
   createCombinedMintWithMetadata,
 };
