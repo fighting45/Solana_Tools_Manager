@@ -4,6 +4,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useMintTransaction } from "../hooks/useMintTransaction";
 import { useToken2022Transaction } from "../hooks/useToken2022Transaction";
 import { DEFAULT_FORM_VALUES, TOKEN_TYPES } from "../config/constants";
+import Navbar from "./Navbar";
 import StatusMessage from "./StatusMessage";
 import WalletInfo from "./WalletInfo";
 import MintForm from "./MintForm";
@@ -62,8 +63,10 @@ const TokenMinter = () => {
   };
 
   return (
-    <div className="token-minter-container">
-      <div className="token-minter-card">
+    <div className="token-minter-wrapper">
+      <Navbar />
+      <div className="token-minter-container">
+        <div className="token-minter-card">
         <div className="card-header">
           <h1 className="card-title">
             <span className="title-icon">🪙</span>
@@ -207,6 +210,7 @@ const TokenMinter = () => {
           </p>
         </div>
       </div>
+    </div>
     </div>
   );
 };

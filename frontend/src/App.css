@@ -4,5 +4,11 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
+  background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+  transition: background 0.3s ease;
+}
+
+[data-theme="dark"] .App {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 

@@ -1,7 +1,13 @@
+.token-minter-wrapper {
+  min-height: 100vh;
+  padding-top: 80px;
+}
+
 .token-minter-container {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
+  padding: 20px;
 }
 
 .token-minter-card {
@@ -11,6 +17,12 @@
   padding: 40px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.5s ease-out;
+  transition: background 0.3s ease;
+}
+
+[data-theme="dark"] .token-minter-card {
+  background: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes slideUp {
@@ -32,7 +44,7 @@
 .card-title {
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 50%, #0f766e 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -41,6 +53,14 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
+  text-align: center;
+}
+
+[data-theme="dark"] .card-title {
+  background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 50%, #0d9488 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .title-icon {
@@ -53,6 +73,11 @@
   font-size: 1rem;
   font-weight: 400;
   margin-bottom: 16px;
+  text-align: center;
+}
+
+[data-theme="dark"] .card-subtitle {
+  color: #cbd5e1;
 }
 
 .powered-by {
@@ -71,7 +96,7 @@
 }
 
 .programmx-brand {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 50%, #0f766e 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -83,6 +108,13 @@
   display: inline-block;
 }
 
+[data-theme="dark"] .programmx-brand {
+  background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 50%, #0d9488 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .programmx-brand::after {
   content: '';
   position: absolute;
@@ -90,9 +122,13 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 50%, #0f766e 100%);
   border-radius: 2px;
   opacity: 0.6;
+}
+
+[data-theme="dark"] .programmx-brand::after {
+  background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 50%, #0d9488 100%);
 }
 
 .token-type-selector {
@@ -126,9 +162,9 @@
 }
 
 .token-type-btn.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: #667eea;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  border-color: #14b8a6;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
 }
 
 .token-type-btn.active .token-type-icon {
@@ -168,7 +204,7 @@
 }
 
 .wallet-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%) !important;
   border-radius: 12px !important;
   font-weight: 600 !important;
   padding: 12px 24px !important;
@@ -177,13 +213,18 @@
 
 .wallet-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4) !important;
+  box-shadow: 0 8px 20px rgba(20, 184, 166, 0.4) !important;
 }
 
 .card-footer {
   text-align: center;
   padding-top: 24px;
   border-top: 1px solid #e5e7eb;
+  transition: border-color 0.3s ease;
+}
+
+[data-theme="dark"] .card-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footer-text {
@@ -197,12 +238,19 @@
 }
 
 .programmx-brand-small {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-weight: 700;
   font-size: 0.875rem;
+}
+
+[data-theme="dark"] .programmx-brand-small {
+  background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .success-result {
