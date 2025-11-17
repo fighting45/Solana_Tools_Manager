@@ -1,5 +1,8 @@
 # SPL Token Minter - Setup Guide
 
+![Screenshot](./assets/Screenshot1.png)
+![Screenshot](./assets/Screenshot2.png)
+
 ## Backend Setup
 
 1. Install backend dependencies:

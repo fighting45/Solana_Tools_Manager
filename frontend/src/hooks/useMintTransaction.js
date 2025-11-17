@@ -121,9 +121,10 @@ export const useMintTransaction = () => {
 
         console.log("✅ Mint transaction confirmed!");
 
+        // Clear status message - detailed info will be shown in result box
         setStatus({
-          type: STATUS_TYPES.SUCCESS,
-          message: `Success! Transaction confirmed.\n\nSignature: ${signature}\nMint Address: ${transactionData.mintAddress}\nMetadata Account: ${transactionData.metadataAccount}\nToken Name: ${transactionData.tokenInfo.name}\nToken Symbol: ${transactionData.tokenInfo.symbol}\nImage URL: ${transactionData.ipfs.imageUrl}\nMetadata URL: ${transactionData.ipfs.metadataUrl}`,
+          type: "",
+          message: "",
         });
 
         return {

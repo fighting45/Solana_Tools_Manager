@@ -122,9 +122,10 @@ export const useToken2022Transaction = () => {
 
         console.log("✅ Token-2022 transaction confirmed!");
 
+        // Clear status message - detailed info will be shown in result box
         setStatus({
-          type: STATUS_TYPES.SUCCESS,
-          message: `Success! Token-2022 transaction confirmed.\n\nSignature: ${signature}\nMint Address: ${transactionData.mintAddress}\nToken Program: ${transactionData.tokenProgram}\nToken Name: ${transactionData.tokenInfo.name}\nToken Symbol: ${transactionData.tokenInfo.symbol}\nImage URL: ${transactionData.ipfs.imageUrl}\nMetadata URL: ${transactionData.ipfs.metadataUrl}`,
+          type: "",
+          message: "",
         });
 
         return {
