@@ -1,0 +1,358 @@
+/* Extension Selector Styles */
+.extension-selector {
+  margin-bottom: 20px;
+}
+
+.extension-selector .form-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.label-hint {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: normal;
+}
+
+.extension-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.extension-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.extension-dropdown-toggle {
+  width: 100%;
+  padding: 10px 12px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.extension-dropdown-toggle:hover:not(:disabled) {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.extension-dropdown-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f9fafb;
+}
+
+.dropdown-toggle-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-text {
+  color: #4b5563;
+}
+
+.dropdown-arrow {
+  font-size: 12px;
+  color: #6b7280;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.extension-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  max-height: 400px;
+  overflow: hidden;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-header {
+  padding: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.select-all-btn {
+  width: 100%;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: #4b5563;
+  text-align: left;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.select-all-btn:hover {
+  background: #e5e7eb;
+}
+
+.extension-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.extension-item {
+  padding: 12px;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.extension-item:last-child {
+  border-bottom: none;
+}
+
+.extension-item:hover {
+  background: #f9fafb;
+}
+
+.extension-checkbox-wrapper {
+  display: flex;
+  gap: 12px;
+}
+
+.extension-checkbox {
+  margin-top: 2px;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: #6366f1;
+}
+
+.extension-content {
+  flex: 1;
+}
+
+.extension-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.extension-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.warning-icon {
+  font-size: 14px;
+  cursor: help;
+}
+
+.extension-description {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.extension-warning {
+  font-size: 12px;
+  color: #d97706;
+  margin: 4px 0 0 0;
+  padding: 6px 8px;
+  background: #fef3c7;
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.warning-prefix {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.selected-extensions {
+  margin-top: 12px;
+}
+
+.extension-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.extension-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #ede9fe;
+  color: #5b21b6;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.tag-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: #5b21b6;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  transition: background 0.2s ease;
+}
+
+.tag-remove:hover:not(:disabled) {
+  background: #4c1d95;
+}
+
+.tag-remove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Teal theme updates */
+.extension-dropdown-toggle:hover:not(:disabled) {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.extension-checkbox {
+  accent-color: #14b8a6;
+}
+
+.extension-tag {
+  background: rgba(20, 184, 166, 0.1);
+  color: #0d9488;
+  border: 1px solid rgba(20, 184, 166, 0.2);
+}
+
+.tag-remove {
+  background: #14b8a6;
+}
+
+.tag-remove:hover:not(:disabled) {
+  background: #0d9488;
+}
+
+/* Dark mode support */
+[data-theme="dark"] .extension-selector .form-label {
+  color: #f3f4f6;
+}
+
+[data-theme="dark"] .extension-dropdown-toggle {
+  background: #1f2937;
+  border-color: #374151;
+  color: #f3f4f6;
+}
+
+[data-theme="dark"] .extension-dropdown-toggle:hover:not(:disabled) {
+  border-color: #2dd4bf;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
+}
+
+[data-theme="dark"] .extension-dropdown-menu {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .dropdown-header {
+  background: #111827;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .extension-item {
+  border-color: #374151;
+}
+
+[data-theme="dark"] .extension-item:hover {
+  background: #111827;
+}
+
+[data-theme="dark"] .extension-label {
+  color: #f3f4f6;
+}
+
+[data-theme="dark"] .extension-description {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .extension-tag {
+  background: rgba(45, 212, 191, 0.1);
+  color: #2dd4bf;
+  border: 1px solid rgba(45, 212, 191, 0.2);
+}
+
+[data-theme="dark"] .tag-remove {
+  background: #2dd4bf;
+}
+
+[data-theme="dark"] .tag-remove:hover:not(:disabled) {
+  background: #14b8a6;
+}

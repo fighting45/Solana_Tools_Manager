@@ -10,7 +10,7 @@ import {
 import { validators } from "../utils/validators";
 
 /**
- * Custom hook for minting Token-2022 tokens
+ * Custom hook for minting Token-2022 tokens with extensions
  */
 export const useToken2022Transaction = () => {
   const { connection } = useConnection();
@@ -46,7 +46,9 @@ export const useToken2022Transaction = () => {
         // Step 1: Create transaction from backend
         setStatus({
           type: STATUS_TYPES.INFO,
-          message: STATUS_MESSAGES.TRANSACTION_CREATED,
+          message: formData.extensions && formData.extensions.length > 0 
+            ? `Creating Token-2022 with ${formData.extensions.length} extension(s)...`
+            : STATUS_MESSAGES.TRANSACTION_CREATED,
         });
 
         const transactionData = await apiService.createToken2022Transaction(
@@ -59,11 +61,17 @@ export const useToken2022Transaction = () => {
             name: formData.name,
             symbol: formData.symbol,
             description: formData.description || `${formData.name} - ${formData.symbol} Token`,
+            extensions: formData.extensions && formData.extensions.length > 0 
+              ? formData.extensions.join(',') 
+              : '', // Send extensions as comma-separated string
           },
           formData.image
         );
 
         console.log("Backend response:", transactionData);
+        if (transactionData.tokenInfo && transactionData.tokenInfo.extensions) {
+          console.log("Token extensions enabled:", transactionData.tokenInfo.extensions);
+        }
 
         // Step 2: Deserialize mint transaction with blockhash and feePayer
         setStatus({
@@ -121,6 +129,11 @@ export const useToken2022Transaction = () => {
         );
 
         console.log("✅ Token-2022 transaction confirmed!");
+        
+        // Log enabled extensions
+        if (transactionData.tokenInfo && transactionData.tokenInfo.extensions && transactionData.tokenInfo.extensions.length > 0) {
+          console.log(`✅ Token created with extensions: ${transactionData.tokenInfo.extensions.join(', ')}`);
+        }
 
         // Clear status message - detailed info will be shown in result box
         setStatus({
@@ -154,4 +167,3 @@ export const useToken2022Transaction = () => {
     status,
   };
 };
-

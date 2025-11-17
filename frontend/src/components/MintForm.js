@@ -1,7 +1,17 @@
 import React from 'react';
+import ExtensionSelector from './ExtensionSelector';
 import './MintForm.css';
 
-const MintForm = ({ formData, onInputChange, onFileChange, onMint, loading, disabled }) => {
+const MintForm = ({ 
+  formData, 
+  onInputChange, 
+  onFileChange, 
+  onExtensionsChange,
+  onMint, 
+  loading, 
+  disabled,
+  tokenType 
+}) => {
   return (
     <div className="form-section">
       <div className="form-row">
@@ -58,6 +68,31 @@ const MintForm = ({ formData, onInputChange, onFileChange, onMint, loading, disa
           </div>
         )}
       </div>
+
+      <div className="form-group">
+        <label htmlFor="description" className="form-label">
+          Token Description (Optional)
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          value={formData.description || ''}
+          onChange={onInputChange}
+          placeholder="Describe your token..."
+          className="form-input form-textarea"
+          disabled={loading || disabled}
+          rows="3"
+        />
+      </div>
+
+      {/* Extension Selector - Only show for Token-2022 */}
+      {tokenType === 'TOKEN2022' && (
+        <ExtensionSelector 
+          onExtensionsChange={onExtensionsChange}
+          disabled={loading || disabled}
+          tokenType={tokenType}
+        />
+      )}
 
       <div className="form-group">
         <label htmlFor="recipientAddress" className="form-label">
@@ -142,13 +177,27 @@ const MintForm = ({ formData, onInputChange, onFileChange, onMint, loading, disa
         ) : (
           <>
             <span>✨</span>
-            Mint Tokens
+            {tokenType === 'TOKEN2022' && formData.extensions && formData.extensions.length > 0 
+              ? `Mint with ${formData.extensions.length} Extension${formData.extensions.length > 1 ? 's' : ''}`
+              : 'Mint Tokens'
+            }
           </>
         )}
       </button>
+
+      {/* Show selected extensions info */}
+      {tokenType === 'TOKEN2022' && formData.extensions && formData.extensions.length > 0 && (
+        <div className="extensions-info-box">
+          <p className="extensions-info-title">
+            🔧 Token will be created with {formData.extensions.length} extension{formData.extensions.length > 1 ? 's' : ''}
+          </p>
+          <p className="extensions-info-subtitle">
+            Extensions are permanent and cannot be removed after token creation.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
 
 export default MintForm;
-

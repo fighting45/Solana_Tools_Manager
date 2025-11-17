@@ -1,10 +1,16 @@
 // API Configuration
 export const API_BASE_URL = "http://localhost:3001";
 
-// API Endpoints
+// API Endpoints - Updated to match backend routes
 export const API_ENDPOINTS = {
+  // Original endpoints - keeping for backward compatibility
   CREATE_MINT: "/mint/createCombinedMint",
   CREATE_TOKEN2022: "/token2022/createToken2022",
+  
+  // Updated endpoints for new backend structure
+  CREATE_TOKEN2022_NEW: "/token2022/create-token2022-transaction",
+  TOKEN2022_EXTENSIONS: "/token2022/token2022-extensions",
+  
   HEALTH: "/health",
 };
 
@@ -30,7 +36,9 @@ export const DEFAULT_FORM_VALUES = {
   mintAuthorityAddress: "",
   name: "",
   symbol: "",
+  description: "",
   image: null,
+  extensions: [], // Add extensions array
 };
 
 // Validation Messages

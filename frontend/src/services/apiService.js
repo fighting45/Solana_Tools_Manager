@@ -88,8 +88,8 @@ class ApiService {
   }
 
   /**
-   * Create Token-2022 transaction
-   * @param {Object} transactionData - Transaction parameters
+   * Create Token-2022 transaction with extensions
+   * @param {Object} transactionData - Transaction parameters including extensions
    * @param {File} imageFile - Image file to upload
    * @returns {Promise<Object>} Transaction data from backend
    */
@@ -98,7 +98,16 @@ class ApiService {
     
     // Add all transaction data as form fields
     Object.keys(transactionData).forEach(key => {
-      formData.append(key, transactionData[key]);
+      // Handle extensions field specially
+      if (key === 'extensions') {
+        // Send as comma-separated string if array, or as is if already a string
+        const extensionsValue = Array.isArray(transactionData[key]) 
+          ? transactionData[key].join(',') 
+          : transactionData[key];
+        formData.append(key, extensionsValue);
+      } else {
+        formData.append(key, transactionData[key]);
+      }
     });
     
     // Add image file
@@ -106,9 +115,21 @@ class ApiService {
       formData.append('image', imageFile);
     }
 
-    return this.request(API_ENDPOINTS.CREATE_TOKEN2022, {
+    // Use the endpoint that supports extensions
+    const endpoint = API_ENDPOINTS.CREATE_TOKEN2022_NEW || API_ENDPOINTS.CREATE_TOKEN2022;
+    return this.request(endpoint, {
       method: 'POST',
       body: formData,
+    });
+  }
+
+  /**
+   * Get available Token-2022 extensions
+   * @returns {Promise<Object>} Available extensions
+   */
+  async getToken2022Extensions() {
+    return this.request(API_ENDPOINTS.TOKEN2022_EXTENSIONS, {
+      method: 'GET',
     });
   }
 
@@ -125,4 +146,3 @@ class ApiService {
 
 // Export singleton instance
 export default new ApiService();
-

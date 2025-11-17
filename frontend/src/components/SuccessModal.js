@@ -4,142 +4,179 @@ import './SuccessModal.css';
 const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
   if (!result || !result.success) return null;
 
-  const transactionData = result.transactionData || {};
+  const { signature, transactionData } = result;
+  const mintAddress = transactionData?.mintAddress;
+  const amount = transactionData?.tokenInfo?.amount || 0;
+  const decimals = transactionData?.tokenInfo?.decimals || 0;
+  const supply = transactionData?.tokenInfo?.supply || '0';
+  const extensions = transactionData?.tokenInfo?.extensions || [];
+
+  const explorerUrl = `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
+  const mintExplorerUrl = mintAddress 
+    ? `https://explorer.solana.com/address/${mintAddress}?cluster=devnet` 
+    : null;
+
+  const handleCopyAddress = (address) => {
+    navigator.clipboard.writeText(address);
+    // You could add a toast notification here
+  };
 
   return (
-    <div className="success-modal-overlay" onClick={onClose}>
-      <div className="success-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="success-modal-header">
-          <div className="success-icon-wrapper">
-            <div className="success-icon">✓</div>
-            <div className="success-ripple"></div>
-            <div className="success-ripple"></div>
-            <div className="success-ripple"></div>
-          </div>
-          <h2 className="success-modal-title">Mint Successful!</h2>
-          <p className="success-modal-subtitle">
-            Your {tokenType === 'SPL' ? 'SPL Token' : 'Token-2022'} has been created successfully
+    <div className="success-modal-overlay">
+      <div className="success-modal">
+        <div className="success-header">
+          <div className="success-icon">✅</div>
+          <h2 className="success-title">Token Minted Successfully!</h2>
+          <p className="success-subtitle">
+            Your {tokenType} token has been created and minted on Solana Devnet
           </p>
         </div>
 
-        <div className="success-modal-content">
-          <div className="success-info-grid">
-            <div className="info-card">
-              <div className="info-icon">🪙</div>
-              <div className="info-content">
-                <div className="info-label">Token Type</div>
-                <div className="info-value">
-                  {tokenType === 'SPL' ? 'SPL Token' : 'Token-2022'}
-                </div>
+        <div className="success-details">
+          <div className="detail-section">
+            <h3 className="detail-title">Token Information</h3>
+            <div className="detail-grid">
+              <div className="detail-item">
+                <span className="detail-label">Name:</span>
+                <span className="detail-value">{transactionData?.tokenInfo?.name}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Symbol:</span>
+                <span className="detail-value">{transactionData?.tokenInfo?.symbol}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Supply:</span>
+                <span className="detail-value">{Number(supply).toLocaleString()}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Decimals:</span>
+                <span className="detail-value">{decimals}</span>
               </div>
             </div>
+          </div>
 
-            <div className="info-card">
-              <div className="info-icon">📝</div>
-              <div className="info-content">
-                <div className="info-label">Token Name</div>
-                <div className="info-value">
-                  {transactionData.tokenInfo?.name || 'N/A'}
-                </div>
-              </div>
-            </div>
-
-            <div className="info-card">
-              <div className="info-icon">🏷️</div>
-              <div className="info-content">
-                <div className="info-label">Token Symbol</div>
-                <div className="info-value">
-                  {transactionData.tokenInfo?.symbol || 'N/A'}
-                </div>
-              </div>
-            </div>
-
-            <div className="info-card full-width">
-              <div className="info-icon">📍</div>
-              <div className="info-content">
-                <div className="info-label">Mint Address</div>
-                <div className="info-value address">
-                  {transactionData.mintAddress || 'N/A'}
-                </div>
-              </div>
-            </div>
-
-            {transactionData.metadataAccount && (
-              <div className="info-card full-width">
-                <div className="info-icon">📄</div>
-                <div className="info-content">
-                  <div className="info-label">Metadata Account</div>
-                  <div className="info-value address">
-                    {transactionData.metadataAccount}
+          {/* Show enabled extensions for Token-2022 */}
+          {tokenType === 'TOKEN2022' && extensions.length > 0 && (
+            <div className="detail-section">
+              <h3 className="detail-title">Enabled Extensions</h3>
+              <div className="extensions-list">
+                {extensions.map((ext, index) => (
+                  <div key={index} className="extension-item-success">
+                    <span className="extension-checkmark">✓</span>
+                    <span className="extension-name">
+                      {getExtensionDisplayName(ext)}
+                    </span>
                   </div>
-                </div>
-              </div>
-            )}
-
-            {transactionData.tokenProgram && (
-              <div className="info-card full-width">
-                <div className="info-icon">⚙️</div>
-                <div className="info-content">
-                  <div className="info-label">Token Program</div>
-                  <div className="info-value address">
-                    {transactionData.tokenProgram}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="info-card full-width">
-              <div className="info-icon">🔐</div>
-              <div className="info-content">
-                <div className="info-label">Transaction Signature</div>
-                <div className="info-value signature">
-                  {result.signature}
-                </div>
+                ))}
               </div>
             </div>
+          )}
 
-            {transactionData.ipfs?.metadataUrl && (
-              <div className="info-card full-width">
-                <div className="info-icon">🔗</div>
-                <div className="info-content">
-                  <div className="info-label">Metadata URL</div>
-                  <a
-                    href={transactionData.ipfs.metadataUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="info-link"
+          <div className="detail-section">
+            <h3 className="detail-title">Addresses</h3>
+            
+            {mintAddress && (
+              <div className="address-box">
+                <div className="address-label">Mint Address:</div>
+                <div className="address-container">
+                  <code className="address-text">{mintAddress}</code>
+                  <button 
+                    className="copy-btn"
+                    onClick={() => handleCopyAddress(mintAddress)}
+                    title="Copy address"
                   >
-                    {transactionData.ipfs.metadataUrl}
-                  </a>
+                    📋
+                  </button>
                 </div>
               </div>
             )}
 
-            {transactionData.ipfs?.imageUrl && (
-              <div className="info-card full-width">
-                <div className="info-icon">🖼️</div>
-                <div className="info-content">
-                  <div className="info-label">Image URL</div>
-                  <a
-                    href={transactionData.ipfs.imageUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="info-link"
+            {transactionData?.associatedTokenAddress && (
+              <div className="address-box">
+                <div className="address-label">Token Account:</div>
+                <div className="address-container">
+                  <code className="address-text">{transactionData.associatedTokenAddress}</code>
+                  <button 
+                    className="copy-btn"
+                    onClick={() => handleCopyAddress(transactionData.associatedTokenAddress)}
+                    title="Copy address"
                   >
-                    {transactionData.ipfs.imageUrl}
-                  </a>
+                    📋
+                  </button>
                 </div>
               </div>
             )}
           </div>
+
+          <div className="detail-section">
+            <h3 className="detail-title">Transaction</h3>
+            <div className="address-box">
+              <div className="address-label">Transaction Signature:</div>
+              <div className="address-container">
+                <code className="address-text signature">{signature.substring(0, 20)}...{signature.substring(signature.length - 20)}</code>
+                <button 
+                  className="copy-btn"
+                  onClick={() => handleCopyAddress(signature)}
+                  title="Copy signature"
+                >
+                  📋
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {transactionData?.ipfs && (
+            <div className="detail-section">
+              <h3 className="detail-title">Metadata</h3>
+              <div className="metadata-links">
+                <a 
+                  href={transactionData.ipfs.imageUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="metadata-link"
+                >
+                  🖼️ View Image on IPFS
+                </a>
+                <a 
+                  href={transactionData.ipfs.metadataUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="metadata-link"
+                >
+                  📄 View Metadata on IPFS
+                </a>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="success-modal-footer">
-          <button className="modal-button secondary" onClick={onClose}>
-            Close
+        <div className="success-actions">
+          <a 
+            href={explorerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="action-btn primary"
+          >
+            View on Explorer →
+          </a>
+          {mintExplorerUrl && (
+            <a 
+              href={mintExplorerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="action-btn secondary"
+            >
+              View Mint Account →
+            </a>
+          )}
+        </div>
+
+        <div className="modal-footer">
+          <button onClick={onNewMint} className="new-mint-btn">
+            🪙 Mint Another Token
           </button>
-          <button className="modal-button primary" onClick={onNewMint}>
-            Mint Another Token
+          <button onClick={onClose} className="close-modal-btn">
+            Close
           </button>
         </div>
       </div>
@@ -147,5 +184,16 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
   );
 };
 
-export default SuccessModal;
+// Helper function to get display names for extensions
+const getExtensionDisplayName = (extensionKey) => {
+  const displayNames = {
+    mintCloseAuthority: 'Mint Close Authority',
+    permanentDelegate: 'Permanent Delegate',
+    nonTransferable: 'Non-Transferable',
+    immutableOwner: 'Immutable Owner',
+    cpiGuard: 'CPI Guard'
+  };
+  return displayNames[extensionKey] || extensionKey;
+};
 
+export default SuccessModal;

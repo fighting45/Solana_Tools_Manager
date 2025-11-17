@@ -2,7 +2,7 @@ const ipfsService = require("../services/ipfsService");
 const token2022Service = require("../utils/MintToken2022");
 
 /**
- * Create Token-2022 transaction with on-chain metadata
+ * Create Token-2022 transaction with on-chain metadata and optional extensions
  */
 async function createToken2022Transaction(req, res) {
   try {
@@ -23,6 +23,18 @@ async function createToken2022Transaction(req, res) {
     const name = cleanFormValue(req.body.name);
     const symbol = cleanFormValue(req.body.symbol);
     const description = cleanFormValue(req.body.description);
+    
+    // Parse selected extensions from request
+    let selectedExtensions = [];
+    if (req.body.extensions) {
+      if (typeof req.body.extensions === 'string') {
+        // If it's a comma-separated string
+        selectedExtensions = req.body.extensions.split(',').map(ext => ext.trim()).filter(ext => ext);
+      } else if (Array.isArray(req.body.extensions)) {
+        // If it's already an array
+        selectedExtensions = req.body.extensions;
+      }
+    }
 
     // Validate required fields
     if (!payerAddress) {
@@ -42,6 +54,7 @@ async function createToken2022Transaction(req, res) {
     console.log("Token Name:", name);
     console.log("Token Symbol:", symbol);
     console.log("Payer Address:", payerAddress);
+    console.log("Selected Extensions:", selectedExtensions);
 
     // Get image file from request
     const imageFile = req.file;
@@ -70,10 +83,10 @@ async function createToken2022Transaction(req, res) {
     console.log("Image URL:", ipfsResult.image.url);
     console.log("Metadata URL:", ipfsResult.metadata.url);
 
-    // Step 2: Create Token-2022 transaction with on-chain metadata
-    console.log("🔨 Creating Token-2022 transaction...");
+    // Step 2: Create Token-2022 transaction with on-chain metadata and extensions
+    console.log("🔨 Creating Token-2022 transaction with extensions...");
 
-    const result = await token2022Service.createToken2022WithMetadata(
+    const result = await token2022Service.createToken2022WithMetadataAndExtensions(
       payerAddress,
       recipientAddress,
       mintAuthorityAddress,
@@ -83,11 +96,13 @@ async function createToken2022Transaction(req, res) {
         name: name,
         symbol: symbol,
         uri: ipfsResult.metadata.url,
-      }
+      },
+      selectedExtensions // Pass the selected extensions
     );
 
     console.log("✅ Token-2022 transaction created successfully!");
     console.log("Mint Address:", result.mintAddress);
+    console.log("Enabled Extensions:", result.extensions);
 
     // Step 3: Return response
     const response = {
@@ -117,6 +132,7 @@ async function createToken2022Transaction(req, res) {
         decimals,
         amount,
         supply: result.supply,
+        extensions: result.extensions, // Include enabled extensions in response
       },
 
       // Additional info
@@ -143,6 +159,47 @@ async function createToken2022Transaction(req, res) {
   }
 }
 
+/**
+ * Get available Token-2022 extensions
+ */
+function getAvailableExtensions(req, res) {
+  const extensions = [
+    {
+      name: "mintCloseAuthority",
+      label: "Mint Close Authority",
+      description: "Allows the mint authority to close the mint account and recover rent",
+      warning: null
+    },
+    {
+      name: "permanentDelegate",
+      label: "Permanent Delegate",
+      description: "Assigns a permanent delegate that can transfer or burn tokens from any account",
+      warning: "This gives significant control to the delegate address"
+    },
+    {
+      name: "nonTransferable",
+      label: "Non-Transferable",
+      description: "Makes tokens non-transferable (soulbound)",
+      warning: "Tokens cannot be transferred once minted"
+    },
+    {
+      name: "immutableOwner",
+      label: "Immutable Owner",
+      description: "Prevents the token account owner from being changed",
+      warning: "Token account ownership becomes permanent"
+    },
+    {
+      name: "cpiGuard",
+      label: "CPI Guard",
+      description: "Prevents token operations from happening via Cross-Program Invocation",
+      warning: "May limit composability with other programs"
+    }
+  ];
+
+  res.status(200).json({ extensions });
+}
+
 module.exports = {
   createToken2022Transaction,
+  getAvailableExtensions,
 };

@@ -125,4 +125,105 @@
     grid-template-columns: 1fr;
   }
 }
+/* Additional styles for MintForm extensions */
+
+.form-textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.extensions-info-box {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  border-radius: 8px;
+  color: white;
+  animation: slideUp 0.3s ease;
+}
+
+[data-theme="dark"] .extensions-info-box {
+  background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.extensions-info-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.extensions-info-subtitle {
+  font-size: 12px;
+  margin: 0;
+  opacity: 0.95;
+}
+
+/* Extension badge on token type button */
+.extension-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #14b8a6;
+  color: white;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 6px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(20, 184, 166, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0);
+  }
+}
+
+.token-type-btn.active .extension-badge {
+  background: white;
+  color: #14b8a6;
+}
+
+[data-theme="dark"] .extension-badge {
+  background: #2dd4bf;
+}
+
+[data-theme="dark"] .token-type-btn.active .extension-badge {
+  background: white;
+  color: #2dd4bf;
+}
+
+/* Update mint button text when extensions are selected */
+.mint-button {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.mint-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(20, 184, 166, 0.3);
+}
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const mintSPLRoute = require("./routes/mintSPLRoute.js");
-const token2022Route = require("./routes/token2022Route.js");
+const mintRoute = require("./routes/tokenRoutes.js");
+
 require("dotenv").config();
 
 const app = express();
@@ -11,8 +11,8 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-app.use("/mint", mintSPLRoute);
-app.use("/token2022", token2022Route);
+app.use("/mint", mintRoute);
+app.use("/token2022", mintRoute);
 
 // Health check endpoint
 app.get("/health", (req, res) => {

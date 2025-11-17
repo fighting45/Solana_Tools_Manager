@@ -20,7 +20,10 @@ const TokenMinter = () => {
   // Use the appropriate hook based on token type
   const { mintTokens, loading, status } = tokenType === TOKEN_TYPES.SPL ? splMint : token2022Mint;
   
-  const [formData, setFormData] = useState(DEFAULT_FORM_VALUES);
+  const [formData, setFormData] = useState({
+    ...DEFAULT_FORM_VALUES,
+    extensions: [] // Add extensions to form data
+  });
   const [result, setResult] = useState(null);
 
   const handleInputChange = (e) => {
@@ -46,10 +49,20 @@ const TokenMinter = () => {
     }
   };
 
+  const handleExtensionsChange = (extensions) => {
+    setFormData((prev) => ({
+      ...prev,
+      extensions: extensions
+    }));
+  };
+
   const handleTokenTypeChange = (newType) => {
     if (loading) return; // Don't allow switching while loading
     setTokenType(newType);
-    setFormData(DEFAULT_FORM_VALUES);
+    setFormData({
+      ...DEFAULT_FORM_VALUES,
+      extensions: [] // Reset extensions when switching token types
+    });
     setResult(null);
     // Status will automatically switch to the active hook's status
   };
@@ -64,12 +77,18 @@ const TokenMinter = () => {
 
   const handleCloseModal = () => {
     setResult(null);
-    setFormData(DEFAULT_FORM_VALUES);
+    setFormData({
+      ...DEFAULT_FORM_VALUES,
+      extensions: []
+    });
   };
 
   const handleNewMint = () => {
     setResult(null);
-    setFormData(DEFAULT_FORM_VALUES);
+    setFormData({
+      ...DEFAULT_FORM_VALUES,
+      extensions: []
+    });
   };
 
   return (
@@ -105,6 +124,9 @@ const TokenMinter = () => {
             >
               <span className="token-type-icon">✨</span>
               <span className="token-type-label">Token-2022</span>
+              {formData.extensions && formData.extensions.length > 0 && (
+                <span className="extension-badge">{formData.extensions.length}</span>
+              )}
             </button>
           </div>
 
@@ -118,9 +140,11 @@ const TokenMinter = () => {
             formData={formData}
             onInputChange={handleInputChange}
             onFileChange={handleFileChange}
+            onExtensionsChange={handleExtensionsChange}
             onMint={handleMint}
             loading={loading}
             disabled={!publicKey}
+            tokenType={tokenType}
           />
 
           {/* Only show status message if there's no successful result (to avoid duplication) */}
