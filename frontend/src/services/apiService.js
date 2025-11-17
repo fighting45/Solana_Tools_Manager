@@ -88,6 +88,31 @@ class ApiService {
   }
 
   /**
+   * Create Token-2022 transaction
+   * @param {Object} transactionData - Transaction parameters
+   * @param {File} imageFile - Image file to upload
+   * @returns {Promise<Object>} Transaction data from backend
+   */
+  async createToken2022Transaction(transactionData, imageFile) {
+    const formData = new FormData();
+    
+    // Add all transaction data as form fields
+    Object.keys(transactionData).forEach(key => {
+      formData.append(key, transactionData[key]);
+    });
+    
+    // Add image file
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+
+    return this.request(API_ENDPOINTS.CREATE_TOKEN2022, {
+      method: 'POST',
+      body: formData,
+    });
+  }
+
+  /**
    * Health check endpoint
    * @returns {Promise<Object>} Health status
    */

@@ -4,7 +4,14 @@ export const API_BASE_URL = "http://localhost:3001";
 // API Endpoints
 export const API_ENDPOINTS = {
   CREATE_MINT: "/mint/createCombinedMint",
+  CREATE_TOKEN2022: "/token2022/createToken2022",
   HEALTH: "/health",
+};
+
+// Token Types
+export const TOKEN_TYPES = {
+  SPL: "SPL",
+  TOKEN2022: "TOKEN2022",
 };
 
 // Transaction Status Types
