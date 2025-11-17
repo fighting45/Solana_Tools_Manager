@@ -1,6 +1,11 @@
 # SPL Token Minter - Setup Guide
 
+#FORM VALUES WITH WEB3 WALLET INTEGRATION
 ![Screenshot](./assets/Screenshot1.png)
+
+
+
+#SUCCESSFUL TRANSACTION FOR TOKEN MINTING
 ![Screenshot](./assets/Screenshot2.png)
 
 ## Backend Setup
