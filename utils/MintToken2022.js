@@ -17,14 +17,12 @@ const {
   ExtensionType,
   createInitializeMetadataPointerInstruction,
   createInitializeMintCloseAuthorityInstruction,
-  createInitializeImmutableOwnerInstruction,
   createInitializePermanentDelegateInstruction,
   createInitializeNonTransferableMintInstruction,
-  createEnableCpiGuardInstruction,
   TYPE_SIZE,
   LENGTH_SIZE,
 } = require("@solana/spl-token");
-const { 
+const {
   createInitializeInstruction,
   pack,
 } = require("@solana/spl-token-metadata");
@@ -32,7 +30,9 @@ const bs58 = require("bs58");
 require("dotenv").config();
 
 // Platform fee configuration from .env
-const PLATFORM_WALLET = new PublicKey(process.env.PLATFORM_WALLET || "A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz");
+const PLATFORM_WALLET = new PublicKey(
+  process.env.PLATFORM_WALLET || "A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz"
+);
 const PLATFORM_FEE_SOL = parseFloat(process.env.PLATFORM_FEE || "0.05");
 const PLATFORM_FEE_LAMPORTS = Math.floor(PLATFORM_FEE_SOL * LAMPORTS_PER_SOL);
 
@@ -41,10 +41,8 @@ const PLATFORM_FEE_LAMPORTS = Math.floor(PLATFORM_FEE_SOL * LAMPORTS_PER_SOL);
  */
 const EXTENSION_MAP = {
   mintCloseAuthority: ExtensionType.MintCloseAuthority,
-  immutableOwner: ExtensionType.ImmutableOwner,
   permanentDelegate: ExtensionType.PermanentDelegate,
   nonTransferable: ExtensionType.NonTransferable,
-  cpiGuard: ExtensionType.CpiGuard,
   // Note: ConfidentialTransferMint requires more complex setup, leaving it out for now
 };
 
@@ -70,7 +68,9 @@ async function createToken2022WithMetadataAndExtensions(
   const rpcUrl = process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
 
   console.log(`🔗 Connecting to Solana RPC for Token-2022: ${rpcUrl}`);
-  console.log(`🔧 Selected extensions: ${selectedExtensions.join(", ") || "None"}`);
+  console.log(
+    `🔧 Selected extensions: ${selectedExtensions.join(", ") || "None"}`
+  );
 
   const connection = new Connection(rpcUrl, {
     commitment: "confirmed",
@@ -85,8 +85,12 @@ async function createToken2022WithMetadataAndExtensions(
     : payer;
   const updateAuthority = mintAuthority;
 
-  console.log(`💰 Supply calculation: ${amount} tokens × 10^${decimals} = ${supply.toString()}`);
-  console.log(`💰 Platform fee: ${PLATFORM_FEE_SOL} SOL (${PLATFORM_FEE_LAMPORTS} lamports)`);
+  console.log(
+    `💰 Supply calculation: ${amount} tokens × 10^${decimals} = ${supply.toString()}`
+  );
+  console.log(
+    `💰 Platform fee: ${PLATFORM_FEE_SOL} SOL (${PLATFORM_FEE_LAMPORTS} lamports)`
+  );
 
   // Check payer balance
   const payerBalance = await connection.getBalance(payer);
@@ -107,8 +111,10 @@ async function createToken2022WithMetadataAndExtensions(
     ASSOCIATED_TOKEN_PROGRAM_ID
   );
 
-  console.log(`📦 Associated Token Account: ${associatedTokenAddress.toBase58()}`);
-  
+  console.log(
+    `📦 Associated Token Account: ${associatedTokenAddress.toBase58()}`
+  );
+
   // Check if associated token account already exists
   let associatedTokenAccountExists = false;
   try {
@@ -148,7 +154,7 @@ async function createToken2022WithMetadataAndExtensions(
   // PLATFORM FEE TRANSFER
   // ========================================
   console.log("💸 Adding platform fee transfer instruction...");
-  
+
   transaction.add(
     SystemProgram.transfer({
       fromPubkey: payer,
@@ -160,11 +166,11 @@ async function createToken2022WithMetadataAndExtensions(
   // ========================================
   // PREPARE EXTENSIONS
   // ========================================
-  
+
   // Convert selected extension names to ExtensionType array
   const extensions = [ExtensionType.MetadataPointer]; // Metadata is always included
-  
-  selectedExtensions.forEach(ext => {
+
+  selectedExtensions.forEach((ext) => {
     if (EXTENSION_MAP[ext]) {
       extensions.push(EXTENSION_MAP[ext]);
     }
@@ -174,7 +180,7 @@ async function createToken2022WithMetadataAndExtensions(
 
   // Calculate space WITHOUT metadata data (for account creation)
   const spaceWithoutMetadata = getMintLen(extensions);
-  
+
   // Pack the metadata to get its exact size
   const metadataData = {
     updateAuthority: updateAuthority,
@@ -184,20 +190,23 @@ async function createToken2022WithMetadataAndExtensions(
     uri: metadata.uri,
     additionalMetadata: [],
   };
-  
+
   const metadataBytes = pack(metadataData);
   const metadataLen = metadataBytes.length;
-  
+
   // Total space WITH metadata
-  const spaceWithMetadata = spaceWithoutMetadata + TYPE_SIZE + LENGTH_SIZE + metadataLen;
-  
+  const spaceWithMetadata =
+    spaceWithoutMetadata + TYPE_SIZE + LENGTH_SIZE + metadataLen;
+
   console.log(`📊 Space breakdown:`);
   console.log(`   Base + extensions: ${spaceWithoutMetadata} bytes`);
   console.log(`   Metadata data: ${metadataLen} bytes`);
   console.log(`   Total: ${spaceWithMetadata} bytes`);
 
   // Calculate rent
-  const mintLamports = await connection.getMinimumBalanceForRentExemption(spaceWithMetadata);
+  const mintLamports = await connection.getMinimumBalanceForRentExemption(
+    spaceWithMetadata
+  );
 
   // ========================================
   // BUILD TRANSACTION
@@ -227,12 +236,14 @@ async function createToken2022WithMetadataAndExtensions(
       TOKEN_2022_PROGRAM_ID
     )
   );
-  console.log(`✅ Instruction ${instructionIndex++}: MetadataPointer extension`);
+  console.log(
+    `✅ Instruction ${instructionIndex++}: MetadataPointer extension`
+  );
 
   // Add optional extensions based on user selection
-  selectedExtensions.forEach(ext => {
-    switch(ext) {
-      case 'mintCloseAuthority':
+  selectedExtensions.forEach((ext) => {
+    switch (ext) {
+      case "mintCloseAuthority":
         transaction.add(
           createInitializeMintCloseAuthorityInstruction(
             mint,
@@ -240,10 +251,12 @@ async function createToken2022WithMetadataAndExtensions(
             TOKEN_2022_PROGRAM_ID
           )
         );
-        console.log(`✅ Instruction ${instructionIndex++}: MintCloseAuthority extension`);
+        console.log(
+          `✅ Instruction ${instructionIndex++}: MintCloseAuthority extension`
+        );
         break;
 
-      case 'permanentDelegate':
+      case "permanentDelegate":
         transaction.add(
           createInitializePermanentDelegateInstruction(
             mint,
@@ -251,21 +264,22 @@ async function createToken2022WithMetadataAndExtensions(
             TOKEN_2022_PROGRAM_ID
           )
         );
-        console.log(`✅ Instruction ${instructionIndex++}: PermanentDelegate extension`);
+        console.log(
+          `✅ Instruction ${instructionIndex++}: PermanentDelegate extension`
+        );
         break;
 
-      case 'nonTransferable':
+      case "nonTransferable":
         transaction.add(
           createInitializeNonTransferableMintInstruction(
             mint,
             TOKEN_2022_PROGRAM_ID
           )
         );
-        console.log(`✅ Instruction ${instructionIndex++}: NonTransferable extension`);
+        console.log(
+          `✅ Instruction ${instructionIndex++}: NonTransferable extension`
+        );
         break;
-
-      // Note: ImmutableOwner is for token accounts, not mints
-      // CpiGuard needs to be enabled after token account creation
     }
   });
 
@@ -298,17 +312,6 @@ async function createToken2022WithMetadataAndExtensions(
 
   // 5. Create associated token account
   if (!associatedTokenAccountExists) {
-    // For immutableOwner extension
-    if (selectedExtensions.includes('immutableOwner')) {
-      transaction.add(
-        createInitializeImmutableOwnerInstruction(
-          associatedTokenAddress,
-          TOKEN_2022_PROGRAM_ID
-        )
-      );
-      console.log(`✅ Instruction ${instructionIndex++}: ImmutableOwner for token account`);
-    }
-
     transaction.add(
       createAssociatedTokenAccountInstruction(
         payer,
@@ -319,20 +322,9 @@ async function createToken2022WithMetadataAndExtensions(
         ASSOCIATED_TOKEN_PROGRAM_ID
       )
     );
-    console.log(`✅ Instruction ${instructionIndex++}: Create associated token account`);
-
-    // Enable CPI Guard after token account creation
-    if (selectedExtensions.includes('cpiGuard')) {
-      transaction.add(
-        createEnableCpiGuardInstruction(
-          associatedTokenAddress,
-          recipient, // Owner must sign
-          [],
-          TOKEN_2022_PROGRAM_ID
-        )
-      );
-      console.log(`✅ Instruction ${instructionIndex++}: Enable CpiGuard`);
-    }
+    console.log(
+      `✅ Instruction ${instructionIndex++}: Create associated token account`
+    );
   }
 
   // 6. Mint tokens
@@ -347,7 +339,9 @@ async function createToken2022WithMetadataAndExtensions(
       TOKEN_2022_PROGRAM_ID
     )
   );
-  console.log(`✅ Instruction ${instructionIndex++}: Mint ${supplyNumber.toLocaleString()} tokens`);
+  console.log(
+    `✅ Instruction ${instructionIndex++}: Mint ${supplyNumber.toLocaleString()} tokens`
+  );
 
   // Partially sign with mint keypair
   transaction.partialSign(mintKeypair);
