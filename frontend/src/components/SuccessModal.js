@@ -1,5 +1,5 @@
-import React from 'react';
-import './SuccessModal.css';
+import React from "react";
+import "./SuccessModal.css";
 
 const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
   if (!result || !result.success) return null;
@@ -8,12 +8,12 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
   const mintAddress = transactionData?.mintAddress;
   const amount = transactionData?.tokenInfo?.amount || 0;
   const decimals = transactionData?.tokenInfo?.decimals || 0;
-  const supply = transactionData?.tokenInfo?.supply || '0';
+  const supply = transactionData?.tokenInfo?.supply || "0";
   const extensions = transactionData?.tokenInfo?.extensions || [];
 
   const explorerUrl = `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
-  const mintExplorerUrl = mintAddress 
-    ? `https://explorer.solana.com/address/${mintAddress}?cluster=devnet` 
+  const mintExplorerUrl = mintAddress
+    ? `https://explorer.solana.com/address/${mintAddress}?cluster=devnet`
     : null;
 
   const handleCopyAddress = (address) => {
@@ -38,15 +38,21 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
             <div className="detail-grid">
               <div className="detail-item">
                 <span className="detail-label">Name:</span>
-                <span className="detail-value">{transactionData?.tokenInfo?.name}</span>
+                <span className="detail-value">
+                  {transactionData?.tokenInfo?.name}
+                </span>
               </div>
               <div className="detail-item">
                 <span className="detail-label">Symbol:</span>
-                <span className="detail-value">{transactionData?.tokenInfo?.symbol}</span>
+                <span className="detail-value">
+                  {transactionData?.tokenInfo?.symbol}
+                </span>
               </div>
               <div className="detail-item">
                 <span className="detail-label">Supply:</span>
-                <span className="detail-value">{Number(supply).toLocaleString()}</span>
+                <span className="detail-value">
+                  {Number(supply).toLocaleString()}
+                </span>
               </div>
               <div className="detail-item">
                 <span className="detail-label">Decimals:</span>
@@ -56,7 +62,7 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
           </div>
 
           {/* Show enabled extensions for Token-2022 */}
-          {tokenType === 'TOKEN2022' && extensions.length > 0 && (
+          {tokenType === "TOKEN2022" && extensions.length > 0 && (
             <div className="detail-section">
               <h3 className="detail-title">Enabled Extensions</h3>
               <div className="extensions-list">
@@ -74,13 +80,13 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
 
           <div className="detail-section">
             <h3 className="detail-title">Addresses</h3>
-            
+
             {mintAddress && (
               <div className="address-box">
                 <div className="address-label">Mint Address:</div>
                 <div className="address-container">
                   <code className="address-text">{mintAddress}</code>
-                  <button 
+                  <button
                     className="copy-btn"
                     onClick={() => handleCopyAddress(mintAddress)}
                     title="Copy address"
@@ -95,10 +101,14 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
               <div className="address-box">
                 <div className="address-label">Token Account:</div>
                 <div className="address-container">
-                  <code className="address-text">{transactionData.associatedTokenAddress}</code>
-                  <button 
+                  <code className="address-text">
+                    {transactionData.associatedTokenAddress}
+                  </code>
+                  <button
                     className="copy-btn"
-                    onClick={() => handleCopyAddress(transactionData.associatedTokenAddress)}
+                    onClick={() =>
+                      handleCopyAddress(transactionData.associatedTokenAddress)
+                    }
                     title="Copy address"
                   >
                     📋
@@ -113,8 +123,11 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
             <div className="address-box">
               <div className="address-label">Transaction Signature:</div>
               <div className="address-container">
-                <code className="address-text signature">{signature.substring(0, 20)}...{signature.substring(signature.length - 20)}</code>
-                <button 
+                <code className="address-text signature">
+                  {signature.substring(0, 20)}...
+                  {signature.substring(signature.length - 20)}
+                </code>
+                <button
                   className="copy-btn"
                   onClick={() => handleCopyAddress(signature)}
                   title="Copy signature"
@@ -129,17 +142,17 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
             <div className="detail-section">
               <h3 className="detail-title">Metadata</h3>
               <div className="metadata-links">
-                <a 
-                  href={transactionData.ipfs.imageUrl} 
-                  target="_blank" 
+                <a
+                  href={transactionData.ipfs.imageUrl}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="metadata-link"
                 >
                   🖼️ View Image on IPFS
                 </a>
-                <a 
-                  href={transactionData.ipfs.metadataUrl} 
-                  target="_blank" 
+                <a
+                  href={transactionData.ipfs.metadataUrl}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="metadata-link"
                 >
@@ -151,7 +164,7 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
         </div>
 
         <div className="success-actions">
-          <a 
+          <a
             href={explorerUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -160,7 +173,7 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
             View on Explorer →
           </a>
           {mintExplorerUrl && (
-            <a 
+            <a
               href={mintExplorerUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -187,11 +200,9 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
 // Helper function to get display names for extensions
 const getExtensionDisplayName = (extensionKey) => {
   const displayNames = {
-    mintCloseAuthority: 'Mint Close Authority',
-    permanentDelegate: 'Permanent Delegate',
-    nonTransferable: 'Non-Transferable',
-    immutableOwner: 'Immutable Owner',
-    cpiGuard: 'CPI Guard'
+    mintCloseAuthority: "Mint Close Authority",
+    permanentDelegate: "Permanent Delegate",
+    nonTransferable: "Non-Transferable",
   };
   return displayNames[extensionKey] || extensionKey;
 };
