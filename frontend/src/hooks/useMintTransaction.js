@@ -49,18 +49,16 @@ export const useMintTransaction = () => {
           message: STATUS_MESSAGES.TRANSACTION_CREATED,
         });
 
-        const transactionData = await apiService.createMintTransaction(
-          {
-            payerAddress: publicKey.toString(),
-            recipientAddress: formData.recipientAddress,
-            mintAuthorityAddress: formData.mintAuthorityAddress || null,
-            amount: parseFloat(formData.amount),
-            decimals: parseInt(formData.decimals),
-            name: formData.name,
-            symbol: formData.symbol,
-          },
-          formData.image
-        );
+        const transactionData = await apiService.createCombinedMintTransaction({
+          payerAddress: publicKey.toString(),
+          recipientAddress: formData.recipientAddress,
+          mintAuthorityAddress: formData.mintAuthorityAddress || null,
+          amount: parseFloat(formData.amount),
+          decimals: parseInt(formData.decimals),
+          name: formData.name,
+          symbol: formData.symbol,
+          image: formData.image, // ← Move it here, inside the object
+        });
 
         console.log("Backend response:", transactionData);
 

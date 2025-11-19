@@ -14,6 +14,8 @@ const {
   createAssociatedTokenAccountInstruction,
   createMintToInstruction,
   getMinimumBalanceForRentExemptMint,
+  createSetAuthorityInstruction,
+  AuthorityType,
   MINT_SIZE,
 } = require("@solana/spl-token");
 const { createUmi } = require("@metaplex-foundation/umi-bundle-defaults");
@@ -23,6 +25,7 @@ const {
   findMetadataPda,
   TokenStandard,
 } = require("@metaplex-foundation/mpl-token-metadata");
+
 const {
   publicKey,
   percentAmount,
@@ -34,34 +37,101 @@ const {
 } = require("@metaplex-foundation/umi-web3js-adapters");
 const { TransactionInstruction } = require("@solana/web3.js");
 const bs58 = require("bs58");
+const crypto = require("crypto");
 require("dotenv").config();
 
 // Platform fee configuration from .env
-const PLATFORM_WALLET = new PublicKey(process.env.PLATFORM_WALLET || "A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz");
+const PLATFORM_WALLET = new PublicKey(
+  process.env.PLATFORM_WALLET || "A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz"
+);
 const PLATFORM_FEE_SOL = parseFloat(process.env.PLATFORM_FEE || "0.05"); // Default 0.05 SOL
 const PLATFORM_FEE_LAMPORTS = Math.floor(PLATFORM_FEE_SOL * LAMPORTS_PER_SOL);
 
+// Additional feature fees
+const CUSTOM_ADDRESS_FEE_SOL = 0.1; // +0.1 SOL for custom address
+const MULTI_WALLET_FEE_SOL = 0.1; // +0.1 SOL for multi-wallet distribution
+
+/**
+ * Generates a custom address with specified prefix and/or suffix
+ * @param {string} prefix - Desired prefix for the address (max 4 chars combined with suffix)
+ * @param {string} suffix - Desired suffix for the address (max 4 chars combined with prefix)
+ * @param {number} maxAttempts - Maximum attempts to generate matching address
+ * @returns {Keypair} - Keypair with custom address
+ */
+async function generateCustomAddress(
+  prefix = "",
+  suffix = "",
+  maxAttempts = 1000000
+) {
+  console.log(
+    `🔑 Generating custom address with prefix: "${prefix}", suffix: "${suffix}"`
+  );
+
+  if ((prefix + suffix).length > 4) {
+    throw new Error("Combined prefix and suffix cannot exceed 4 characters");
+  }
+
+  let attempts = 0;
+  while (attempts < maxAttempts) {
+    const keypair = Keypair.generate();
+    const address = keypair.publicKey.toBase58();
+
+    const matchesPrefix =
+      !prefix || address.toLowerCase().startsWith(prefix.toLowerCase());
+    const matchesSuffix =
+      !suffix || address.toLowerCase().endsWith(suffix.toLowerCase());
+
+    if (matchesPrefix && matchesSuffix) {
+      console.log(
+        `✅ Found matching address after ${attempts} attempts: ${address}`
+      );
+      return keypair;
+    }
+
+    attempts++;
+    if (attempts % 10000 === 0) {
+      console.log(`... ${attempts} attempts made`);
+    }
+  }
+
+  throw new Error(
+    `Could not generate custom address after ${maxAttempts} attempts`
+  );
+}
+
 /**
  * Creates a COMBINED transaction with both SPL token mint AND metadata creation
- * This is more efficient and ensures atomicity - either both succeed or both fail
- * @param {string} payerAddress - The payer's wallet address (base58) - will sign the transaction
- * @param {string} recipientAddress - The recipient's wallet address (base58)
- * @param {string} mintAuthorityAddress - The mint authority address (base58) - defaults to payer
- * @param {number} amount - Amount of tokens to mint
- * @param {number} decimals - Number of decimals for the token
- * @param {Object} metadata - Metadata object with name, symbol, uri
- * @param {number} sellerFeeBasisPoints - Royalty percentage (0-10000)
+ * with support for additional features like custom address, multi-wallet distribution, and revokes
+ * @param {Object} params - All parameters for token creation
  * @returns {Promise<Object>} Combined transaction ready for frontend signing
  */
-async function createCombinedMintWithMetadata(
-  payerAddress,
-  recipientAddress,
-  mintAuthorityAddress = null,
-  amount,
-  decimals,
-  metadata,
-  sellerFeeBasisPoints = 0
-) {
+async function createCombinedMintWithMetadata(params) {
+  const {
+    payerAddress,
+    recipientAddress,
+    mintAuthorityAddress = null,
+    amount,
+    decimals,
+    metadata,
+    sellerFeeBasisPoints = 0,
+    // Social links
+    socialLinks = {},
+    // Tags
+    tags = [],
+    // Custom address parameters
+    useCustomAddress = false,
+    addressPrefix = "",
+    addressSuffix = "",
+    // Multi-wallet distribution
+    multiWalletDistribution = null,
+    // Revoke authorities
+    revokeAuthorities = {
+      freezeAuthority: false,
+      mintAuthority: false,
+      updateAuthority: false,
+    },
+  } = params;
+
   // Use RPC from environment or fallback to reliable public RPCs
   const rpcUrl = process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
 
@@ -72,32 +142,81 @@ async function createCombinedMintWithMetadata(
     confirmTransactionInitialTimeout: 60000,
   });
 
-  const supply = amount * LAMPORTS_PER_SOL;
+  const supply = amount * Math.pow(10, decimals);
   const payer = new PublicKey(payerAddress);
   const recipient = new PublicKey(recipientAddress);
-  const mintAuthority = payer;
+  const mintAuthority = mintAuthorityAddress
+    ? new PublicKey(mintAuthorityAddress)
+    : payer;
+  const freezeAuthority = revokeAuthorities.freezeAuthority
+    ? null
+    : mintAuthority;
 
-  // Check payer balance (ONLY for the payer, not platform wallet)
+  // Check payer balance
   const payerBalance = await connection.getBalance(payer);
-  console.log(`💵 Payer balance: ${payerBalance / LAMPORTS_PER_SOL} SOL (${payerBalance} lamports)`);
+  console.log(
+    `💵 Payer balance: ${
+      payerBalance / LAMPORTS_PER_SOL
+    } SOL (${payerBalance} lamports)`
+  );
 
-  // Generate a new mint keypair
-  const mintKeypair = Keypair.generate();
+  // Generate mint keypair (custom or regular)
+  let mintKeypair;
+  if (useCustomAddress) {
+    console.log("🎯 Generating custom address...");
+    mintKeypair = await generateCustomAddress(addressPrefix, addressSuffix);
+  } else {
+    mintKeypair = Keypair.generate();
+  }
   const mint = mintKeypair.publicKey;
 
   console.log(`🎯 Creating COMBINED transaction for mint: ${mint.toBase58()}`);
-  console.log(`Recipient: ${recipient.toBase58()}`);
-  console.log(`💰 Platform fee: ${PLATFORM_FEE_SOL} SOL (${PLATFORM_FEE_LAMPORTS} lamports)`);
+
+  // Calculate total platform fee
+  let totalPlatformFee = PLATFORM_FEE_SOL;
+  if (useCustomAddress) totalPlatformFee += CUSTOM_ADDRESS_FEE_SOL;
+  if (multiWalletDistribution) totalPlatformFee += MULTI_WALLET_FEE_SOL;
+
+  const totalPlatformFeeLamports = Math.floor(
+    totalPlatformFee * LAMPORTS_PER_SOL
+  );
+
+  console.log(
+    `💰 Total platform fee: ${totalPlatformFee} SOL (${totalPlatformFeeLamports} lamports)`
+  );
   console.log(`💰 Platform wallet: ${PLATFORM_WALLET.toBase58()}`);
 
-  // Get the associated token account address for the recipient
-  const associatedTokenAddress = await getAssociatedTokenAddress(
-    mint,
-    recipient,
-    false,
-    TOKEN_PROGRAM_ID,
-    ASSOCIATED_TOKEN_PROGRAM_ID
-  );
+  // Process multi-wallet distribution
+  let walletDistributions = [];
+  if (multiWalletDistribution && multiWalletDistribution.length > 0) {
+    console.log("📊 Processing multi-wallet distribution...");
+
+    // Validate percentages total to 100
+    const totalPercentage = multiWalletDistribution.reduce(
+      (sum, dist) => sum + dist.percentage,
+      0
+    );
+    if (Math.abs(totalPercentage - 100) > 0.01) {
+      throw new Error(
+        `Distribution percentages must total 100%, got ${totalPercentage}%`
+      );
+    }
+
+    walletDistributions = multiWalletDistribution.map((dist) => ({
+      wallet: new PublicKey(dist.wallet),
+      amount: Math.floor((supply * dist.percentage) / 100),
+    }));
+
+    console.log(`✅ Distributing to ${walletDistributions.length} wallets`);
+  } else {
+    // Single wallet receives all tokens
+    walletDistributions = [
+      {
+        wallet: recipient,
+        amount: supply,
+      },
+    ];
+  }
 
   // Get recent blockhash with retry logic
   let blockhash, lastValidBlockHeight;
@@ -139,16 +258,18 @@ async function createCombinedMintWithMetadata(
   // INSTRUCTION 0: PLATFORM FEE TRANSFER
   // ========================================
   console.log("💸 Adding platform fee transfer instruction...");
-  
+
   transaction.add(
     SystemProgram.transfer({
       fromPubkey: payer,
       toPubkey: PLATFORM_WALLET,
-      lamports: PLATFORM_FEE_LAMPORTS,
+      lamports: totalPlatformFeeLamports,
     })
   );
 
-  console.log(`✅ Platform fee instruction added: ${PLATFORM_FEE_SOL} SOL to ${PLATFORM_WALLET.toBase58()}`);
+  console.log(
+    `✅ Platform fee instruction added: ${totalPlatformFee} SOL to ${PLATFORM_WALLET.toBase58()}`
+  );
 
   // ========================================
   // PART 1: SPL TOKEN CREATION INSTRUCTIONS
@@ -174,34 +295,45 @@ async function createCombinedMintWithMetadata(
       mint,
       decimals,
       mintAuthority,
-      mintAuthority,
+      freezeAuthority,
       TOKEN_PROGRAM_ID
     )
   );
 
-  // Instruction 3: Create associated token account
-  transaction.add(
-    createAssociatedTokenAccountInstruction(
-      payer,
-      associatedTokenAddress,
-      recipient,
+  // Create associated token accounts and mint tokens for each distribution
+  for (const dist of walletDistributions) {
+    const associatedTokenAddress = await getAssociatedTokenAddress(
       mint,
+      dist.wallet,
+      false,
       TOKEN_PROGRAM_ID,
       ASSOCIATED_TOKEN_PROGRAM_ID
-    )
-  );
+    );
 
-  // Instruction 4: Mint tokens to the recipient
-  transaction.add(
-    createMintToInstruction(
-      mint,
-      associatedTokenAddress,
-      mintAuthority,
-      supply,
-      [],
-      TOKEN_PROGRAM_ID
-    )
-  );
+    // Create associated token account
+    transaction.add(
+      createAssociatedTokenAccountInstruction(
+        payer,
+        associatedTokenAddress,
+        dist.wallet,
+        mint,
+        TOKEN_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      )
+    );
+
+    // Mint tokens to the wallet
+    transaction.add(
+      createMintToInstruction(
+        mint,
+        associatedTokenAddress,
+        mintAuthority,
+        dist.amount,
+        [],
+        TOKEN_PROGRAM_ID
+      )
+    );
+  }
 
   console.log("✅ SPL token instructions added");
 
@@ -232,17 +364,28 @@ async function createCombinedMintWithMetadata(
 
     console.log("Metadata Account:", metadataAccountAddress.toString());
 
-    // Create metadata instruction builder
-    const metadataBuilder = createV1(umi, {
-      mint: umiMint,
-      authority: noopSigner,
-      payer: noopSigner,
-      updateAuthority: updateAuthority,
+    // Build metadata with additional fields
+    const metadataData = {
       name: metadata.name,
       symbol: metadata.symbol,
       uri: metadata.uri,
       sellerFeeBasisPoints: percentAmount(sellerFeeBasisPoints, 2),
       tokenStandard: TokenStandard.Fungible,
+    };
+
+    // Add social links and tags to metadata JSON if provided
+    // These will be included in the off-chain metadata (IPFS JSON)
+    // The on-chain metadata only stores the URI pointing to this JSON
+
+    // Create metadata instruction builder
+    const metadataBuilder = createV1(umi, {
+      mint: umiMint,
+      authority: noopSigner,
+      payer: noopSigner,
+      updateAuthority: revokeAuthorities.updateAuthority
+        ? publicKey(PublicKey.default.toBase58())
+        : updateAuthority,
+      ...metadataData,
     });
 
     // Get metadata instructions
@@ -278,20 +421,59 @@ async function createCombinedMintWithMetadata(
 
     console.log("✅ Metadata instructions added");
 
+    // ========================================
+    // PART 3: REVOKE AUTHORITIES (if requested)
+    // ========================================
+
+    if (revokeAuthorities.freezeAuthority && freezeAuthority) {
+      console.log("🔒 Revoking freeze authority...");
+      transaction.add(
+        createSetAuthorityInstruction(
+          mint,
+          mintAuthority,
+          AuthorityType.FreezeAccount,
+          null,
+          [],
+          TOKEN_PROGRAM_ID
+        )
+      );
+    }
+
+    if (revokeAuthorities.mintAuthority) {
+      console.log("🔒 Revoking mint authority...");
+      transaction.add(
+        createSetAuthorityInstruction(
+          mint,
+          mintAuthority,
+          AuthorityType.MintTokens,
+          null,
+          [],
+          TOKEN_PROGRAM_ID
+        )
+      );
+    }
+
+    // Note: Update authority revoke is handled in metadata creation above
+
     // Calculate total cost
     const mintRentSOL = mintRent / LAMPORTS_PER_SOL;
     const estimatedMetadataRent = 0.0015; // Approximate metadata account rent
-    const estimatedFees = 0.00002; // ~20000 lamports for transaction fees
-    const totalCost = PLATFORM_FEE_SOL + mintRentSOL + estimatedMetadataRent + estimatedFees;
-    
+    const estimatedFees = 0.00002 * (1 + walletDistributions.length); // Additional fees for multiple wallets
+    const totalCost =
+      totalPlatformFee + mintRentSOL + estimatedMetadataRent + estimatedFees;
+
     console.log(`💰 Total estimated cost: ${totalCost.toFixed(6)} SOL`);
-    console.log(`   - Platform fee: ${PLATFORM_FEE_SOL} SOL`);
+    console.log(`   - Platform fee: ${totalPlatformFee} SOL`);
     console.log(`   - Mint rent: ${mintRentSOL.toFixed(6)} SOL`);
     console.log(`   - Metadata rent: ~${estimatedMetadataRent} SOL`);
     console.log(`   - Transaction fees: ~${estimatedFees} SOL`);
 
     if (payerBalance < totalCost * LAMPORTS_PER_SOL) {
-      throw new Error(`Insufficient balance. Required: ${totalCost.toFixed(6)} SOL, Available: ${(payerBalance / LAMPORTS_PER_SOL).toFixed(6)} SOL`);
+      throw new Error(
+        `Insufficient balance. Required: ${totalCost.toFixed(
+          6
+        )} SOL, Available: ${(payerBalance / LAMPORTS_PER_SOL).toFixed(6)} SOL`
+      );
     }
 
     // Partially sign with mint keypair (required for creating the mint account)
@@ -310,25 +492,50 @@ async function createCombinedMintWithMetadata(
       transaction: serializedTransaction.toString("base64"),
       mintAddress: mint.toBase58(),
       recipientAddress: recipient.toBase58(),
-      associatedTokenAddress: associatedTokenAddress.toBase58(),
+      walletDistributions: walletDistributions.map((dist) => ({
+        wallet: dist.wallet.toBase58(),
+        amount: dist.amount.toString(),
+        percentage: ((dist.amount * 100) / supply).toFixed(2),
+      })),
       metadataAccount: metadataAccountAddress.toString(),
       supply: supply.toString(),
       decimals: decimals,
       mintSecretKey: bs58.encode(mintKeypair.secretKey),
       payerPublicKey: payer.toBase58(),
       mintAuthority: mintAuthority.toBase58(),
-      updateAuthority: updateAuthority.toString(),
+      updateAuthority: revokeAuthorities.updateAuthority
+        ? "revoked"
+        : updateAuthority.toString(),
+      freezeAuthority: revokeAuthorities.freezeAuthority
+        ? "revoked"
+        : freezeAuthority
+        ? freezeAuthority.toBase58()
+        : "none",
       blockhash: blockhash,
       lastValidBlockHeight: lastValidBlockHeight,
       metadata: {
         name: metadata.name,
         symbol: metadata.symbol,
         uri: metadata.uri,
+        socialLinks: socialLinks,
+        tags: tags,
       },
       platformFee: {
-        amount: PLATFORM_FEE_SOL,
-        amountLamports: PLATFORM_FEE_LAMPORTS,
+        amount: totalPlatformFee,
+        amountLamports: totalPlatformFeeLamports,
         recipient: PLATFORM_WALLET.toBase58(),
+        breakdown: {
+          base: PLATFORM_FEE_SOL,
+          customAddress: useCustomAddress ? CUSTOM_ADDRESS_FEE_SOL : 0,
+          multiWallet: multiWalletDistribution ? MULTI_WALLET_FEE_SOL : 0,
+        },
+      },
+      features: {
+        customAddress: useCustomAddress,
+        addressPrefix: addressPrefix,
+        addressSuffix: addressSuffix,
+        multiWalletDistribution: !!multiWalletDistribution,
+        revokedAuthorities: revokeAuthorities,
       },
     };
   } catch (error) {
@@ -337,7 +544,10 @@ async function createCombinedMintWithMetadata(
   }
 }
 
-// Export the function
+// Export the functions
 module.exports = {
   createCombinedMintWithMetadata,
+  generateCustomAddress,
+  CUSTOM_ADDRESS_FEE_SOL,
+  MULTI_WALLET_FEE_SOL,
 };

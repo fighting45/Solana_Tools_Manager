@@ -1,148 +1,264 @@
-import { API_BASE_URL, API_ENDPOINTS } from '../config/constants';
+import axios from "axios";
 
-/**
- * API Service for backend communication
- */
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || "http://localhost:3001/api";
+
 class ApiService {
-  constructor(baseURL = API_BASE_URL) {
-    this.baseURL = baseURL;
-  }
-
   /**
-   * Generic fetch wrapper with error handling
+   * Create combined mint transaction with all features
    */
-  async request(endpoint, options = {}) {
-    const url = `${this.baseURL}${endpoint}`;
-    const config = {
-      ...options,
-      headers: {
-        ...options.headers,
-      },
-    };
-
-    // Don't set Content-Type for FormData (browser will set it with boundary)
-    if (!(options.body instanceof FormData)) {
-      config.headers['Content-Type'] = 'application/json';
-    }
-
+  async createCombinedMintTransaction(formData) {
     try {
-      const response = await fetch(url, config);
-      
-      // Check if response is JSON
-      const contentType = response.headers.get('content-type');
-      const isJson = contentType && contentType.includes('application/json');
+      const form = new FormData();
 
-      if (!response.ok) {
-        let errorMessage = `HTTP error! status: ${response.status}`;
-        if (isJson) {
-          try {
-            const error = await response.json();
-            errorMessage = error.error || errorMessage;
-          } catch (e) {
-            // If JSON parsing fails, try text
-            const text = await response.text();
-            errorMessage = text || errorMessage;
-          }
-        } else {
-          const text = await response.text();
-          errorMessage = text || errorMessage;
+      // Basic token information
+      form.append("payerAddress", formData.payerAddress);
+      form.append("recipientAddress", formData.recipientAddress);
+      form.append("name", formData.name);
+      form.append("symbol", formData.symbol);
+      form.append("description", formData.description || "");
+      form.append("amount", formData.amount);
+      form.append("decimals", formData.decimals);
+      form.append("image", formData.image);
+
+      // Mint authority (optional)
+      if (formData.mintAuthorityAddress) {
+        form.append("mintAuthorityAddress", formData.mintAuthorityAddress);
+      }
+
+      // Seller fee (royalties)
+      if (formData.sellerFeeBasisPoints) {
+        form.append("sellerFeeBasisPoints", formData.sellerFeeBasisPoints);
+      }
+
+      // Social links (optional)
+      if (formData.telegramUrl)
+        form.append("telegramUrl", formData.telegramUrl);
+      if (formData.websiteUrl) form.append("websiteUrl", formData.websiteUrl);
+      if (formData.discordUrl) form.append("discordUrl", formData.discordUrl);
+      if (formData.twitterUrl) form.append("twitterUrl", formData.twitterUrl);
+
+      // Tags (optional - up to 5)
+      if (formData.tags && formData.tags.length > 0) {
+        form.append("tags", formData.tags.join(","));
+      }
+
+      // Custom address feature
+      if (formData.useCustomAddress) {
+        form.append("useCustomAddress", "true");
+        if (formData.addressPrefix)
+          form.append("addressPrefix", formData.addressPrefix);
+        if (formData.addressSuffix)
+          form.append("addressSuffix", formData.addressSuffix);
+      }
+
+      // Multi-wallet distribution
+      if (
+        formData.multiWalletDistribution &&
+        formData.multiWalletDistribution.length > 0
+      ) {
+        form.append(
+          "multiWalletDistribution",
+          JSON.stringify(formData.multiWalletDistribution)
+        );
+      }
+
+      // Revoke authorities
+      if (formData.revokeFreezeAuthority)
+        form.append("revokeFreezeAuthority", "true");
+      if (formData.revokeMintAuthority)
+        form.append("revokeMintAuthority", "true");
+      if (formData.revokeUpdateAuthority)
+        form.append("revokeUpdateAuthority", "true");
+
+      const response = await axios.post(
+        `${API_BASE_URL}/mint/create-transaction`,
+        form,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-        throw new Error(errorMessage);
-      }
+      );
 
-      if (!isJson) {
-        const text = await response.text();
-        throw new Error(`Expected JSON response but got: ${text.substring(0, 100)}`);
-      }
-
-      return await response.json();
+      return response.data;
     } catch (error) {
-      console.error('API Request Error:', error);
+      console.error("Error creating combined mint transaction:", error);
       throw error;
     }
   }
 
   /**
-   * Create mint transaction
-   * @param {Object} transactionData - Transaction parameters
-   * @param {File} imageFile - Image file to upload
-   * @returns {Promise<Object>} Transaction data from backend
+   * Preview custom address generation
    */
-  async createMintTransaction(transactionData, imageFile) {
-    const formData = new FormData();
-    
-    // Add all transaction data as form fields
-    Object.keys(transactionData).forEach(key => {
-      formData.append(key, transactionData[key]);
-    });
-    
-    // Add image file
-    if (imageFile) {
-      formData.append('image', imageFile);
+  async previewCustomAddress(prefix, suffix) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/mint/preview-address`, {
+        params: { prefix, suffix },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error previewing custom address:", error);
+      throw error;
     }
-
-    return this.request(API_ENDPOINTS.CREATE_MINT, {
-      method: 'POST',
-      body: formData,
-    });
   }
 
   /**
-   * Create Token-2022 transaction with extensions
-   * @param {Object} transactionData - Transaction parameters including extensions
-   * @param {File} imageFile - Image file to upload
-   * @returns {Promise<Object>} Transaction data from backend
+   * Calculate fees based on selected features
    */
-  async createToken2022Transaction(transactionData, imageFile) {
-    const formData = new FormData();
-    
-    // Add all transaction data as form fields
-    Object.keys(transactionData).forEach(key => {
-      // Handle extensions field specially
-      if (key === 'extensions') {
-        // Send as comma-separated string if array, or as is if already a string
-        const extensionsValue = Array.isArray(transactionData[key]) 
-          ? transactionData[key].join(',') 
-          : transactionData[key];
-        formData.append(key, extensionsValue);
-      } else {
-        formData.append(key, transactionData[key]);
+  async calculateFees(features) {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/mint/calculate-fees`,
+        features
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error calculating fees:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create Token-2022 with extensions
+   */
+  async createToken2022Transaction(formData) {
+    try {
+      const form = new FormData();
+
+      // Basic token information
+      form.append("payerAddress", formData.payerAddress);
+      form.append("recipientAddress", formData.recipientAddress);
+      form.append("name", formData.name);
+      form.append("symbol", formData.symbol);
+      form.append("description", formData.description || "");
+      form.append("amount", formData.amount);
+      form.append("decimals", formData.decimals);
+      form.append("image", formData.image);
+
+      // Token-2022 specific extensions
+      if (formData.extensions) {
+        form.append("extensions", JSON.stringify(formData.extensions));
       }
-    });
-    
-    // Add image file
-    if (imageFile) {
-      formData.append('image', imageFile);
+
+      // Social links and other features (same as SPL)
+      if (formData.telegramUrl)
+        form.append("telegramUrl", formData.telegramUrl);
+      if (formData.websiteUrl) form.append("websiteUrl", formData.websiteUrl);
+      if (formData.discordUrl) form.append("discordUrl", formData.discordUrl);
+      if (formData.twitterUrl) form.append("twitterUrl", formData.twitterUrl);
+
+      if (formData.tags && formData.tags.length > 0) {
+        form.append("tags", formData.tags.join(","));
+      }
+
+      if (formData.useCustomAddress) {
+        form.append("useCustomAddress", "true");
+        if (formData.addressPrefix)
+          form.append("addressPrefix", formData.addressPrefix);
+        if (formData.addressSuffix)
+          form.append("addressSuffix", formData.addressSuffix);
+      }
+
+      if (
+        formData.multiWalletDistribution &&
+        formData.multiWalletDistribution.length > 0
+      ) {
+        form.append(
+          "multiWalletDistribution",
+          JSON.stringify(formData.multiWalletDistribution)
+        );
+      }
+
+      if (formData.revokeFreezeAuthority)
+        form.append("revokeFreezeAuthority", "true");
+      if (formData.revokeMintAuthority)
+        form.append("revokeMintAuthority", "true");
+      if (formData.revokeUpdateAuthority)
+        form.append("revokeUpdateAuthority", "true");
+
+      const response = await axios.post(
+        `${API_BASE_URL}/token2022/create`,
+        form,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error creating Token-2022 transaction:", error);
+      throw error;
     }
-
-    // Use the endpoint that supports extensions
-    const endpoint = API_ENDPOINTS.CREATE_TOKEN2022_NEW || API_ENDPOINTS.CREATE_TOKEN2022;
-    return this.request(endpoint, {
-      method: 'POST',
-      body: formData,
-    });
   }
 
   /**
-   * Get available Token-2022 extensions
-   * @returns {Promise<Object>} Available extensions
+   * Upload metadata to IPFS
    */
-  async getToken2022Extensions() {
-    return this.request(API_ENDPOINTS.TOKEN2022_EXTENSIONS, {
-      method: 'GET',
-    });
+  async uploadToIPFS(imageFile, metadata) {
+    try {
+      const form = new FormData();
+      form.append("image", imageFile);
+      form.append("metadata", JSON.stringify(metadata));
+
+      const response = await axios.post(`${API_BASE_URL}/ipfs/upload`, form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading to IPFS:", error);
+      throw error;
+    }
   }
 
   /**
-   * Health check endpoint
-   * @returns {Promise<Object>} Health status
+   * Get transaction status
    */
-  async healthCheck() {
-    return this.request(API_ENDPOINTS.HEALTH, {
-      method: 'GET',
-    });
+  async getTransactionStatus(signature) {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/transaction/status/${signature}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error getting transaction status:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Validate Solana address
+   */
+  async validateAddress(address) {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/utils/validate-address`,
+        { address }
+      );
+      return response.data.valid;
+    } catch (error) {
+      console.error("Error validating address:", error);
+      return false;
+    }
+  }
+
+  /**
+   * Get network status and RPC health
+   */
+  async getNetworkStatus() {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/network/status`);
+      return response.data;
+    } catch (error) {
+      console.error("Error getting network status:", error);
+      throw error;
+    }
   }
 }
 
-// Export singleton instance
 export default new ApiService();

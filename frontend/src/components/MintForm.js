@@ -1,16 +1,18 @@
-import React from 'react';
-import ExtensionSelector from './ExtensionSelector';
-import './MintForm.css';
+import React from "react";
+import ExtensionSelector from "./ExtensionSelector";
+import CustomAddressGenerator from "./CustomAddressGenerator";
+import MultiWalletDistribution from "./MultiWalletDistribution";
+import "./MintForm.css";
 
-const MintForm = ({ 
-  formData, 
-  onInputChange, 
-  onFileChange, 
+const MintForm = ({
+  formData,
+  onInputChange,
+  onFileChange,
   onExtensionsChange,
-  onMint, 
-  loading, 
+  onMint,
+  loading,
   disabled,
-  tokenType 
+  tokenType,
 }) => {
   return (
     <div className="form-section">
@@ -76,7 +78,7 @@ const MintForm = ({
         <textarea
           id="description"
           name="description"
-          value={formData.description || ''}
+          value={formData.description || ""}
           onChange={onInputChange}
           placeholder="Describe your token..."
           className="form-input form-textarea"
@@ -85,9 +87,186 @@ const MintForm = ({
         />
       </div>
 
+      <div className="form-section-divider">
+        <h3>Social Links (Optional)</h3>
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label htmlFor="telegramUrl" className="form-label">
+            Telegram URL
+          </label>
+          <input
+            type="text"
+            id="telegramUrl"
+            name="telegramUrl"
+            value={formData.telegramUrl || ""}
+            onChange={onInputChange}
+            placeholder="https://t.me/yourgroup"
+            className="form-input"
+            disabled={loading || disabled}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="websiteUrl" className="form-label">
+            Website URL
+          </label>
+          <input
+            type="text"
+            id="websiteUrl"
+            name="websiteUrl"
+            value={formData.websiteUrl || ""}
+            onChange={onInputChange}
+            placeholder="https://yourwebsite.com"
+            className="form-input"
+            disabled={loading || disabled}
+          />
+        </div>
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label htmlFor="discordUrl" className="form-label">
+            Discord URL
+          </label>
+          <input
+            type="text"
+            id="discordUrl"
+            name="discordUrl"
+            value={formData.discordUrl || ""}
+            onChange={onInputChange}
+            placeholder="https://discord.gg/yourinvite"
+            className="form-input"
+            disabled={loading || disabled}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="twitterUrl" className="form-label">
+            Twitter URL
+          </label>
+          <input
+            type="text"
+            id="twitterUrl"
+            name="twitterUrl"
+            value={formData.twitterUrl || ""}
+            onChange={onInputChange}
+            placeholder="https://twitter.com/yourhandle"
+            className="form-input"
+            disabled={loading || disabled}
+          />
+        </div>
+      </div>
+
+      <div className="form-section-divider">
+        <h3>Tags (Optional - Max 5)</h3>
+      </div>
+      <div className="form-group">
+        <div className="tags-container">
+          <input
+            type="text"
+            name="tag1"
+            value={formData.tag1 || ""}
+            onChange={onInputChange}
+            placeholder="Tag 1"
+            className="tag-input"
+            disabled={loading || disabled}
+          />
+          <input
+            type="text"
+            name="tag2"
+            value={formData.tag2 || ""}
+            onChange={onInputChange}
+            placeholder="Tag 2"
+            className="tag-input"
+            disabled={loading || disabled}
+          />
+          <input
+            type="text"
+            name="tag3"
+            value={formData.tag3 || ""}
+            onChange={onInputChange}
+            placeholder="Tag 3"
+            className="tag-input"
+            disabled={loading || disabled}
+          />
+          <input
+            type="text"
+            name="tag4"
+            value={formData.tag4 || ""}
+            onChange={onInputChange}
+            placeholder="Tag 4"
+            className="tag-input"
+            disabled={loading || disabled}
+          />
+          <input
+            type="text"
+            name="tag5"
+            value={formData.tag5 || ""}
+            onChange={onInputChange}
+            placeholder="Tag 5"
+            className="tag-input"
+            disabled={loading || disabled}
+          />
+        </div>
+      </div>
+
+      {/* Custom Address Generator - Only show for SPL tokens */}
+      {tokenType !== "TOKEN2022" && (
+        <CustomAddressGenerator
+          enabled={formData.useCustomAddress || false}
+          prefix={formData.addressPrefix || ""}
+          suffix={formData.addressSuffix || ""}
+          generatedAddress={formData.generatedAddress || ""}
+          onToggle={(enabled) =>
+            onInputChange({
+              target: { name: "useCustomAddress", value: enabled },
+            })
+          }
+          onPrefixChange={(value) =>
+            onInputChange({ target: { name: "addressPrefix", value } })
+          }
+          onSuffixChange={(value) =>
+            onInputChange({ target: { name: "addressSuffix", value } })
+          }
+          onGenerate={async (prefix, suffix) => {
+            // This will be handled by parent component (TokenMinter)
+            // For now, just trigger a custom event or callback
+            if (formData.onGenerateAddress) {
+              await formData.onGenerateAddress(prefix, suffix);
+            }
+          }}
+          disabled={loading || disabled}
+          loading={formData.generatingAddress || false}
+        />
+      )}
+
+      {/* Multi-Wallet Distribution - Only show for SPL tokens */}
+      {tokenType !== "TOKEN2022" && (
+        <MultiWalletDistribution
+          enabled={formData.useMultiWallet || false}
+          distributions={
+            formData.multiWalletDistributions || [
+              { wallet: "", percentage: 100, avatar: "😎" },
+            ]
+          }
+          onToggle={(enabled) =>
+            onInputChange({
+              target: { name: "useMultiWallet", value: enabled },
+            })
+          }
+          onChange={(distributions) =>
+            onInputChange({
+              target: {
+                name: "multiWalletDistributions",
+                value: distributions,
+              },
+            })
+          }
+          disabled={loading || disabled}
+        />
+      )}
+
       {/* Extension Selector - Only show for Token-2022 */}
-      {tokenType === 'TOKEN2022' && (
-        <ExtensionSelector 
+      {tokenType === "TOKEN2022" && (
+        <ExtensionSelector
           onExtensionsChange={onExtensionsChange}
           disabled={loading || disabled}
           tokenType={tokenType}
@@ -177,25 +356,32 @@ const MintForm = ({
         ) : (
           <>
             <span>✨</span>
-            {tokenType === 'TOKEN2022' && formData.extensions && formData.extensions.length > 0 
-              ? `Mint with ${formData.extensions.length} Extension${formData.extensions.length > 1 ? 's' : ''}`
-              : 'Mint Tokens'
-            }
+            {tokenType === "TOKEN2022" &&
+            formData.extensions &&
+            formData.extensions.length > 0
+              ? `Mint with ${formData.extensions.length} Extension${
+                  formData.extensions.length > 1 ? "s" : ""
+                }`
+              : "Mint Tokens"}
           </>
         )}
       </button>
 
       {/* Show selected extensions info */}
-      {tokenType === 'TOKEN2022' && formData.extensions && formData.extensions.length > 0 && (
-        <div className="extensions-info-box">
-          <p className="extensions-info-title">
-            🔧 Token will be created with {formData.extensions.length} extension{formData.extensions.length > 1 ? 's' : ''}
-          </p>
-          <p className="extensions-info-subtitle">
-            Extensions are permanent and cannot be removed after token creation.
-          </p>
-        </div>
-      )}
+      {tokenType === "TOKEN2022" &&
+        formData.extensions &&
+        formData.extensions.length > 0 && (
+          <div className="extensions-info-box">
+            <p className="extensions-info-title">
+              🔧 Token will be created with {formData.extensions.length}{" "}
+              extension{formData.extensions.length > 1 ? "s" : ""}
+            </p>
+            <p className="extensions-info-subtitle">
+              Extensions are permanent and cannot be removed after token
+              creation.
+            </p>
+          </div>
+        )}
     </div>
   );
 };
