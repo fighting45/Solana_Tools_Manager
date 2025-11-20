@@ -63,6 +63,12 @@ async function createCombinedMintTransaction(req, res) {
     let multiWalletDistribution = null;
     if (req.body.multiWalletDistribution) {
       try {
+        console.log(
+          "📥 Raw multiWalletDistribution received:",
+          req.body.multiWalletDistribution
+        );
+        console.log("📥 Type:", typeof req.body.multiWalletDistribution);
+
         // Parse the distribution data
         if (typeof req.body.multiWalletDistribution === "string") {
           multiWalletDistribution = JSON.parse(
@@ -71,6 +77,11 @@ async function createCombinedMintTransaction(req, res) {
         } else {
           multiWalletDistribution = req.body.multiWalletDistribution;
         }
+
+        console.log(
+          "📥 Parsed multiWalletDistribution:",
+          multiWalletDistribution
+        );
 
         // Validate distribution
         if (
@@ -123,11 +134,9 @@ async function createCombinedMintTransaction(req, res) {
       return res.status(400).json({ error: "payerAddress is required" });
     }
     if (!recipientAddress && !multiWalletDistribution) {
-      return res
-        .status(400)
-        .json({
-          error: "recipientAddress or multiWalletDistribution is required",
-        });
+      return res.status(400).json({
+        error: "recipientAddress or multiWalletDistribution is required",
+      });
     }
     if (!name) {
       return res.status(400).json({ error: "name is required" });
@@ -348,26 +357,44 @@ async function previewCustomAddress(req, res) {
   try {
     const { prefix = "", suffix = "" } = req.query;
 
+    // Validate input
+    if (!prefix && !suffix) {
+      return res.status(400).json({
+        error: "At least one of prefix or suffix must be provided",
+      });
+    }
+
     if ((prefix + suffix).length > 4) {
       return res.status(400).json({
         error: "Combined prefix and suffix cannot exceed 4 characters",
       });
     }
 
-    // Generate a sample address
+    console.log(
+      `🔍 Previewing custom address: prefix="${prefix}", suffix="${suffix}"`
+    );
+
+    // Generate a sample address with more attempts for better success rate
     const { generateCustomAddress } = mintService;
-    const keypair = await generateCustomAddress(prefix, suffix, 100); // Quick attempt
+
+    const keypair = await generateCustomAddress(prefix, suffix);
+
+    console.log(
+      `✅ Generated preview address: ${keypair.publicKey.toBase58()}`
+    );
 
     res.status(200).json({
+      success: true,
       sampleAddress: keypair.publicKey.toBase58(),
       prefix,
       suffix,
-      note: "This is a sample. Actual address generation may take longer.",
+      note: "This is a preview. The actual mint will use a different address with these characteristics.",
     });
   } catch (error) {
+    console.error("❌ Error generating custom address preview:", error);
     res.status(500).json({
-      error:
-        "Could not generate sample address quickly. Try simpler prefix/suffix.",
+      success: false,
+      error: `Could not generate address with prefix="${prefix}" suffix="${suffix}" after multiple attempts. Try a simpler combination or fewer characters.`,
       details: error.message,
     });
   }

@@ -39,6 +39,20 @@ export const DEFAULT_FORM_VALUES = {
   description: "",
   image: null,
   extensions: [], // Add extensions array
+  useOptionalMetadata: false, // Toggle for social links & tags
+  telegramUrl: "",
+  websiteUrl: "",
+  discordUrl: "",
+  twitterUrl: "",
+  tag1: "",
+  tag2: "",
+  tag3: "",
+  tag4: "",
+  tag5: "",
+  useCustomAddress: false,
+  addressPrefix: "",
+  addressSuffix: "",
+  generatedAddress: "",
 };
 
 // Validation Messages

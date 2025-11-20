@@ -136,49 +136,19 @@ class ApiService {
       form.append("decimals", formData.decimals);
       form.append("image", formData.image);
 
-      // Token-2022 specific extensions
-      if (formData.extensions) {
-        form.append("extensions", JSON.stringify(formData.extensions));
+      // Mint authority (optional)
+      if (formData.mintAuthorityAddress) {
+        form.append("mintAuthorityAddress", formData.mintAuthorityAddress);
       }
 
-      // Social links and other features (same as SPL)
-      if (formData.telegramUrl)
-        form.append("telegramUrl", formData.telegramUrl);
-      if (formData.websiteUrl) form.append("websiteUrl", formData.websiteUrl);
-      if (formData.discordUrl) form.append("discordUrl", formData.discordUrl);
-      if (formData.twitterUrl) form.append("twitterUrl", formData.twitterUrl);
-
-      if (formData.tags && formData.tags.length > 0) {
-        form.append("tags", formData.tags.join(","));
+      // Token-2022 specific extensions (send as comma-separated string or array)
+      if (formData.extensions && Array.isArray(formData.extensions) && formData.extensions.length > 0) {
+        // Send as comma-separated string to match backend expectation
+        form.append("extensions", formData.extensions.join(","));
       }
-
-      if (formData.useCustomAddress) {
-        form.append("useCustomAddress", "true");
-        if (formData.addressPrefix)
-          form.append("addressPrefix", formData.addressPrefix);
-        if (formData.addressSuffix)
-          form.append("addressSuffix", formData.addressSuffix);
-      }
-
-      if (
-        formData.multiWalletDistribution &&
-        formData.multiWalletDistribution.length > 0
-      ) {
-        form.append(
-          "multiWalletDistribution",
-          JSON.stringify(formData.multiWalletDistribution)
-        );
-      }
-
-      if (formData.revokeFreezeAuthority)
-        form.append("revokeFreezeAuthority", "true");
-      if (formData.revokeMintAuthority)
-        form.append("revokeMintAuthority", "true");
-      if (formData.revokeUpdateAuthority)
-        form.append("revokeUpdateAuthority", "true");
 
       const response = await axios.post(
-        `${API_BASE_URL}/token2022/create`,
+        `${API_BASE_URL}/token2022/create-token2022-transaction`,
         form,
         {
           headers: {
@@ -256,6 +226,19 @@ class ApiService {
       return response.data;
     } catch (error) {
       console.error("Error getting network status:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get available Token-2022 extensions
+   */
+  async getToken2022Extensions() {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/token2022/token2022-extensions`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching Token-2022 extensions:", error);
       throw error;
     }
   }

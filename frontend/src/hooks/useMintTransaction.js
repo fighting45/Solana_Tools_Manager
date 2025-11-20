@@ -49,6 +49,28 @@ export const useMintTransaction = () => {
           message: STATUS_MESSAGES.TRANSACTION_CREATED,
         });
 
+        // Prepare tags array from individual tag fields
+        const tags = [
+          formData.tag1,
+          formData.tag2,
+          formData.tag3,
+          formData.tag4,
+          formData.tag5,
+        ].filter((tag) => tag && tag.trim() !== "");
+
+        // Prepare multi-wallet distribution - filter out empty wallets
+        let multiWalletDistribution = null;
+        if (formData.multiWalletDistributions && Array.isArray(formData.multiWalletDistributions)) {
+          console.log("📋 Original multi-wallet data:", formData.multiWalletDistributions);
+          const validWallets = formData.multiWalletDistributions.filter(
+            (dist) => dist.wallet && dist.wallet.trim() !== "" && dist.percentage > 0
+          );
+          console.log("✅ Filtered valid wallets:", validWallets);
+          if (validWallets.length > 0) {
+            multiWalletDistribution = validWallets;
+          }
+        }
+
         const transactionData = await apiService.createCombinedMintTransaction({
           payerAddress: publicKey.toString(),
           recipientAddress: formData.recipientAddress,
@@ -57,7 +79,25 @@ export const useMintTransaction = () => {
           decimals: parseInt(formData.decimals),
           name: formData.name,
           symbol: formData.symbol,
-          image: formData.image, // ← Move it here, inside the object
+          description: formData.description,
+          image: formData.image,
+          // Social links
+          telegramUrl: formData.telegramUrl,
+          websiteUrl: formData.websiteUrl,
+          discordUrl: formData.discordUrl,
+          twitterUrl: formData.twitterUrl,
+          // Tags
+          tags: tags,
+          // Custom address
+          useCustomAddress: formData.useCustomAddress,
+          addressPrefix: formData.addressPrefix,
+          addressSuffix: formData.addressSuffix,
+          // Multi-wallet distribution (only valid wallets)
+          multiWalletDistribution: multiWalletDistribution,
+          // Revoke authorities
+          revokeFreezeAuthority: formData.revokeFreezeAuthority,
+          revokeMintAuthority: formData.revokeMintAuthority,
+          revokeUpdateAuthority: formData.revokeUpdateAuthority,
         });
 
         console.log("Backend response:", transactionData);

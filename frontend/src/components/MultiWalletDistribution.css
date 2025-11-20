@@ -6,8 +6,98 @@
   border: 1px solid #2a2a4a;
 }
 
+.multi-wallet-section .feature-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.multi-wallet-section .feature-title {
+  flex: 1;
+}
+
+.multi-wallet-section .feature-title h4 {
+  color: #00d4ff;
+  font-size: 18px;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.multi-wallet-section .feature-description {
+  color: #a0a0c0;
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.multi-wallet-section .toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.multi-wallet-section .toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.multi-wallet-section .toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #2a2a4a;
+  border-radius: 30px;
+  transition: 0.3s;
+}
+
+.multi-wallet-section .toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.multi-wallet-section .toggle-switch input:checked + .toggle-slider {
+  background: #00d4ff;
+}
+
+.multi-wallet-section .toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(30px);
+}
+
+.multi-wallet-section .toggle-switch input:disabled + .toggle-slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .multi-wallet-content {
   animation: slideIn 0.3s ease-out;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #2a2a4a;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .distribution-bar {

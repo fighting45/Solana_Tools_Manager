@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import './CustomAddressGenerator.css';
+import React, { useState, useEffect } from "react";
+import "./CustomAddressGenerator.css";
 
 const CustomAddressGenerator = ({
   enabled,
@@ -11,21 +11,21 @@ const CustomAddressGenerator = ({
   onSuffixChange,
   onGenerate,
   disabled,
-  loading
+  loading,
 }) => {
   const [internalLoading, setInternalLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const combinedLength = prefix.length + suffix.length;
   const isValid = combinedLength <= 4 && combinedLength > 0;
 
   useEffect(() => {
     if (combinedLength > 4) {
-      setError('Combined prefix and suffix must not exceed 4 characters.');
+      setError("Combined prefix and suffix must not exceed 4 characters.");
     } else if (combinedLength === 0) {
-      setError('At least one of prefix or suffix must be provided.');
+      setError("At least one of prefix or suffix must be provided.");
     } else {
-      setError('');
+      setError("");
     }
   }, [prefix, suffix]);
 
@@ -45,7 +45,9 @@ const CustomAddressGenerator = ({
     try {
       await onGenerate(prefix, suffix);
     } catch (err) {
-      setError('Failed to generate address. Please try again.');
+      setError(
+        "Failed to generate address in threshold time. Please try again."
+      );
     } finally {
       setInternalLoading(false);
     }
@@ -61,7 +63,8 @@ const CustomAddressGenerator = ({
         <div className="feature-title">
           <h4>Custom Address Generator (+0.1 SOL)</h4>
           <p className="feature-description">
-            Generate a custom token address with your desired prefix or suffix (max 4 characters combined)
+            Generate a custom token address with your desired prefix or suffix
+            (max 4 characters combined)
           </p>
         </div>
         <label className="toggle-switch">
@@ -98,7 +101,7 @@ const CustomAddressGenerator = ({
             />
           </div>
 
-          <div className={`character-counter ${isValid ? 'valid' : 'invalid'}`}>
+          <div className={`character-counter ${isValid ? "valid" : "invalid"}`}>
             {combinedLength}/4 characters used
           </div>
 
@@ -109,19 +112,26 @@ const CustomAddressGenerator = ({
             onClick={handleGenerate}
             disabled={disabled || !isValid || internalLoading || loading}
           >
-            {internalLoading || loading ? <span className="spinner"></span> : 'Generate Address'}
+            {internalLoading || loading ? (
+              <span className="spinner"></span>
+            ) : (
+              "Generate Address"
+            )}
           </button>
 
           {generatedAddress && (
             <div className="generated-address-display">
               <div className="label">Generated Address</div>
               <div className="address">{generatedAddress}</div>
-              <button className="copy-btn" onClick={copyToClipboard}>Copy</button>
+              <button className="copy-btn" onClick={copyToClipboard}>
+                Copy
+              </button>
             </div>
           )}
 
           <div className="info-note">
-            Note: Address generation may take a few moments depending on complexity
+            Note: Address generation may take a few moments depending on
+            complexity
           </div>
         </div>
       )}

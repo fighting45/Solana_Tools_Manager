@@ -2,6 +2,7 @@ import React from "react";
 import ExtensionSelector from "./ExtensionSelector";
 import CustomAddressGenerator from "./CustomAddressGenerator";
 import MultiWalletDistribution from "./MultiWalletDistribution";
+import OptionalMetadata from "./OptionalMetadata";
 import "./MintForm.css";
 
 const MintForm = ({
@@ -9,6 +10,7 @@ const MintForm = ({
   onInputChange,
   onFileChange,
   onExtensionsChange,
+  onGenerateCustomAddress,
   onMint,
   loading,
   disabled,
@@ -87,126 +89,33 @@ const MintForm = ({
         />
       </div>
 
-      <div className="form-section-divider">
-        <h3>Social Links (Optional)</h3>
-      </div>
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="telegramUrl" className="form-label">
-            Telegram URL
-          </label>
-          <input
-            type="text"
-            id="telegramUrl"
-            name="telegramUrl"
-            value={formData.telegramUrl || ""}
-            onChange={onInputChange}
-            placeholder="https://t.me/yourgroup"
-            className="form-input"
-            disabled={loading || disabled}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="websiteUrl" className="form-label">
-            Website URL
-          </label>
-          <input
-            type="text"
-            id="websiteUrl"
-            name="websiteUrl"
-            value={formData.websiteUrl || ""}
-            onChange={onInputChange}
-            placeholder="https://yourwebsite.com"
-            className="form-input"
-            disabled={loading || disabled}
-          />
-        </div>
-      </div>
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="discordUrl" className="form-label">
-            Discord URL
-          </label>
-          <input
-            type="text"
-            id="discordUrl"
-            name="discordUrl"
-            value={formData.discordUrl || ""}
-            onChange={onInputChange}
-            placeholder="https://discord.gg/yourinvite"
-            className="form-input"
-            disabled={loading || disabled}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="twitterUrl" className="form-label">
-            Twitter URL
-          </label>
-          <input
-            type="text"
-            id="twitterUrl"
-            name="twitterUrl"
-            value={formData.twitterUrl || ""}
-            onChange={onInputChange}
-            placeholder="https://twitter.com/yourhandle"
-            className="form-input"
-            disabled={loading || disabled}
-          />
-        </div>
-      </div>
-
-      <div className="form-section-divider">
-        <h3>Tags (Optional - Max 5)</h3>
-      </div>
-      <div className="form-group">
-        <div className="tags-container">
-          <input
-            type="text"
-            name="tag1"
-            value={formData.tag1 || ""}
-            onChange={onInputChange}
-            placeholder="Tag 1"
-            className="tag-input"
-            disabled={loading || disabled}
-          />
-          <input
-            type="text"
-            name="tag2"
-            value={formData.tag2 || ""}
-            onChange={onInputChange}
-            placeholder="Tag 2"
-            className="tag-input"
-            disabled={loading || disabled}
-          />
-          <input
-            type="text"
-            name="tag3"
-            value={formData.tag3 || ""}
-            onChange={onInputChange}
-            placeholder="Tag 3"
-            className="tag-input"
-            disabled={loading || disabled}
-          />
-          <input
-            type="text"
-            name="tag4"
-            value={formData.tag4 || ""}
-            onChange={onInputChange}
-            placeholder="Tag 4"
-            className="tag-input"
-            disabled={loading || disabled}
-          />
-          <input
-            type="text"
-            name="tag5"
-            value={formData.tag5 || ""}
-            onChange={onInputChange}
-            placeholder="Tag 5"
-            className="tag-input"
-            disabled={loading || disabled}
-          />
-        </div>
-      </div>
+      {/* Social Links & Tags - Only show for SPL tokens */}
+      {tokenType !== "TOKEN2022" && (
+        <OptionalMetadata
+          enabled={formData.useOptionalMetadata || false}
+          socialLinks={{
+            telegramUrl: formData.telegramUrl,
+            websiteUrl: formData.websiteUrl,
+            discordUrl: formData.discordUrl,
+            twitterUrl: formData.twitterUrl,
+          }}
+          tags={{
+            tag1: formData.tag1,
+            tag2: formData.tag2,
+            tag3: formData.tag3,
+            tag4: formData.tag4,
+            tag5: formData.tag5,
+          }}
+          onToggle={(enabled) =>
+            onInputChange({
+              target: { name: "useOptionalMetadata", value: enabled },
+            })
+          }
+          onSocialLinkChange={onInputChange}
+          onTagChange={onInputChange}
+          disabled={loading || disabled}
+        />
+      )}
 
       {/* Custom Address Generator - Only show for SPL tokens */}
       {tokenType !== "TOKEN2022" && (
@@ -226,15 +135,9 @@ const MintForm = ({
           onSuffixChange={(value) =>
             onInputChange({ target: { name: "addressSuffix", value } })
           }
-          onGenerate={async (prefix, suffix) => {
-            // This will be handled by parent component (TokenMinter)
-            // For now, just trigger a custom event or callback
-            if (formData.onGenerateAddress) {
-              await formData.onGenerateAddress(prefix, suffix);
-            }
-          }}
+          onGenerate={onGenerateCustomAddress}
           disabled={loading || disabled}
-          loading={formData.generatingAddress || false}
+          loading={loading}
         />
       )}
 
@@ -273,21 +176,35 @@ const MintForm = ({
         />
       )}
 
-      <div className="form-group">
-        <label htmlFor="recipientAddress" className="form-label">
-          Recipient Address <span className="required">*</span>
-        </label>
-        <input
-          type="text"
-          id="recipientAddress"
-          name="recipientAddress"
-          value={formData.recipientAddress}
-          onChange={onInputChange}
-          placeholder="Enter recipient wallet address"
-          className="form-input"
-          disabled={loading || disabled}
-        />
-      </div>
+      {/* Recipient Address - Only show when NOT using multi-wallet distribution */}
+      {!(formData.useMultiWallet && formData.multiWalletDistributions && formData.multiWalletDistributions.length > 0) && (
+        <div className="form-group">
+          <label htmlFor="recipientAddress" className="form-label">
+            Recipient Address <span className="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="recipientAddress"
+            name="recipientAddress"
+            value={formData.recipientAddress}
+            onChange={onInputChange}
+            placeholder="Enter recipient wallet address"
+            className="form-input"
+            disabled={loading || disabled}
+          />
+          <p className="form-helper-text">
+            💡 When using Multi-Wallet Distribution, recipient addresses are specified in the distribution list
+          </p>
+        </div>
+      )}
+
+      {/* Show info when multi-wallet is enabled */}
+      {formData.useMultiWallet && formData.multiWalletDistributions && formData.multiWalletDistributions.length > 0 && (
+        <div className="info-message">
+          <span className="info-icon">ℹ️</span>
+          <span>Tokens will be distributed to the wallets specified in Multi-Wallet Distribution</span>
+        </div>
+      )}
 
       <div className="form-row">
         <div className="form-group">

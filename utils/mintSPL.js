@@ -64,7 +64,7 @@ async function generateCustomAddress(
   maxAttempts = 1000000
 ) {
   console.log(
-    `🔑 Generating custom address with prefix: "${prefix}", suffix: "${suffix}"`
+    `🔑 Generating custom address with prefix: "${prefix}", suffix: "${suffix}", maxAttempts: ${maxAttempts} (type: ${typeof maxAttempts})`
   );
 
   if ((prefix + suffix).length > 4) {
@@ -89,7 +89,7 @@ async function generateCustomAddress(
     }
 
     attempts++;
-    if (attempts % 10000 === 0) {
+    if (attempts % 1000000 === 0) {
       console.log(`... ${attempts} attempts made`);
     }
   }
@@ -190,9 +190,42 @@ async function createCombinedMintWithMetadata(params) {
   let walletDistributions = [];
   if (multiWalletDistribution && multiWalletDistribution.length > 0) {
     console.log("📊 Processing multi-wallet distribution...");
+    console.log(
+      "📋 Received distribution data:",
+      JSON.stringify(multiWalletDistribution, null, 2)
+    );
 
-    // Validate percentages total to 100
-    const totalPercentage = multiWalletDistribution.reduce(
+    // Filter out empty/invalid wallet addresses and trim whitespace
+    const validDistributions = multiWalletDistribution.filter((dist) => {
+      if (!dist.wallet || typeof dist.wallet !== "string") {
+        console.warn(
+          `⚠️ Skipping invalid wallet entry: ${JSON.stringify(dist)}`
+        );
+        return false;
+      }
+      const trimmedWallet = dist.wallet.trim();
+      if (trimmedWallet.length === 0) {
+        console.warn(`⚠️ Skipping empty wallet address`);
+        return false;
+      }
+      // Basic Solana address validation (should be 32-44 characters)
+      if (trimmedWallet.length < 32 || trimmedWallet.length > 44) {
+        console.warn(
+          `⚠️ Skipping invalid wallet address length: ${trimmedWallet}`
+        );
+        return false;
+      }
+      return true;
+    });
+
+    if (validDistributions.length === 0) {
+      throw new Error(
+        "No valid wallet addresses provided in multi-wallet distribution"
+      );
+    }
+
+    // Validate percentages total to 100 (only for valid wallets)
+    const totalPercentage = validDistributions.reduce(
       (sum, dist) => sum + dist.percentage,
       0
     );
@@ -202,10 +235,19 @@ async function createCombinedMintWithMetadata(params) {
       );
     }
 
-    walletDistributions = multiWalletDistribution.map((dist) => ({
-      wallet: new PublicKey(dist.wallet),
-      amount: Math.floor((supply * dist.percentage) / 100),
-    }));
+    // Create wallet distributions with validated addresses
+    walletDistributions = validDistributions.map((dist) => {
+      try {
+        return {
+          wallet: new PublicKey(dist.wallet.trim()),
+          amount: Math.floor((supply * dist.percentage) / 100),
+        };
+      } catch (err) {
+        throw new Error(
+          `Invalid wallet address: ${dist.wallet.trim()} - ${err.message}`
+        );
+      }
+    });
 
     console.log(`✅ Distributing to ${walletDistributions.length} wallets`);
   } else {

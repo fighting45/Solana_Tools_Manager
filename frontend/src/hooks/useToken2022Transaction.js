@@ -34,7 +34,7 @@ export const useToken2022Transaction = () => {
       if (!validation.isValid) {
         setStatus({
           type: STATUS_TYPES.ERROR,
-          message: validation.errors.join(", "),  
+          message: validation.errors.join(", "),
         });
         return { success: false };
       }
@@ -46,31 +46,33 @@ export const useToken2022Transaction = () => {
         // Step 1: Create transaction from backend
         setStatus({
           type: STATUS_TYPES.INFO,
-          message: formData.extensions && formData.extensions.length > 0 
-            ? `Creating Token-2022 with ${formData.extensions.length} extension(s)...`
-            : STATUS_MESSAGES.TRANSACTION_CREATED,
+          message:
+            formData.extensions && formData.extensions.length > 0
+              ? `Creating Token-2022 with ${formData.extensions.length} extension(s)...`
+              : STATUS_MESSAGES.TRANSACTION_CREATED,
         });
 
-        const transactionData = await apiService.createToken2022Transaction(
-          {
-            payerAddress: publicKey.toString(),
-            recipientAddress: formData.recipientAddress,
-            mintAuthorityAddress: formData.mintAuthorityAddress || null,
-            amount: parseFloat(formData.amount),
-            decimals: parseInt(formData.decimals),
-            name: formData.name,
-            symbol: formData.symbol,
-            description: formData.description || `${formData.name} - ${formData.symbol} Token`,
-            extensions: formData.extensions && formData.extensions.length > 0 
-              ? formData.extensions.join(',') 
-              : '', // Send extensions as comma-separated string
-          },
-          formData.image
-        );
+        const transactionData = await apiService.createToken2022Transaction({
+          payerAddress: publicKey.toString(),
+          recipientAddress: formData.recipientAddress,
+          mintAuthorityAddress: formData.mintAuthorityAddress || null,
+          amount: parseFloat(formData.amount),
+          decimals: parseInt(formData.decimals),
+          name: formData.name,
+          symbol: formData.symbol,
+          description:
+            formData.description ||
+            `${formData.name} - ${formData.symbol} Token`,
+          image: formData.image,
+          extensions: formData.extensions || [], // Pass extensions as array
+        });
 
         console.log("Backend response:", transactionData);
         if (transactionData.tokenInfo && transactionData.tokenInfo.extensions) {
-          console.log("Token extensions enabled:", transactionData.tokenInfo.extensions);
+          console.log(
+            "Token extensions enabled:",
+            transactionData.tokenInfo.extensions
+          );
         }
 
         // Step 2: Deserialize mint transaction with blockhash and feePayer
@@ -129,10 +131,18 @@ export const useToken2022Transaction = () => {
         );
 
         console.log("✅ Token-2022 transaction confirmed!");
-        
+
         // Log enabled extensions
-        if (transactionData.tokenInfo && transactionData.tokenInfo.extensions && transactionData.tokenInfo.extensions.length > 0) {
-          console.log(`✅ Token created with extensions: ${transactionData.tokenInfo.extensions.join(', ')}`);
+        if (
+          transactionData.tokenInfo &&
+          transactionData.tokenInfo.extensions &&
+          transactionData.tokenInfo.extensions.length > 0
+        ) {
+          console.log(
+            `✅ Token created with extensions: ${transactionData.tokenInfo.extensions.join(
+              ", "
+            )}`
+          );
         }
 
         // Clear status message - detailed info will be shown in result box
@@ -151,7 +161,9 @@ export const useToken2022Transaction = () => {
         console.error("Error details:", error.stack);
         setStatus({
           type: STATUS_TYPES.ERROR,
-          message: error.message || "An error occurred while minting Token-2022 tokens",
+          message:
+            error.message ||
+            "An error occurred while minting Token-2022 tokens",
         });
         return { success: false, error: error.message };
       } finally {

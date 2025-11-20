@@ -397,3 +397,29 @@
     opacity: 1;
   }
 }
+
+/* Helper text and info messages */
+.form-helper-text {
+  color: #a0a0c0;
+  font-size: 12px;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.info-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  margin: 16px 0;
+  color: #00d4ff;
+  font-size: 14px;
+}
+
+.info-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}

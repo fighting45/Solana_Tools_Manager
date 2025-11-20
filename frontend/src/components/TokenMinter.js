@@ -91,6 +91,33 @@ const TokenMinter = () => {
     });
   };
 
+  const handleGenerateCustomAddress = async (prefix, suffix) => {
+    try {
+      console.log('🔍 Generating custom address...', { prefix, suffix });
+      const apiService = (await import('../services/apiService')).default;
+      const result = await apiService.previewCustomAddress(prefix, suffix);
+
+      console.log('✅ Received result:', result);
+
+      if (!result.success || !result.sampleAddress) {
+        throw new Error(result.error || 'Failed to generate address');
+      }
+
+      // Update form with generated address
+      setFormData((prev) => ({
+        ...prev,
+        generatedAddress: result.sampleAddress
+      }));
+
+      console.log('✅ Custom address generated:', result.sampleAddress);
+      return result.sampleAddress;
+    } catch (error) {
+      console.error('❌ Error generating custom address:', error);
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to generate address. Please try again.';
+      throw new Error(errorMessage);
+    }
+  };
+
   return (
     <div className="token-minter-wrapper">
       <Navbar />
@@ -141,6 +168,7 @@ const TokenMinter = () => {
             onInputChange={handleInputChange}
             onFileChange={handleFileChange}
             onExtensionsChange={handleExtensionsChange}
+            onGenerateCustomAddress={handleGenerateCustomAddress}
             onMint={handleMint}
             loading={loading}
             disabled={!publicKey}
