@@ -1,0 +1,178 @@
+.priority-fee-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.priority-fee-modal {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16161f 100%);
+  border: 2px solid #00d4ff;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 600px;
+  width: 90%;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0, 212, 255, 0.3);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.priority-fee-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.priority-fee-title {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.priority-fee-close {
+  background: transparent;
+  border: none;
+  color: #8b8b9f;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.priority-fee-close:hover {
+  color: #ffffff;
+}
+
+.priority-fee-description {
+  color: #a0a0c0;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 30px 0;
+}
+
+.priority-level-section {
+  margin-bottom: 24px;
+}
+
+.priority-level-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.priority-level-label {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.priority-level-icon {
+  font-size: 20px;
+}
+
+.priority-levels-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.priority-level-btn {
+  background: rgba(20, 20, 40, 0.6);
+  border: 2px solid #2d3748;
+  border-radius: 12px;
+  padding: 20px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.priority-level-btn:hover {
+  border-color: #3d4758;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.priority-level-btn.active {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 153, 204, 0.1) 100%);
+  border-color: #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.level-icon {
+  font-size: 24px;
+}
+
+.level-label {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.priority-level-btn.active .level-label {
+  color: #00d4ff;
+}
+
+.priority-fee-note {
+  color: #8b8b9f;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 16px;
+  background: rgba(0, 212, 255, 0.05);
+  border-left: 3px solid #00d4ff;
+  border-radius: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .priority-fee-modal {
+    padding: 24px;
+  }
+
+  .priority-fee-title {
+    font-size: 24px;
+  }
+
+  .priority-levels-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .priority-level-btn {
+    flex-direction: row;
+    justify-content: center;
+    padding: 16px;
+  }
+}

@@ -24,6 +24,11 @@ async function createToken2022Transaction(req, res) {
     const symbol = cleanFormValue(req.body.symbol);
     const description = cleanFormValue(req.body.description);
 
+    // Priority fee level
+    const priorityLevel = cleanFormValue(req.body.priorityLevel) || "none";
+    console.log('🎯 [Controller] Received priority level from frontend:', req.body.priorityLevel);
+    console.log('🎯 [Controller] Cleaned priority level:', priorityLevel);
+
     // Parse selected extensions from request
     let selectedExtensions = [];
     if (req.body.extensions) {
@@ -101,7 +106,8 @@ async function createToken2022Transaction(req, res) {
           symbol: symbol,
           uri: ipfsResult.metadata.url,
         },
-        selectedExtensions // Pass the selected extensions
+        selectedExtensions, // Pass the selected extensions
+        priorityLevel // Pass the priority level
       );
 
     console.log("✅ Token-2022 transaction created successfully!");

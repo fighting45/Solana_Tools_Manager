@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useMintTransaction } from "../hooks/useMintTransaction";
 import { useToken2022Transaction } from "../hooks/useToken2022Transaction";
 import { DEFAULT_FORM_VALUES, TOKEN_TYPES } from "../config/constants";
 import Navbar from "./Navbar";
 import StatusMessage from "./StatusMessage";
-import WalletInfo from "./WalletInfo";
 import MintForm from "./MintForm";
 import SuccessModal from "./SuccessModal";
 import "./TokenMinter.css";
@@ -91,6 +89,33 @@ const TokenMinter = () => {
     });
   };
 
+  const handleGenerateCustomAddress = async (prefix, suffix) => {
+    try {
+      console.log('🔍 Generating custom address...', { prefix, suffix });
+      const apiService = (await import('../services/apiService')).default;
+      const result = await apiService.previewCustomAddress(prefix, suffix);
+
+      console.log('✅ Received result:', result);
+
+      if (!result.success || !result.sampleAddress) {
+        throw new Error(result.error || 'Failed to generate address');
+      }
+
+      // Update form with generated address
+      setFormData((prev) => ({
+        ...prev,
+        generatedAddress: result.sampleAddress
+      }));
+
+      console.log('✅ Custom address generated:', result.sampleAddress);
+      return result.sampleAddress;
+    } catch (error) {
+      console.error('❌ Error generating custom address:', error);
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to generate address. Please try again.';
+      throw new Error(errorMessage);
+    }
+  };
+
   return (
     <div className="token-minter-wrapper">
       <Navbar />
@@ -130,17 +155,12 @@ const TokenMinter = () => {
             </button>
           </div>
 
-          <div className="wallet-section">
-            <WalletMultiButton className="wallet-button" />
-          </div>
-
-          {publicKey && <WalletInfo publicKey={publicKey} />}
-
           <MintForm
             formData={formData}
             onInputChange={handleInputChange}
             onFileChange={handleFileChange}
             onExtensionsChange={handleExtensionsChange}
+            onGenerateCustomAddress={handleGenerateCustomAddress}
             onMint={handleMint}
             loading={loading}
             disabled={!publicKey}

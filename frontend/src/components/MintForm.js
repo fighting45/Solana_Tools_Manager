@@ -1,16 +1,23 @@
-import React from 'react';
-import ExtensionSelector from './ExtensionSelector';
-import './MintForm.css';
+import React from "react";
+import ExtensionSelector from "./ExtensionSelector";
+import CustomAddressGenerator from "./CustomAddressGenerator";
+import MultiWalletDistribution from "./MultiWalletDistribution";
+import OptionalMetadata from "./OptionalMetadata";
+import RevokeAuthorities from "./RevokeAuthorities";
+import CustomCreator from "./CustomCreator";
+import TotalFees from "./TotalFees";
+import "./MintForm.css";
 
-const MintForm = ({ 
-  formData, 
-  onInputChange, 
-  onFileChange, 
+const MintForm = ({
+  formData,
+  onInputChange,
+  onFileChange,
   onExtensionsChange,
-  onMint, 
-  loading, 
+  onGenerateCustomAddress,
+  onMint,
+  loading,
   disabled,
-  tokenType 
+  tokenType,
 }) => {
   return (
     <div className="form-section">
@@ -49,66 +56,166 @@ const MintForm = ({
         </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="image" className="form-label">
-          Token Image <span className="required">*</span>
-        </label>
-        <input
-          type="file"
-          id="image"
-          name="image"
-          accept="image/*"
-          onChange={onFileChange}
-          className="form-input file-input"
-          disabled={loading || disabled}
-        />
-        {formData.imagePreview && (
-          <div className="image-preview">
-            <img src={formData.imagePreview} alt="Preview" />
-          </div>
-        )}
+      <div className="form-row image-description-row">
+        <div className="form-group">
+          <label htmlFor="image" className="form-label">
+            Token Image <span className="required">*</span>
+          </label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            onChange={onFileChange}
+            className="form-input file-input"
+            disabled={loading || disabled}
+          />
+          {formData.imagePreview && (
+            <div className="image-preview">
+              <img src={formData.imagePreview} alt="Preview" />
+            </div>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="description" className="form-label">
+            Token Description (Optional)
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description || ""}
+            onChange={onInputChange}
+            placeholder="Describe your token..."
+            className="form-input form-textarea"
+            disabled={loading || disabled}
+            rows="3"
+          />
+        </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="description" className="form-label">
-          Token Description (Optional)
-        </label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description || ''}
-          onChange={onInputChange}
-          placeholder="Describe your token..."
-          className="form-input form-textarea"
-          disabled={loading || disabled}
-          rows="3"
-        />
-      </div>
+      {/* Optional Components Grid - Only show for SPL tokens */}
+      {tokenType !== "TOKEN2022" && (
+        <div className="optional-components-grid">
+          {/* Social Links & Tags */}
+          <OptionalMetadata
+            enabled={formData.useOptionalMetadata || false}
+            socialLinks={{
+              telegramUrl: formData.telegramUrl,
+              websiteUrl: formData.websiteUrl,
+              discordUrl: formData.discordUrl,
+              twitterUrl: formData.twitterUrl,
+            }}
+            tags={{
+              tag1: formData.tag1,
+              tag2: formData.tag2,
+              tag3: formData.tag3,
+              tag4: formData.tag4,
+              tag5: formData.tag5,
+            }}
+            onToggle={(enabled) =>
+              onInputChange({
+                target: { name: "useOptionalMetadata", value: enabled },
+              })
+            }
+            onSocialLinkChange={onInputChange}
+            onTagChange={onInputChange}
+            disabled={loading || disabled}
+          />
+
+          {/* Custom Address Generator */}
+          <CustomAddressGenerator
+            enabled={formData.useCustomAddress || false}
+            prefix={formData.addressPrefix || ""}
+            suffix={formData.addressSuffix || ""}
+            generatedAddress={formData.generatedAddress || ""}
+            onToggle={(enabled) =>
+              onInputChange({
+                target: { name: "useCustomAddress", value: enabled },
+              })
+            }
+            onPrefixChange={(value) =>
+              onInputChange({ target: { name: "addressPrefix", value } })
+            }
+            onSuffixChange={(value) =>
+              onInputChange({ target: { name: "addressSuffix", value } })
+            }
+            onGenerate={onGenerateCustomAddress}
+            disabled={loading || disabled}
+            loading={loading}
+          />
+
+          {/* Multi-Wallet Distribution */}
+          <MultiWalletDistribution
+            enabled={formData.useMultiWallet || false}
+            distributions={
+              formData.multiWalletDistributions || [
+                { wallet: "", percentage: 100, avatar: "😎" },
+              ]
+            }
+            onToggle={(enabled) =>
+              onInputChange({
+                target: { name: "useMultiWallet", value: enabled },
+              })
+            }
+            onChange={(distributions) =>
+              onInputChange({
+                target: {
+                  name: "multiWalletDistributions",
+                  value: distributions,
+                },
+              })
+            }
+            disabled={loading || disabled}
+          />
+
+          {/* Custom Creator Section */}
+          <CustomCreator
+            formData={formData}
+            onInputChange={onInputChange}
+            disabled={loading || disabled}
+          />
+        </div>
+      )}
 
       {/* Extension Selector - Only show for Token-2022 */}
-      {tokenType === 'TOKEN2022' && (
-        <ExtensionSelector 
+      {tokenType === "TOKEN2022" && (
+        <ExtensionSelector
           onExtensionsChange={onExtensionsChange}
           disabled={loading || disabled}
           tokenType={tokenType}
         />
       )}
 
-      <div className="form-group">
-        <label htmlFor="recipientAddress" className="form-label">
-          Recipient Address <span className="required">*</span>
-        </label>
-        <input
-          type="text"
-          id="recipientAddress"
-          name="recipientAddress"
-          value={formData.recipientAddress}
-          onChange={onInputChange}
-          placeholder="Enter recipient wallet address"
-          className="form-input"
-          disabled={loading || disabled}
-        />
-      </div>
+      {/* Recipient Address - Only show when NOT using multi-wallet distribution */}
+      {!(formData.useMultiWallet && formData.multiWalletDistributions && formData.multiWalletDistributions.length > 0) && (
+        <div className="form-group">
+          <label htmlFor="recipientAddress" className="form-label">
+            Recipient Address <span className="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="recipientAddress"
+            name="recipientAddress"
+            value={formData.recipientAddress}
+            onChange={onInputChange}
+            placeholder="Enter recipient wallet address"
+            className="form-input"
+            disabled={loading || disabled}
+          />
+          <p className="form-helper-text">
+            💡 When using Multi-Wallet Distribution, recipient addresses are specified in the distribution list
+          </p>
+        </div>
+      )}
+
+      {/* Show info when multi-wallet is enabled */}
+      {formData.useMultiWallet && formData.multiWalletDistributions && formData.multiWalletDistributions.length > 0 && (
+        <div className="info-message">
+          <span className="info-icon">ℹ️</span>
+          <span>Tokens will be distributed to the wallets specified in Multi-Wallet Distribution</span>
+        </div>
+      )}
 
       <div className="form-row">
         <div className="form-group">
@@ -164,6 +271,18 @@ const MintForm = ({
         />
       </div>
 
+      {/* Revoke Authorities Section */}
+      {tokenType !== "TOKEN2022" && (
+        <RevokeAuthorities
+          formData={formData}
+          onInputChange={onInputChange}
+          disabled={loading || disabled}
+        />
+      )}
+
+      {/* Total Fees Display */}
+      <TotalFees formData={formData} />
+
       <button
         onClick={onMint}
         disabled={loading || disabled}
@@ -177,25 +296,32 @@ const MintForm = ({
         ) : (
           <>
             <span>✨</span>
-            {tokenType === 'TOKEN2022' && formData.extensions && formData.extensions.length > 0 
-              ? `Mint with ${formData.extensions.length} Extension${formData.extensions.length > 1 ? 's' : ''}`
-              : 'Mint Tokens'
-            }
+            {tokenType === "TOKEN2022" &&
+            formData.extensions &&
+            formData.extensions.length > 0
+              ? `Mint with ${formData.extensions.length} Extension${
+                  formData.extensions.length > 1 ? "s" : ""
+                }`
+              : "Mint Tokens"}
           </>
         )}
       </button>
 
       {/* Show selected extensions info */}
-      {tokenType === 'TOKEN2022' && formData.extensions && formData.extensions.length > 0 && (
-        <div className="extensions-info-box">
-          <p className="extensions-info-title">
-            🔧 Token will be created with {formData.extensions.length} extension{formData.extensions.length > 1 ? 's' : ''}
-          </p>
-          <p className="extensions-info-subtitle">
-            Extensions are permanent and cannot be removed after token creation.
-          </p>
-        </div>
-      )}
+      {tokenType === "TOKEN2022" &&
+        formData.extensions &&
+        formData.extensions.length > 0 && (
+          <div className="extensions-info-box">
+            <p className="extensions-info-title">
+              🔧 Token will be created with {formData.extensions.length}{" "}
+              extension{formData.extensions.length > 1 ? "s" : ""}
+            </p>
+            <p className="extensions-info-subtitle">
+              Extensions are permanent and cannot be removed after token
+              creation.
+            </p>
+          </div>
+        )}
     </div>
   );
 };

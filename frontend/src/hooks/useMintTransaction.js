@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { usePriorityFee } from "../context/PriorityFeeContext";
 import apiService from "../services/apiService";
 import transactionService from "../services/transactionService";
 import {
@@ -15,6 +16,7 @@ import { validators } from "../utils/validators";
 export const useMintTransaction = () => {
   const { connection } = useConnection();
   const { publicKey, signTransaction } = useWallet();
+  const { priorityLevel } = usePriorityFee();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
 
@@ -49,18 +51,65 @@ export const useMintTransaction = () => {
           message: STATUS_MESSAGES.TRANSACTION_CREATED,
         });
 
-        const transactionData = await apiService.createMintTransaction(
-          {
-            payerAddress: publicKey.toString(),
-            recipientAddress: formData.recipientAddress,
-            mintAuthorityAddress: formData.mintAuthorityAddress || null,
-            amount: parseFloat(formData.amount),
-            decimals: parseInt(formData.decimals),
-            name: formData.name,
-            symbol: formData.symbol,
-          },
-          formData.image
-        );
+        // Prepare tags array from individual tag fields
+        const tags = [
+          formData.tag1,
+          formData.tag2,
+          formData.tag3,
+          formData.tag4,
+          formData.tag5,
+        ].filter((tag) => tag && tag.trim() !== "");
+
+        // Prepare multi-wallet distribution - filter out empty wallets
+        let multiWalletDistribution = null;
+        if (formData.multiWalletDistributions && Array.isArray(formData.multiWalletDistributions)) {
+          console.log("📋 Original multi-wallet data:", formData.multiWalletDistributions);
+          const validWallets = formData.multiWalletDistributions.filter(
+            (dist) => dist.wallet && dist.wallet.trim() !== "" && dist.percentage > 0
+          );
+          console.log("✅ Filtered valid wallets:", validWallets);
+          if (validWallets.length > 0) {
+            multiWalletDistribution = validWallets;
+          }
+        }
+
+        // Get priority level from context
+        console.log('🎯 [Frontend] Priority level from context:', priorityLevel);
+
+        const transactionData = await apiService.createCombinedMintTransaction({
+          payerAddress: publicKey.toString(),
+          recipientAddress: formData.recipientAddress,
+          mintAuthorityAddress: formData.mintAuthorityAddress || null,
+          amount: parseFloat(formData.amount),
+          decimals: parseInt(formData.decimals),
+          name: formData.name,
+          symbol: formData.symbol,
+          description: formData.description,
+          image: formData.image,
+          // Social links
+          telegramUrl: formData.telegramUrl,
+          websiteUrl: formData.websiteUrl,
+          discordUrl: formData.discordUrl,
+          twitterUrl: formData.twitterUrl,
+          // Tags
+          tags: tags,
+          // Custom address
+          useCustomAddress: formData.useCustomAddress,
+          addressPrefix: formData.addressPrefix,
+          addressSuffix: formData.addressSuffix,
+          // Custom creator
+          useCustomCreator: formData.useCustomCreator,
+          creatorName: formData.creatorName,
+          creatorWebsite: formData.creatorWebsite,
+          // Multi-wallet distribution (only valid wallets)
+          multiWalletDistribution: multiWalletDistribution,
+          // Revoke authorities
+          revokeFreezeAuthority: formData.revokeFreezeAuthority,
+          revokeMintAuthority: formData.revokeMintAuthority,
+          revokeUpdateAuthority: formData.revokeUpdateAuthority,
+          // Priority fee
+          priorityLevel: priorityLevel,
+        });
 
         console.log("Backend response:", transactionData);
 
@@ -144,7 +193,7 @@ export const useMintTransaction = () => {
         setLoading(false);
       }
     },
-    [publicKey, connection, signTransaction]
+    [publicKey, connection, signTransaction, priorityLevel]
   );
 
   return {

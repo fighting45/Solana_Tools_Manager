@@ -1,0 +1,141 @@
+.revoke-authorities-section {
+  margin: 20px 0 0 0;
+}
+
+.revoke-authorities-header {
+  margin-bottom: 20px;
+}
+
+.revoke-authorities-header h3 {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+}
+
+.revoke-authorities-description {
+  color: #8b8b9f;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 800px;
+}
+
+.revoke-authorities-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.revoke-authority-card {
+  background: #1a1a2e;
+  border: 2px solid #2d3748;
+  border-radius: 10px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+.revoke-authority-card:hover {
+  border-color: #3d4758;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.revoke-authority-card.selected {
+  border-color: #00d4ff;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(0, 212, 255, 0.02) 100%);
+}
+
+.authority-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.authority-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.authority-checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.authority-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #00d4ff;
+  background-color: transparent;
+  border: 2px solid #4a5568;
+  border-radius: 4px;
+}
+
+.authority-checkbox input[type="checkbox"]:checked {
+  background-color: #00d4ff;
+  border-color: #00d4ff;
+}
+
+.authority-title {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+}
+
+.authority-description {
+  color: #8b8b9f;
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0 0 auto 0;
+  flex-grow: 1;
+}
+
+.authority-fee {
+  color: #00d4ff;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 10px;
+  text-align: right;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 968px) {
+  .revoke-authorities-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .revoke-authority-card {
+    min-height: 100px;
+  }
+}
+
+@media (max-width: 640px) {
+  .revoke-authority-card {
+    min-height: 90px;
+    padding: 12px;
+  }
+
+  .authority-icon {
+    font-size: 24px;
+  }
+
+  .authority-title {
+    font-size: 14px;
+  }
+
+  .authority-description {
+    font-size: 10px;
+  }
+
+  .authority-fee {
+    font-size: 12px;
+  }
+}

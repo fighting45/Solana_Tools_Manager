@@ -6,6 +6,7 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import '@solana/wallet-adapter-react-ui/styles.css';
+import { PriorityFeeProvider } from './context/PriorityFeeContext';
 import Homepage from './components/Homepage';
 import TokenMinter from './components/TokenMinter';
 import './App.css';
@@ -26,16 +27,18 @@ function App() {
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Homepage />} />
-              <Route path="/launch" element={
-                <div className="App">
-                  <TokenMinter />
-                </div>
-              } />
-            </Routes>
-          </Router>
+          <PriorityFeeProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Homepage />} />
+                <Route path="/launch" element={
+                  <div className="App">
+                    <TokenMinter />
+                  </div>
+                } />
+              </Routes>
+            </Router>
+          </PriorityFeeProvider>
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
