@@ -1,0 +1,322 @@
+/* CustomAddressGenerator.css */
+
+.custom-address-section {
+  margin: 0;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.6) 0%, rgba(22, 22, 38, 0.4) 100%);
+  border-radius: 12px;
+  border: 1px solid #2d3748;
+  transition: all 0.3s ease;
+}
+
+.custom-address-section:hover {
+  border-color: #3d4758;
+}
+
+.custom-address-section .feature-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.custom-address-section .feature-title {
+  flex: 1;
+}
+
+.custom-address-section .feature-title h4 {
+  color: #00d4ff;
+  font-size: 16px;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.custom-address-section .feature-description {
+  color: #8b8b9f;
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.custom-address-section .toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.custom-address-section .toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.custom-address-section .toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #2d3748;
+  border: 2px solid #3d4758;
+  border-radius: 30px;
+  transition: 0.3s;
+}
+
+.custom-address-section .toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 2px;
+  bottom: 2px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.custom-address-section .toggle-switch input:checked + .toggle-slider {
+  background-color: #00d4ff;
+  border-color: #00d4ff;
+}
+
+.custom-address-section .toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(30px);
+}
+
+.custom-address-section .toggle-switch input:disabled + .toggle-slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.custom-address-content {
+  animation: slideIn 0.3s ease-out;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #2a2a4a;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.address-input {
+  padding: 12px 15px;
+  background: rgba(10, 10, 30, 0.6);
+  border: 2px solid #2a2a4a;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 15px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.address-input:focus {
+  outline: none;
+  border-color: #00d4ff;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+}
+
+.address-input::placeholder {
+  color: #505070;
+  text-transform: none;
+}
+
+.address-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.character-counter {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.character-counter.valid {
+  color: #00ff88;
+}
+
+.character-counter.invalid {
+  color: #ff4444;
+}
+
+.generate-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+.generate-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #00b8e6 0%, #0088bb 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+}
+
+.generate-btn:disabled {
+  background: linear-gradient(135deg, #3a3a5a 0%, #2a2a4a 100%);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.generate-btn .spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.generated-address-display {
+  padding: 20px;
+  background: rgba(10, 10, 30, 0.4);
+  border: 2px solid #00d4ff;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.generated-address-display .label {
+  color: #a0a0c0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.generated-address-display .address {
+  color: #00d4ff;
+  font-size: 16px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  word-break: break-all;
+  font-weight: 600;
+}
+
+.generated-address-display .copy-btn {
+  margin-top: 10px;
+  padding: 8px 15px;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid #00d4ff;
+  border-radius: 6px;
+  color: #00d4ff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.generated-address-display .copy-btn:hover {
+  background: rgba(0, 212, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.info-note {
+  padding: 12px;
+  background: rgba(0, 212, 255, 0.05);
+  border-left: 3px solid #00d4ff;
+  color: #a0a0c0;
+  font-size: 13px;
+  border-radius: 4px;
+  line-height: 1.5;
+}
+
+.error-message {
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  color: #ff4444;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  font-size: 14px;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .input-row {
+    grid-template-columns: 1fr;
+  }
+  .generate-btn {
+    font-size: 14px;
+  }
+  .address-input {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .custom-address-section {
+    padding: 15px;
+  }
+  .feature-title h4 {
+    font-size: 16px;
+  }
+  .feature-description {
+    font-size: 13px;
+  }
+  .address-input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .generate-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+  .generated-address-display {
+    padding: 15px;
+  }
+  .generated-address-display .address {
+    font-size: 14px;
+  }
+}

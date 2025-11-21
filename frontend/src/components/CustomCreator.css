@@ -1,0 +1,147 @@
+.custom-creator-section {
+  margin: 0;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.6) 0%, rgba(22, 22, 38, 0.4) 100%);
+  border-radius: 12px;
+  border: 1px solid #2d3748;
+  transition: all 0.3s ease;
+}
+
+.custom-creator-section:hover {
+  border-color: #3d4758;
+}
+
+.custom-creator-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.custom-creator-title-section {
+  flex: 1;
+}
+
+.custom-creator-title {
+  color: #00d4ff;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.custom-creator-description {
+  color: #8b8b9f;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.custom-creator-toggle {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.custom-creator-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #2d3748;
+  transition: 0.3s;
+  border-radius: 30px;
+  border: 2px solid #3d4758;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.custom-creator-toggle input:checked + .toggle-slider {
+  background-color: #00d4ff;
+  border-color: #00d4ff;
+}
+
+.custom-creator-toggle input:checked + .toggle-slider:before {
+  transform: translateX(30px);
+}
+
+.custom-creator-toggle input:disabled + .toggle-slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.custom-creator-content {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #2d3748;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.custom-creator-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  font-size: 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.form-input.with-icon {
+  padding-left: 45px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .custom-creator-header {
+    flex-direction: column;
+  }
+
+  .custom-creator-toggle {
+    align-self: flex-end;
+  }
+
+  .custom-creator-fields {
+    grid-template-columns: 1fr;
+  }
+}

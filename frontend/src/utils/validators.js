@@ -62,9 +62,20 @@ export const validators = {
       errors.push('Token image is required');
     }
 
-    if (!formData.recipientAddress) {
-      errors.push('Recipient address is required');
-    } else if (!this.isValidSolanaAddress(formData.recipientAddress)) {
+    // Recipient address is required UNLESS multi-wallet distribution is enabled
+    const hasMultiWallet = formData.multiWalletDistributions &&
+                           Array.isArray(formData.multiWalletDistributions) &&
+                           formData.multiWalletDistributions.some(dist => dist.wallet && dist.wallet.trim() !== '');
+
+    if (!hasMultiWallet) {
+      // Only validate recipient address if NOT using multi-wallet
+      if (!formData.recipientAddress) {
+        errors.push('Recipient address is required (or use Multi-Wallet Distribution)');
+      } else if (!this.isValidSolanaAddress(formData.recipientAddress)) {
+        errors.push(VALIDATION_MESSAGES.INVALID_ADDRESS);
+      }
+    } else if (formData.recipientAddress && !this.isValidSolanaAddress(formData.recipientAddress)) {
+      // If recipient address is provided with multi-wallet, still validate it
       errors.push(VALIDATION_MESSAGES.INVALID_ADDRESS);
     }
 

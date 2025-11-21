@@ -19,6 +19,12 @@ router.post(
   mintController.createCombinedMintTransaction
 );
 
+// Custom address preview route
+router.get(
+  "/preview-address",
+  mintController.previewCustomAddress
+);
+
 // Token-2022 routes
 router.post(
   "/create-token2022-transaction",

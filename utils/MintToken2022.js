@@ -27,6 +27,7 @@ const {
   pack,
 } = require("@solana/spl-token-metadata");
 const bs58 = require("bs58");
+const { getPriorityFee, addPriorityFeeToTransaction, mapPriorityLevel } = require("./priorityFee");
 require("dotenv").config();
 
 // Platform fee configuration from .env
@@ -63,7 +64,8 @@ async function createToken2022WithMetadataAndExtensions(
   amount,
   decimals,
   metadata,
-  selectedExtensions = []
+  selectedExtensions = [],
+  priorityLevel = "none"
 ) {
   const rpcUrl = process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
 
@@ -149,6 +151,28 @@ async function createToken2022WithMetadataAndExtensions(
     blockhash: blockhash,
     lastValidBlockHeight: lastValidBlockHeight,
   });
+
+  // ========================================
+  // PRIORITY FEE (if enabled)
+  // ========================================
+  if (priorityLevel && priorityLevel !== 'none') {
+    try {
+      console.log(`🚀 Processing priority fee (UI level: ${priorityLevel})...`);
+      const apiLevel = mapPriorityLevel(priorityLevel);
+      const priorityFee = getPriorityFee(apiLevel);
+
+      if (priorityFee > 0) {
+        addPriorityFeeToTransaction(transaction, priorityFee);
+        console.log(`✅ Priority fee added: ${priorityFee} micro-lamports`);
+      } else {
+        console.log(`⏭️  Skipping priority fee (level: ${apiLevel})`);
+      }
+    } catch (error) {
+      console.warn('⚠️ Failed to add priority fee, continuing without it:', error.message);
+    }
+  } else {
+    console.log(`⏭️  No priority fee requested (level: ${priorityLevel})`);
+  }
 
   // ========================================
   // PLATFORM FEE TRANSFER

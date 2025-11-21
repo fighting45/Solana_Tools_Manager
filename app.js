@@ -11,8 +11,8 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-app.use("/mint", mintRoute);
-app.use("/token2022", mintRoute);
+app.use("/api/mint", mintRoute);
+app.use("/api/token2022", mintRoute);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
