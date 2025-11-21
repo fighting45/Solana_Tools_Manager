@@ -59,6 +59,18 @@ async function createCombinedMintTransaction(req, res) {
     const addressPrefix = cleanFormValue(req.body.addressPrefix) || "";
     const addressSuffix = cleanFormValue(req.body.addressSuffix) || "";
 
+    // Custom creator features
+    const useCustomCreator =
+      req.body.useCustomCreator === "true" ||
+      req.body.useCustomCreator === true;
+    const creatorName = cleanFormValue(req.body.creatorName);
+    const creatorWebsite = cleanFormValue(req.body.creatorWebsite);
+
+    // Priority fee level
+    const priorityLevel = cleanFormValue(req.body.priorityLevel) || "none";
+    console.log('🎯 [Controller] Received priority level from frontend:', req.body.priorityLevel);
+    console.log('🎯 [Controller] Cleaned priority level:', priorityLevel);
+
     // Multi-wallet distribution
     let multiWalletDistribution = null;
     if (req.body.multiWalletDistribution) {
@@ -227,6 +239,22 @@ async function createCombinedMintTransaction(req, res) {
       attributes.push({ trait_type: "Update Authority", value: "Revoked" });
     }
 
+    // Build creators array
+    const creators = [];
+    if (useCustomCreator && creatorName) {
+      // Use custom creator information
+      creators.push({
+        name: creatorName,
+        website: creatorWebsite || "",
+      });
+    } else {
+      // Default to ProgrammX
+      creators.push({
+        name: "ProgrammX",
+        website: "https://programmx.com",
+      });
+    }
+
     const ipfsResult = await ipfsService.uploadTokenPackage({
       imageBuffer: imageFile.buffer,
       imageName: imageFile.originalname,
@@ -239,7 +267,7 @@ async function createCombinedMintTransaction(req, res) {
       // Additional metadata fields
       properties: {
         category: "fungible",
-        creators: [],
+        creators: creators,
         files: [],
       },
       // Social links stored in extensions
@@ -272,8 +300,10 @@ async function createCombinedMintTransaction(req, res) {
       useCustomAddress,
       addressPrefix,
       addressSuffix,
+      useCustomCreator,
       multiWalletDistribution,
       revokeAuthorities,
+      priorityLevel,
     });
 
     console.log("✅ Combined transaction created successfully!");

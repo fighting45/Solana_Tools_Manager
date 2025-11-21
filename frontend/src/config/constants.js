@@ -53,6 +53,12 @@ export const DEFAULT_FORM_VALUES = {
   addressPrefix: "",
   addressSuffix: "",
   generatedAddress: "",
+  revokeFreezeAuthority: false,
+  revokeMintAuthority: false,
+  revokeUpdateAuthority: false,
+  useCustomCreator: false,
+  creatorName: "",
+  creatorWebsite: "",
 };
 
 // Validation Messages

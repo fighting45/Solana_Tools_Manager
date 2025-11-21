@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useMintTransaction } from "../hooks/useMintTransaction";
 import { useToken2022Transaction } from "../hooks/useToken2022Transaction";
 import { DEFAULT_FORM_VALUES, TOKEN_TYPES } from "../config/constants";
 import Navbar from "./Navbar";
 import StatusMessage from "./StatusMessage";
-import WalletInfo from "./WalletInfo";
 import MintForm from "./MintForm";
 import SuccessModal from "./SuccessModal";
 import "./TokenMinter.css";
@@ -156,12 +154,6 @@ const TokenMinter = () => {
               )}
             </button>
           </div>
-
-          <div className="wallet-section">
-            <WalletMultiButton className="wallet-button" />
-          </div>
-
-          {publicKey && <WalletInfo publicKey={publicKey} />}
 
           <MintForm
             formData={formData}

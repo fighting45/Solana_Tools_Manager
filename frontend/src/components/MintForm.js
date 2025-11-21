@@ -3,6 +3,9 @@ import ExtensionSelector from "./ExtensionSelector";
 import CustomAddressGenerator from "./CustomAddressGenerator";
 import MultiWalletDistribution from "./MultiWalletDistribution";
 import OptionalMetadata from "./OptionalMetadata";
+import RevokeAuthorities from "./RevokeAuthorities";
+import CustomCreator from "./CustomCreator";
+import TotalFees from "./TotalFees";
 import "./MintForm.css";
 
 const MintForm = ({
@@ -53,118 +56,126 @@ const MintForm = ({
         </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="image" className="form-label">
-          Token Image <span className="required">*</span>
-        </label>
-        <input
-          type="file"
-          id="image"
-          name="image"
-          accept="image/*"
-          onChange={onFileChange}
-          className="form-input file-input"
-          disabled={loading || disabled}
-        />
-        {formData.imagePreview && (
-          <div className="image-preview">
-            <img src={formData.imagePreview} alt="Preview" />
-          </div>
-        )}
+      <div className="form-row image-description-row">
+        <div className="form-group">
+          <label htmlFor="image" className="form-label">
+            Token Image <span className="required">*</span>
+          </label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            onChange={onFileChange}
+            className="form-input file-input"
+            disabled={loading || disabled}
+          />
+          {formData.imagePreview && (
+            <div className="image-preview">
+              <img src={formData.imagePreview} alt="Preview" />
+            </div>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="description" className="form-label">
+            Token Description (Optional)
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description || ""}
+            onChange={onInputChange}
+            placeholder="Describe your token..."
+            className="form-input form-textarea"
+            disabled={loading || disabled}
+            rows="3"
+          />
+        </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="description" className="form-label">
-          Token Description (Optional)
-        </label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description || ""}
-          onChange={onInputChange}
-          placeholder="Describe your token..."
-          className="form-input form-textarea"
-          disabled={loading || disabled}
-          rows="3"
-        />
-      </div>
-
-      {/* Social Links & Tags - Only show for SPL tokens */}
+      {/* Optional Components Grid - Only show for SPL tokens */}
       {tokenType !== "TOKEN2022" && (
-        <OptionalMetadata
-          enabled={formData.useOptionalMetadata || false}
-          socialLinks={{
-            telegramUrl: formData.telegramUrl,
-            websiteUrl: formData.websiteUrl,
-            discordUrl: formData.discordUrl,
-            twitterUrl: formData.twitterUrl,
-          }}
-          tags={{
-            tag1: formData.tag1,
-            tag2: formData.tag2,
-            tag3: formData.tag3,
-            tag4: formData.tag4,
-            tag5: formData.tag5,
-          }}
-          onToggle={(enabled) =>
-            onInputChange({
-              target: { name: "useOptionalMetadata", value: enabled },
-            })
-          }
-          onSocialLinkChange={onInputChange}
-          onTagChange={onInputChange}
-          disabled={loading || disabled}
-        />
-      )}
+        <div className="optional-components-grid">
+          {/* Social Links & Tags */}
+          <OptionalMetadata
+            enabled={formData.useOptionalMetadata || false}
+            socialLinks={{
+              telegramUrl: formData.telegramUrl,
+              websiteUrl: formData.websiteUrl,
+              discordUrl: formData.discordUrl,
+              twitterUrl: formData.twitterUrl,
+            }}
+            tags={{
+              tag1: formData.tag1,
+              tag2: formData.tag2,
+              tag3: formData.tag3,
+              tag4: formData.tag4,
+              tag5: formData.tag5,
+            }}
+            onToggle={(enabled) =>
+              onInputChange({
+                target: { name: "useOptionalMetadata", value: enabled },
+              })
+            }
+            onSocialLinkChange={onInputChange}
+            onTagChange={onInputChange}
+            disabled={loading || disabled}
+          />
 
-      {/* Custom Address Generator - Only show for SPL tokens */}
-      {tokenType !== "TOKEN2022" && (
-        <CustomAddressGenerator
-          enabled={formData.useCustomAddress || false}
-          prefix={formData.addressPrefix || ""}
-          suffix={formData.addressSuffix || ""}
-          generatedAddress={formData.generatedAddress || ""}
-          onToggle={(enabled) =>
-            onInputChange({
-              target: { name: "useCustomAddress", value: enabled },
-            })
-          }
-          onPrefixChange={(value) =>
-            onInputChange({ target: { name: "addressPrefix", value } })
-          }
-          onSuffixChange={(value) =>
-            onInputChange({ target: { name: "addressSuffix", value } })
-          }
-          onGenerate={onGenerateCustomAddress}
-          disabled={loading || disabled}
-          loading={loading}
-        />
-      )}
+          {/* Custom Address Generator */}
+          <CustomAddressGenerator
+            enabled={formData.useCustomAddress || false}
+            prefix={formData.addressPrefix || ""}
+            suffix={formData.addressSuffix || ""}
+            generatedAddress={formData.generatedAddress || ""}
+            onToggle={(enabled) =>
+              onInputChange({
+                target: { name: "useCustomAddress", value: enabled },
+              })
+            }
+            onPrefixChange={(value) =>
+              onInputChange({ target: { name: "addressPrefix", value } })
+            }
+            onSuffixChange={(value) =>
+              onInputChange({ target: { name: "addressSuffix", value } })
+            }
+            onGenerate={onGenerateCustomAddress}
+            disabled={loading || disabled}
+            loading={loading}
+          />
 
-      {/* Multi-Wallet Distribution - Only show for SPL tokens */}
-      {tokenType !== "TOKEN2022" && (
-        <MultiWalletDistribution
-          enabled={formData.useMultiWallet || false}
-          distributions={
-            formData.multiWalletDistributions || [
-              { wallet: "", percentage: 100, avatar: "😎" },
-            ]
-          }
-          onToggle={(enabled) =>
-            onInputChange({
-              target: { name: "useMultiWallet", value: enabled },
-            })
-          }
-          onChange={(distributions) =>
-            onInputChange({
-              target: {
-                name: "multiWalletDistributions",
-                value: distributions,
-              },
-            })
-          }
-          disabled={loading || disabled}
-        />
+          {/* Multi-Wallet Distribution */}
+          <MultiWalletDistribution
+            enabled={formData.useMultiWallet || false}
+            distributions={
+              formData.multiWalletDistributions || [
+                { wallet: "", percentage: 100, avatar: "😎" },
+              ]
+            }
+            onToggle={(enabled) =>
+              onInputChange({
+                target: { name: "useMultiWallet", value: enabled },
+              })
+            }
+            onChange={(distributions) =>
+              onInputChange({
+                target: {
+                  name: "multiWalletDistributions",
+                  value: distributions,
+                },
+              })
+            }
+            disabled={loading || disabled}
+          />
+
+          {/* Custom Creator Section */}
+          <CustomCreator
+            formData={formData}
+            onInputChange={onInputChange}
+            disabled={loading || disabled}
+          />
+        </div>
       )}
 
       {/* Extension Selector - Only show for Token-2022 */}
@@ -259,6 +270,18 @@ const MintForm = ({
           disabled={loading || disabled}
         />
       </div>
+
+      {/* Revoke Authorities Section */}
+      {tokenType !== "TOKEN2022" && (
+        <RevokeAuthorities
+          formData={formData}
+          onInputChange={onInputChange}
+          disabled={loading || disabled}
+        />
+      )}
+
+      {/* Total Fees Display */}
+      <TotalFees formData={formData} />
 
       <button
         onClick={onMint}

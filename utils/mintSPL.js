@@ -22,6 +22,7 @@ const { createUmi } = require("@metaplex-foundation/umi-bundle-defaults");
 const { mplTokenMetadata } = require("@metaplex-foundation/mpl-token-metadata");
 const {
   createV1,
+  updateV1,
   findMetadataPda,
   TokenStandard,
 } = require("@metaplex-foundation/mpl-token-metadata");
@@ -38,6 +39,7 @@ const {
 const { TransactionInstruction } = require("@solana/web3.js");
 const bs58 = require("bs58");
 const crypto = require("crypto");
+const { getPriorityFee, addPriorityFeeToTransaction, mapPriorityLevel } = require("./priorityFee");
 require("dotenv").config();
 
 // Platform fee configuration from .env
@@ -50,6 +52,8 @@ const PLATFORM_FEE_LAMPORTS = Math.floor(PLATFORM_FEE_SOL * LAMPORTS_PER_SOL);
 // Additional feature fees
 const CUSTOM_ADDRESS_FEE_SOL = 0.1; // +0.1 SOL for custom address
 const MULTI_WALLET_FEE_SOL = 0.1; // +0.1 SOL for multi-wallet distribution
+const REVOKE_AUTHORITY_FEE_SOL = 0.1; // +0.1 SOL per revoke authority option
+const CUSTOM_CREATOR_FEE_SOL = 0.1; // +0.1 SOL for custom creator information
 
 /**
  * Generates a custom address with specified prefix and/or suffix
@@ -122,6 +126,8 @@ async function createCombinedMintWithMetadata(params) {
     useCustomAddress = false,
     addressPrefix = "",
     addressSuffix = "",
+    // Custom creator parameters
+    useCustomCreator = false,
     // Multi-wallet distribution
     multiWalletDistribution = null,
     // Revoke authorities
@@ -130,6 +136,8 @@ async function createCombinedMintWithMetadata(params) {
       mintAuthority: false,
       updateAuthority: false,
     },
+    // Priority fee level
+    priorityLevel = "none",
   } = params;
 
   // Use RPC from environment or fallback to reliable public RPCs
@@ -176,6 +184,21 @@ async function createCombinedMintWithMetadata(params) {
   let totalPlatformFee = PLATFORM_FEE_SOL;
   if (useCustomAddress) totalPlatformFee += CUSTOM_ADDRESS_FEE_SOL;
   if (multiWalletDistribution) totalPlatformFee += MULTI_WALLET_FEE_SOL;
+  if (useCustomCreator) totalPlatformFee += CUSTOM_CREATOR_FEE_SOL;
+
+  // Add revoke authority fees (0.1 SOL per enabled revoke option)
+  let revokeCount = 0;
+  if (revokeAuthorities.freezeAuthority) revokeCount++;
+  if (revokeAuthorities.mintAuthority) revokeCount++;
+  if (revokeAuthorities.updateAuthority) revokeCount++;
+  if (revokeCount > 0) {
+    totalPlatformFee += (REVOKE_AUTHORITY_FEE_SOL * revokeCount);
+    console.log(`🔒 Revoking ${revokeCount} authorities (+${REVOKE_AUTHORITY_FEE_SOL * revokeCount} SOL)`);
+  }
+
+  if (useCustomCreator) {
+    console.log(`✏️ Custom creator information (+${CUSTOM_CREATOR_FEE_SOL} SOL)`);
+  }
 
   const totalPlatformFeeLamports = Math.floor(
     totalPlatformFee * LAMPORTS_PER_SOL
@@ -295,6 +318,28 @@ async function createCombinedMintWithMetadata(params) {
     blockhash: blockhash,
     lastValidBlockHeight: lastValidBlockHeight,
   });
+
+  // ========================================
+  // PRIORITY FEE (if enabled)
+  // ========================================
+  if (priorityLevel && priorityLevel !== 'none') {
+    try {
+      console.log(`🚀 Processing priority fee (UI level: ${priorityLevel})...`);
+      const apiLevel = mapPriorityLevel(priorityLevel);
+      const priorityFee = getPriorityFee(apiLevel);
+
+      if (priorityFee > 0) {
+        addPriorityFeeToTransaction(transaction, priorityFee);
+        console.log(`✅ Priority fee added: ${priorityFee} micro-lamports`);
+      } else {
+        console.log(`⏭️  Skipping priority fee (level: ${apiLevel})`);
+      }
+    } catch (error) {
+      console.warn('⚠️ Failed to add priority fee, continuing without it:', error.message);
+    }
+  } else {
+    console.log(`⏭️  No priority fee requested (level: ${priorityLevel})`);
+  }
 
   // ========================================
   // INSTRUCTION 0: PLATFORM FEE TRANSFER
@@ -424,9 +469,7 @@ async function createCombinedMintWithMetadata(params) {
       mint: umiMint,
       authority: noopSigner,
       payer: noopSigner,
-      updateAuthority: revokeAuthorities.updateAuthority
-        ? publicKey(PublicKey.default.toBase58())
-        : updateAuthority,
+      updateAuthority: updateAuthority, // Always set valid authority initially
       ...metadataData,
     });
 
@@ -495,7 +538,44 @@ async function createCombinedMintWithMetadata(params) {
       );
     }
 
-    // Note: Update authority revoke is handled in metadata creation above
+    // Revoke update authority for metadata
+    if (revokeAuthorities.updateAuthority) {
+      console.log("🔒 Revoking update authority...");
+      try {
+        const updateBuilder = updateV1(umi, {
+          mint: umiMint,
+          authority: updateAuthority,
+          newUpdateAuthority: publicKey(PublicKey.default.toBase58()),
+        });
+
+        const updateInstructions = updateBuilder.getInstructions();
+
+        for (const umiIx of updateInstructions) {
+          try {
+            const web3Ix = toWeb3JsInstruction(umiIx);
+            transaction.add(web3Ix);
+          } catch (adapterError) {
+            const keys = (umiIx.keys || []).map((key) => ({
+              pubkey: new PublicKey(key.pubkey.toString()),
+              isSigner: key.isSigner || false,
+              isWritable: key.isWritable || false,
+            }));
+
+            const web3Ix = new TransactionInstruction({
+              keys,
+              programId: new PublicKey(umiIx.programId.toString()),
+              data: Buffer.from(umiIx.data),
+            });
+
+            transaction.add(web3Ix);
+          }
+        }
+
+        console.log("✅ Update authority will be revoked");
+      } catch (error) {
+        console.warn("⚠️ Could not add update authority revoke instruction:", error.message);
+      }
+    }
 
     // Calculate total cost
     const mintRentSOL = mintRent / LAMPORTS_PER_SOL;
@@ -592,4 +672,6 @@ module.exports = {
   generateCustomAddress,
   CUSTOM_ADDRESS_FEE_SOL,
   MULTI_WALLET_FEE_SOL,
+  REVOKE_AUTHORITY_FEE_SOL,
+  CUSTOM_CREATOR_FEE_SOL,
 };

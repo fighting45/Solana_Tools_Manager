@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { usePriorityFee } from "../context/PriorityFeeContext";
 import apiService from "../services/apiService";
 import transactionService from "../services/transactionService";
 import {
@@ -15,6 +16,7 @@ import { validators } from "../utils/validators";
 export const useMintTransaction = () => {
   const { connection } = useConnection();
   const { publicKey, signTransaction } = useWallet();
+  const { priorityLevel } = usePriorityFee();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
 
@@ -71,6 +73,9 @@ export const useMintTransaction = () => {
           }
         }
 
+        // Get priority level from context
+        console.log('🎯 [Frontend] Priority level from context:', priorityLevel);
+
         const transactionData = await apiService.createCombinedMintTransaction({
           payerAddress: publicKey.toString(),
           recipientAddress: formData.recipientAddress,
@@ -92,12 +97,18 @@ export const useMintTransaction = () => {
           useCustomAddress: formData.useCustomAddress,
           addressPrefix: formData.addressPrefix,
           addressSuffix: formData.addressSuffix,
+          // Custom creator
+          useCustomCreator: formData.useCustomCreator,
+          creatorName: formData.creatorName,
+          creatorWebsite: formData.creatorWebsite,
           // Multi-wallet distribution (only valid wallets)
           multiWalletDistribution: multiWalletDistribution,
           // Revoke authorities
           revokeFreezeAuthority: formData.revokeFreezeAuthority,
           revokeMintAuthority: formData.revokeMintAuthority,
           revokeUpdateAuthority: formData.revokeUpdateAuthority,
+          // Priority fee
+          priorityLevel: priorityLevel,
         });
 
         console.log("Backend response:", transactionData);
@@ -182,7 +193,7 @@ export const useMintTransaction = () => {
         setLoading(false);
       }
     },
-    [publicKey, connection, signTransaction]
+    [publicKey, connection, signTransaction, priorityLevel]
   );
 
   return {

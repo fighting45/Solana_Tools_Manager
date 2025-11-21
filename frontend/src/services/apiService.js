@@ -71,6 +71,12 @@ class ApiService {
       if (formData.revokeUpdateAuthority)
         form.append("revokeUpdateAuthority", "true");
 
+      // Priority fee level
+      if (formData.priorityLevel) {
+        form.append("priorityLevel", formData.priorityLevel);
+        console.log('🎯 [ApiService] Sending priority level to backend:', formData.priorityLevel);
+      }
+
       const response = await axios.post(
         `${API_BASE_URL}/mint/create-transaction`,
         form,
@@ -145,6 +151,12 @@ class ApiService {
       if (formData.extensions && Array.isArray(formData.extensions) && formData.extensions.length > 0) {
         // Send as comma-separated string to match backend expectation
         form.append("extensions", formData.extensions.join(","));
+      }
+
+      // Priority fee level
+      if (formData.priorityLevel) {
+        form.append("priorityLevel", formData.priorityLevel);
+        console.log('🎯 [ApiService] Sending priority level to backend:', formData.priorityLevel);
       }
 
       const response = await axios.post(

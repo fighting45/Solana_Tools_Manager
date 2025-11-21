@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { usePriorityFee } from "../context/PriorityFeeContext";
 import apiService from "../services/apiService";
 import transactionService from "../services/transactionService";
 import {
@@ -15,6 +16,7 @@ import { validators } from "../utils/validators";
 export const useToken2022Transaction = () => {
   const { connection } = useConnection();
   const { publicKey, signTransaction } = useWallet();
+  const { priorityLevel } = usePriorityFee();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
 
@@ -52,6 +54,9 @@ export const useToken2022Transaction = () => {
               : STATUS_MESSAGES.TRANSACTION_CREATED,
         });
 
+        // Get priority level from context
+        console.log('🎯 [Frontend] Priority level from context:', priorityLevel);
+
         const transactionData = await apiService.createToken2022Transaction({
           payerAddress: publicKey.toString(),
           recipientAddress: formData.recipientAddress,
@@ -65,6 +70,7 @@ export const useToken2022Transaction = () => {
             `${formData.name} - ${formData.symbol} Token`,
           image: formData.image,
           extensions: formData.extensions || [], // Pass extensions as array
+          priorityLevel: priorityLevel, // Priority fee
         });
 
         console.log("Backend response:", transactionData);
@@ -170,7 +176,7 @@ export const useToken2022Transaction = () => {
         setLoading(false);
       }
     },
-    [publicKey, connection, signTransaction]
+    [publicKey, connection, signTransaction, priorityLevel]
   );
 
   return {

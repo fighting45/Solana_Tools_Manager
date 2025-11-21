@@ -1,6 +1,6 @@
 /* Form Section Styles */
 .form-section {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -61,6 +61,22 @@
   resize: vertical;
   min-height: 100px;
   font-family: inherit;
+}
+
+/* Image and Description Row - Side by Side */
+.image-description-row {
+  align-items: stretch;
+}
+
+.image-description-row .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.image-description-row .form-textarea {
+  flex-grow: 1;
+  min-height: 200px;
+  height: 100%;
 }
 
 .file-input {
@@ -314,10 +330,30 @@
   }
 }
 
+/* Optional Components Grid Layout */
+.optional-components-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.optional-component-full {
+  grid-column: 1 / -1;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .optional-components-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .image-description-row .form-textarea {
+    min-height: 100px;
   }
 
   .tags-container {

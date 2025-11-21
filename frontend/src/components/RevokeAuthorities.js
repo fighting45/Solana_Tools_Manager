@@ -1,116 +1,67 @@
-import React from "react";
-import "./RevokeAuthorities.css";
+import React from 'react';
+import './RevokeAuthorities.css';
 
-const RevokeAuthorities = ({
-  freezeAuthority,
-  mintAuthority,
-  updateAuthority,
-  onFreezeChange,
-  onMintChange,
-  onUpdateChange,
-  disabled,
-}) => {
+const RevokeAuthorities = ({ formData, onInputChange, disabled }) => {
   const authorities = [
     {
-      id: "freeze",
-      title: "Revoke Freeze Authority",
-      description:
-        "Permanently removes the ability to freeze token accounts. Once revoked, no one can freeze or unfreeze token accounts.",
-      checked: freezeAuthority,
-      onChange: onFreezeChange,
-      icon: "❄️",
-      warning:
-        "This action is irreversible. Token accounts can never be frozen after this.",
+      key: 'revokeFreezeAuthority',
+      icon: '❄️',
+      title: 'Revoke Freeze',
+      description: 'No one will be able to freeze holders\' token accounts anymore',
     },
     {
-      id: "mint",
-      title: "Revoke Mint Authority",
-      description:
-        "Permanently removes the ability to mint new tokens. The total supply becomes fixed forever.",
-      checked: mintAuthority,
-      onChange: onMintChange,
-      icon: "🏭",
-      warning:
-        "This action is irreversible. No new tokens can ever be created after this.",
+      key: 'revokeMintAuthority',
+      icon: '🪙',
+      title: 'Revoke Mint',
+      description: 'No one will be able to create more tokens anymore',
     },
     {
-      id: "update",
-      title: "Revoke Update Authority",
-      description:
-        "Permanently removes the ability to update token metadata. The metadata becomes immutable.",
-      checked: updateAuthority,
-      onChange: onUpdateChange,
-      icon: "✏️",
-      warning:
-        "This action is irreversible. Token metadata can never be changed after this.",
+      key: 'revokeUpdateAuthority',
+      icon: '✏️',
+      title: 'Revoke Update',
+      description: 'No one will be able to modify token metadata anymore',
     },
   ];
 
   return (
     <div className="revoke-authorities-section">
-      <div className="feature-header">
-        <div className="feature-title">
-          <h4>Revoke Authorities</h4>
-          <p className="feature-description">
-            Permanently remove specific authorities to make your token more
-            decentralized and trustless. These actions are irreversible.
-          </p>
-        </div>
+      <div className="revoke-authorities-header">
+        <h3>Revoke Authorities</h3>
+        <p className="revoke-authorities-description">
+          Solana Token has 3 authorities: Freeze Authority, Mint Authority, and Update Authority.
+          Revoke them to attract more investors.
+        </p>
       </div>
 
-      <div className="authorities-grid">
+      <div className="revoke-authorities-grid">
         {authorities.map((authority) => (
           <div
-            key={authority.id}
-            className={`authority-card ${authority.checked ? "selected" : ""}`}
+            key={authority.key}
+            className={`revoke-authority-card ${formData[authority.key] ? 'selected' : ''}`}
+            onClick={() => !disabled && onInputChange({
+              target: { name: authority.key, value: !formData[authority.key] }
+            })}
           >
-            <div className="authority-header">
-              <span className="authority-icon">{authority.icon}</span>
-              <label className="authority-checkbox">
+            <div className="authority-card-header">
+              <div className="authority-icon">{authority.icon}</div>
+              <div className="authority-checkbox">
                 <input
                   type="checkbox"
-                  checked={authority.checked}
-                  onChange={(e) => authority.onChange(e.target.checked)}
+                  name={authority.key}
+                  checked={formData[authority.key] || false}
+                  onChange={(e) => onInputChange({
+                    target: { name: authority.key, value: e.target.checked }
+                  })}
                   disabled={disabled}
+                  onClick={(e) => e.stopPropagation()}
                 />
-                <span className="checkbox-custom"></span>
-              </label>
+              </div>
             </div>
-
-            <h5 className="authority-title">{authority.title}</h5>
+            <h4 className="authority-title">{authority.title}</h4>
             <p className="authority-description">{authority.description}</p>
-
-            {authority.checked && (
-              <div className="authority-warning">⚠️ {authority.warning}</div>
-            )}
+            <div className="authority-fee">+0.1 SOL</div>
           </div>
         ))}
-      </div>
-
-      <div className="revoke-summary">
-        <h5>Selected Revokes:</h5>
-        <div className="revoke-list">
-          {!freezeAuthority && !mintAuthority && !updateAuthority && (
-            <span className="no-revokes">No authorities will be revoked</span>
-          )}
-          {freezeAuthority && (
-            <span className="revoke-badge">❄️ Freeze Authority</span>
-          )}
-          {mintAuthority && (
-            <span className="revoke-badge">🏭 Mint Authority</span>
-          )}
-          {updateAuthority && (
-            <span className="revoke-badge">✏️ Update Authority</span>
-          )}
-        </div>
-
-        {(freezeAuthority || mintAuthority || updateAuthority) && (
-          <div className="final-warning">
-            <strong>⚠️ Final Warning:</strong> Revoking authorities is permanent
-            and cannot be undone. Make sure you understand the implications
-            before proceeding.
-          </div>
-        )}
       </div>
     </div>
   );
