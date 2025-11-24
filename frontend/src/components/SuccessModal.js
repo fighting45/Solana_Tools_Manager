@@ -6,7 +6,6 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
 
   const { signature, transactionData } = result;
   const mintAddress = transactionData?.mintAddress;
-  const amount = transactionData?.tokenInfo?.amount || 0;
   const decimals = transactionData?.tokenInfo?.decimals || 0;
   const supply = transactionData?.tokenInfo?.supply || "0";
   const extensions = transactionData?.tokenInfo?.extensions || [];

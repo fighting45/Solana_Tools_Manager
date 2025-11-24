@@ -15,11 +15,7 @@ const MultiWalletDistribution = ({
 
   const avatars = ["😎", "🦊", "🐻", "🐼", "🐵", "🦁", "🐸", "🦄", "🐙", "🦋"];
 
-  useEffect(() => {
-    validatePercentages();
-  }, [wallets]);
-
-  const validatePercentages = () => {
+  const validatePercentages = React.useCallback(() => {
     const total = wallets.reduce(
       (sum, w) => sum + (parseFloat(w.percentage) || 0),
       0
@@ -29,7 +25,11 @@ const MultiWalletDistribution = ({
     } else {
       setError("");
     }
-  };
+  }, [wallets]);
+
+  useEffect(() => {
+    validatePercentages();
+  }, [wallets, validatePercentages]);
 
   const handleWalletChange = (index, field, value) => {
     const newWallets = [...wallets];

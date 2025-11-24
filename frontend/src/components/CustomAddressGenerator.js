@@ -27,7 +27,7 @@ const CustomAddressGenerator = ({
     } else {
       setError("");
     }
-  }, [prefix, suffix]);
+  }, [prefix, suffix, combinedLength]);
 
   const handlePrefixChange = (e) => {
     const value = e.target.value.toUpperCase();

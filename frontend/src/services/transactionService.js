@@ -188,4 +188,5 @@ class TransactionService {
 }
 
 // Export singleton instance
-export default new TransactionService();
+const transactionServiceInstance = new TransactionService();
+export default transactionServiceInstance;

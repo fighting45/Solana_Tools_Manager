@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./PriorityFeeSelector.css";
 
 const PriorityFeeSelector = ({ isOpen, onClose, selectedLevel, onSelectLevel }) => {
