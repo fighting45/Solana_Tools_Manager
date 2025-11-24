@@ -3,6 +3,9 @@ import axios from "axios";
 const API_BASE_URL =
   process.env.REACT_APP_API_URL || "http://localhost:3001/api";
 
+console.log('🔧 [ApiService] API_BASE_URL:', API_BASE_URL);
+console.log('🔧 [ApiService] REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+
 class ApiService {
   /**
    * Create combined mint transaction with all features
@@ -77,8 +80,11 @@ class ApiService {
         console.log('🎯 [ApiService] Sending priority level to backend:', formData.priorityLevel);
       }
 
+      const fullUrl = `${API_BASE_URL}/mint/create-transaction`;
+      console.log('🌐 [ApiService] Making POST request to:', fullUrl);
+
       const response = await axios.post(
-        `${API_BASE_URL}/mint/create-transaction`,
+        fullUrl,
         form,
         {
           headers: {
