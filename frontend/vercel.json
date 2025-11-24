@@ -11,11 +11,19 @@
   ],
   "routes": [
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
   ],
-  "buildCommand": "DISABLE_ESLINT_PLUGIN=true npm install && DISABLE_ESLINT_PLUGIN=true npm run build",
+  "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "outputDirectory": "build"
+  "outputDirectory": "build",
+  "env": {
+    "DISABLE_ESLINT_PLUGIN": "true",
+    "GENERATE_SOURCEMAP": "false",
+    "REACT_APP_API_URL": "https://spl-token-backend-production.up.railway.app/api"
+  }
 }
