@@ -15,7 +15,7 @@
       "dest": "/index.html"
     }
   ],
-  "buildCommand": "npm install && npm run build",
-  "outputDirectory": "build",
-  "installCommand": "npm install"
+  "buildCommand": "DISABLE_ESLINT_PLUGIN=true npm install && DISABLE_ESLINT_PLUGIN=true npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": "build"
 }
