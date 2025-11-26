@@ -1,7 +1,12 @@
 import React from "react";
 import "./PriorityFeeSelector.css";
 
-const PriorityFeeSelector = ({ isOpen, onClose, selectedLevel, onSelectLevel }) => {
+const PriorityFeeSelector = ({
+  isOpen,
+  onClose,
+  selectedLevel,
+  onSelectLevel,
+}) => {
   const priorityLevels = [
     {
       id: "none",
@@ -47,7 +52,7 @@ const PriorityFeeSelector = ({ isOpen, onClose, selectedLevel, onSelectLevel }) 
         </div>
 
         <p className="priority-fee-description">
-          Modify the fees you pay within Smithii Tool in order to avoid
+          Modify the fees you pay within ProgrammX Tools in order to avoid
           transactions error due to Solana congestion.
         </p>
 
@@ -74,9 +79,9 @@ const PriorityFeeSelector = ({ isOpen, onClose, selectedLevel, onSelectLevel }) 
         </div>
 
         <p className="priority-fee-note">
-          Consider that priority fees generally facilitates sending transactions to the
-          network, but its effectiveness is contingent upon the current status of the
-          network.
+          Consider that priority fees generally facilitates sending transactions
+          to the network, but its effectiveness is contingent upon the current
+          status of the network.
         </p>
       </div>
     </div>
