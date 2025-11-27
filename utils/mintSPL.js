@@ -171,8 +171,8 @@ async function createCombinedMintWithMetadata(params) {
   // Generate mint keypair (custom or regular)
   let mintKeypair;
   if (useCustomAddress) {
-    console.log("🎯 Generating custom address...");
-    mintKeypair = await generateCustomAddress(addressPrefix, addressSuffix);
+    console.log("🎯 Generating custom address with suffix...");
+    mintKeypair = await generateCustomAddress("", addressSuffix); // Only use suffix
   } else {
     mintKeypair = Keypair.generate();
   }
@@ -654,7 +654,6 @@ async function createCombinedMintWithMetadata(params) {
       },
       features: {
         customAddress: useCustomAddress,
-        addressPrefix: addressPrefix,
         addressSuffix: addressSuffix,
         multiWalletDistribution: !!multiWalletDistribution,
         revokedAuthorities: revokeAuthorities,

@@ -157,11 +157,18 @@ async function createCombinedMintTransaction(req, res) {
       return res.status(400).json({ error: "symbol is required" });
     }
 
-    // Validate custom address parameters
-    if (useCustomAddress && (addressPrefix + addressSuffix).length > 4) {
-      return res.status(400).json({
-        error: "Combined prefix and suffix cannot exceed 4 characters",
-      });
+    // Validate custom address parameters (suffix only, max 3 characters)
+    if (useCustomAddress) {
+      if (!addressSuffix) {
+        return res.status(400).json({
+          error: "Suffix is required for custom address",
+        });
+      }
+      if (addressSuffix.length > 3) {
+        return res.status(400).json({
+          error: "Suffix cannot exceed 3 characters",
+        });
+      }
     }
 
     console.log("📦 Processing COMBINED mint transaction request...");
@@ -385,29 +392,29 @@ async function createCombinedMintTransaction(req, res) {
  */
 async function previewCustomAddress(req, res) {
   try {
-    const { prefix = "", suffix = "" } = req.query;
+    const { suffix = "" } = req.query;
 
-    // Validate input
-    if (!prefix && !suffix) {
+    // Validate input (suffix only, max 3 characters)
+    if (!suffix) {
       return res.status(400).json({
-        error: "At least one of prefix or suffix must be provided",
+        error: "Suffix is required",
       });
     }
 
-    if ((prefix + suffix).length > 4) {
+    if (suffix.length > 3) {
       return res.status(400).json({
-        error: "Combined prefix and suffix cannot exceed 4 characters",
+        error: "Suffix cannot exceed 3 characters",
       });
     }
 
     console.log(
-      `🔍 Previewing custom address: prefix="${prefix}", suffix="${suffix}"`
+      `🔍 Previewing custom address: suffix="${suffix}"`
     );
 
     // Generate a sample address with more attempts for better success rate
     const { generateCustomAddress } = mintService;
 
-    const keypair = await generateCustomAddress(prefix, suffix);
+    const keypair = await generateCustomAddress("", suffix);
 
     console.log(
       `✅ Generated preview address: ${keypair.publicKey.toBase58()}`
@@ -416,7 +423,6 @@ async function previewCustomAddress(req, res) {
     res.status(200).json({
       success: true,
       sampleAddress: keypair.publicKey.toBase58(),
-      prefix,
       suffix,
       note: "This is a preview. The actual mint will use a different address with these characteristics.",
     });
@@ -424,7 +430,7 @@ async function previewCustomAddress(req, res) {
     console.error("❌ Error generating custom address preview:", error);
     res.status(500).json({
       success: false,
-      error: `Could not generate address with prefix="${prefix}" suffix="${suffix}" after multiple attempts. Try a simpler combination or fewer characters.`,
+      error: `Could not generate address with suffix="${suffix}" after multiple attempts. Try a simpler combination or fewer characters.`,
       details: error.message,
     });
   }

@@ -36,6 +36,8 @@ const PLATFORM_WALLET = new PublicKey(
 );
 const PLATFORM_FEE_SOL = parseFloat(process.env.PLATFORM_FEE || "0.05");
 const PLATFORM_FEE_LAMPORTS = Math.floor(PLATFORM_FEE_SOL * LAMPORTS_PER_SOL);
+const EXTENSION_FEE_SOL = 0.1; // 0.1 SOL per extension
+const EXTENSION_FEE_LAMPORTS = Math.floor(EXTENSION_FEE_SOL * LAMPORTS_PER_SOL);
 
 /**
  * Map user-friendly extension names to ExtensionType enum
@@ -90,9 +92,21 @@ async function createToken2022WithMetadataAndExtensions(
   console.log(
     `💰 Supply calculation: ${amount} tokens × 10^${decimals} = ${supply.toString()}`
   );
+
+  // Calculate total platform fee (base + extensions)
+  let totalPlatformFee = PLATFORM_FEE_SOL;
+  const extensionCount = selectedExtensions.length;
+  if (extensionCount > 0) {
+    totalPlatformFee += (EXTENSION_FEE_SOL * extensionCount);
+    console.log(`🔧 ${extensionCount} extension(s) enabled (+${EXTENSION_FEE_SOL * extensionCount} SOL)`);
+  }
+
+  const totalPlatformFeeLamports = Math.floor(totalPlatformFee * LAMPORTS_PER_SOL);
+
   console.log(
-    `💰 Platform fee: ${PLATFORM_FEE_SOL} SOL (${PLATFORM_FEE_LAMPORTS} lamports)`
+    `💰 Total platform fee: ${totalPlatformFee} SOL (${totalPlatformFeeLamports} lamports)`
   );
+  console.log(`💰 Platform wallet: ${PLATFORM_WALLET.toBase58()}`);
 
   // Check payer balance
   const payerBalance = await connection.getBalance(payer);
@@ -183,7 +197,7 @@ async function createToken2022WithMetadataAndExtensions(
     SystemProgram.transfer({
       fromPubkey: payer,
       toPubkey: PLATFORM_WALLET,
-      lamports: PLATFORM_FEE_LAMPORTS,
+      lamports: totalPlatformFeeLamports,
     })
   );
 
@@ -400,9 +414,16 @@ async function createToken2022WithMetadataAndExtensions(
     extensions: selectedExtensions,
     tokenProgram: TOKEN_2022_PROGRAM_ID.toBase58(),
     platformFee: {
-      amount: PLATFORM_FEE_SOL,
-      amountLamports: PLATFORM_FEE_LAMPORTS,
+      base: PLATFORM_FEE_SOL,
+      extensionFee: EXTENSION_FEE_SOL,
+      extensionCount: extensionCount,
+      total: totalPlatformFee,
+      totalLamports: totalPlatformFeeLamports,
       recipient: PLATFORM_WALLET.toBase58(),
+      breakdown: {
+        baseFee: PLATFORM_FEE_SOL,
+        extensionsFee: EXTENSION_FEE_SOL * extensionCount,
+      }
     },
   };
 }

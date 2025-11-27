@@ -92,7 +92,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
     <div className="extension-selector">
       <label className="form-label">
         Optional Token Extensions
-        <span className="label-hint">(Select any that apply)</span>
+        <span className="label-hint">(+0.1 SOL per extension)</span>
       </label>
       
       <div className="extension-dropdown">
@@ -142,6 +142,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
                     <div className="extension-content">
                       <div className="extension-header">
                         <span className="extension-label">{extension.label}</span>
+                        <span className="extension-fee">+0.1 SOL</span>
                         {extension.warning && (
                           <span className="warning-icon" title={extension.warning}>⚠️</span>
                         )}

@@ -307,7 +307,7 @@ const MintForm = ({
         )}
       </button>
 
-      {/* Show selected extensions info */}
+      {/* Show selected extensions info and fees */}
       {tokenType === "TOKEN2022" &&
         formData.extensions &&
         formData.extensions.length > 0 && (
@@ -320,6 +320,20 @@ const MintForm = ({
               Extensions are permanent and cannot be removed after token
               creation.
             </p>
+            <div className="fee-breakdown">
+              <div className="fee-line">
+                <span>Base Platform Fee:</span>
+                <span className="fee-value">0.05 SOL</span>
+              </div>
+              <div className="fee-line">
+                <span>Extensions ({formData.extensions.length}):</span>
+                <span className="fee-value">+{(formData.extensions.length * 0.1).toFixed(2)} SOL</span>
+              </div>
+              <div className="fee-line fee-total">
+                <span>Total Platform Fee:</span>
+                <span className="fee-value">{(0.05 + formData.extensions.length * 0.1).toFixed(2)} SOL</span>
+              </div>
+            </div>
           </div>
         )}
     </div>
