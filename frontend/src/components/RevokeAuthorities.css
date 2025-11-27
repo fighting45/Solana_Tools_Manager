@@ -139,3 +139,48 @@
     font-size: 12px;
   }
 }
+
+/* ============================================ */
+/* LIGHT MODE PROFESSIONAL OVERRIDES */
+/* ============================================ */
+
+:root:not([data-theme="dark"]) .revoke-authorities {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+:root:not([data-theme="dark"]) .revoke-authorities h3 {
+  color: #1e293b;
+}
+
+:root:not([data-theme="dark"]) .revoke-authorities p {
+  color: #64748b;
+}
+
+:root:not([data-theme="dark"]) .authority-card {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+}
+
+:root:not([data-theme="dark"]) .authority-card:hover {
+  border-color: #cbd5e1;
+  background: #ffffff;
+}
+
+:root:not([data-theme="dark"]) .authority-card.selected {
+  background: #dbeafe;
+  border-color: #0ea5e9;
+}
+
+:root:not([data-theme="dark"]) .authority-title {
+  color: #0f172a;
+}
+
+:root:not([data-theme="dark"]) .authority-description {
+  color: #64748b;
+}
+
+:root:not([data-theme="dark"]) .authority-fee {
+  color: #10b981;
+}

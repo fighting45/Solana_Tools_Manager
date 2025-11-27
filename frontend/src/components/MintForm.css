@@ -26,6 +26,12 @@
   letter-spacing: 0.5px;
 }
 
+/* Light Mode Override */
+:root:not([data-theme="dark"]) .form-label {
+  color: #1e293b;
+  font-weight: 600;
+}
+
 .form-label .required {
   color: #ff4444;
   font-weight: bold;
@@ -41,6 +47,13 @@
   transition: all 0.3s ease;
 }
 
+/* Light Mode Override */
+:root:not([data-theme="dark"]) .form-input {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  color: #1e293b;
+}
+
 .form-input:focus {
   outline: none;
   border-color: #00d4ff;
@@ -48,8 +61,20 @@
   background: rgba(10, 10, 30, 0.8);
 }
 
+/* Light Mode Focus */
+:root:not([data-theme="dark"]) .form-input:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+  background: #ffffff;
+}
+
 .form-input::placeholder {
   color: #505070;
+}
+
+/* Light Mode Placeholder */
+:root:not([data-theme="dark"]) .form-input::placeholder {
+  color: #94a3b8;
 }
 
 .form-input:disabled {
@@ -511,4 +536,57 @@
 .fee-value {
   font-weight: 600;
   color: #10b981;
+}
+
+/* ============================================ */
+/* LIGHT MODE PROFESSIONAL OVERRIDES - ENHANCED */
+/* ============================================ */
+
+/* Mint Button Light Mode */
+:root:not([data-theme="dark"]) .mint-button {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+:root:not([data-theme="dark"]) .mint-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+:root:not([data-theme="dark"]) .mint-button:disabled {
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  opacity: 0.6;
+}
+
+/* Info Messages Light Mode */
+:root:not([data-theme="dark"]) .info-message {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  color: #0c4a6e;
+}
+
+:root:not([data-theme="dark"]) .info-icon {
+  color: #0ea5e9;
+}
+
+/* Error Messages Light Mode */
+:root:not([data-theme="dark"]) .error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+/* File Input Light Mode */
+:root:not([data-theme="dark"]) .file-input {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+:root:not([data-theme="dark"]) .file-input::file-selector-button {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+:root:not([data-theme="dark"]) .file-input::file-selector-button:hover {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
 }

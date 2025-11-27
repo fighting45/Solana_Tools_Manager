@@ -320,3 +320,55 @@
     font-size: 14px;
   }
 }
+/* ============================================ */
+/* LIGHT MODE PROFESSIONAL OVERRIDES */
+/* ============================================ */
+
+:root:not([data-theme="dark"]) .custom-address-section {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+:root:not([data-theme="dark"]) .custom-address-section:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+:root:not([data-theme="dark"]) .custom-address-section .feature-title h4 {
+  color: #0ea5e9;
+}
+
+:root:not([data-theme="dark"]) .custom-address-section .feature-description {
+  color: #64748b;
+}
+
+:root:not([data-theme="dark"]) .custom-address-section .address-input {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  color: #1e293b;
+}
+
+:root:not([data-theme="dark"]) .custom-address-section .address-input:focus {
+  background: #ffffff;
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+:root:not([data-theme="dark"]) .custom-address-section .address-input::placeholder {
+  color: #94a3b8;
+}
+
+:root:not([data-theme="dark"]) .custom-address-section .character-counter {
+  color: #64748b;
+}
+
+:root:not([data-theme="dark"]) .custom-address-section .character-counter.valid {
+  color: #10b981;
+}
+
+:root:not([data-theme="dark"]) .custom-address-section .info-note {
+  background: #f0f9ff;
+  color: #0c4a6e;
+  border-left-color: #0ea5e9;
+}

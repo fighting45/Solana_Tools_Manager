@@ -156,9 +156,8 @@ async function createCombinedMintWithMetadata(params) {
   const mintAuthority = mintAuthorityAddress
     ? new PublicKey(mintAuthorityAddress)
     : payer;
-  const freezeAuthority = revokeAuthorities.freezeAuthority
-    ? null
-    : mintAuthority;
+  // Always set freeze authority initially - we'll revoke it later if requested
+  const freezeAuthority = mintAuthority;
 
   // Check payer balance
   const payerBalance = await connection.getBalance(payer);
@@ -510,14 +509,14 @@ async function createCombinedMintWithMetadata(params) {
     // PART 3: REVOKE AUTHORITIES (if requested)
     // ========================================
 
-    if (revokeAuthorities.freezeAuthority && freezeAuthority) {
+    if (revokeAuthorities.freezeAuthority) {
       console.log("🔒 Revoking freeze authority...");
       transaction.add(
         createSetAuthorityInstruction(
           mint,
-          mintAuthority,
+          freezeAuthority, // Use freezeAuthority as current authority
           AuthorityType.FreezeAccount,
-          null,
+          null, // Set to null to revoke
           [],
           TOKEN_PROGRAM_ID
         )
