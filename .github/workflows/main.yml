@@ -1,34 +1,55 @@
-# .github/workflows/ci.yml
-name: CI — Lint & Format Check
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  lint-format:
-    name: Lint & Format (ESLint + Prettier)
+  lint:
+    name: "Lint & Format Check"
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'        # set version you use
+          node-version: "22" # adjust to your node version
 
       - name: Install dependencies
-        run: npm ci               # or `npm install` / `yarn install` as per your project
+        run: npm ci # or npm install, as per your repo
 
-      - name: Run linters and formatter
-        # You can run ESLint then Prettier; this fails the job if any errors found
+      - name: Run ESLint & Prettier checks
         run: |
           npx eslint . --max-warnings 0
           npx prettier --check .
-     
+
+  deploy:
+    name: "Deploy to VPS"
+    needs: lint # ensures this job runs only if lint passes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install SSH Client
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: Deploy to VPS
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r . $SERVER_USER@$SERVER_IP:/tmp/sol_tool_manager
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+          echo '--- Copying sol_tool_manager to /mnt/sol_tool_manager ---'
+          rm -rf /mnt/sol_tool_manager
+          mkdir -p /mnt/sol_tool_manager
+          cp -r /tmp/sol_manager_tool/* /mnt/sol_tool_manager
+          BACKEND_DIR="/mnt/sol_tool_manager"
+          FRONTEND_DIR="/mnt/sol_tool_manager/frontend"
+          EOF
