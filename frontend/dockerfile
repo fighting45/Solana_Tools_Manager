@@ -1,0 +1,43 @@
+# ---- Stage 1: Build React App ----
+FROM node:18-slim AS builder
+
+WORKDIR /usr/src/app
+
+# Install OS dependencies for building
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    python3 \
+    git \
+    curl \
+    ca-certificates \
+    libz-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies ignoring peer conflicts
+RUN npm ci --legacy-peer-deps
+
+# Copy all source code
+COPY . .
+
+# Build React app
+RUN npm run build
+
+# ---- Stage 2: Serve static files ----
+FROM node:18-slim
+
+WORKDIR /usr/src/app
+
+# Install serve globally
+RUN npm install -g serve
+
+# Copy build output
+COPY --from=builder /usr/src/app/build ./build
+
+# Expose frontend port
+EXPOSE 3000
+
+# Start app
+CMD ["serve", "-s", "build", "-l", "3000"]

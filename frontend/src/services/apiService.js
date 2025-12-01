@@ -3,8 +3,11 @@ import axios from "axios";
 const API_BASE_URL =
   process.env.REACT_APP_API_URL || "http://localhost:3001/api";
 
-console.log('🔧 [ApiService] API_BASE_URL:', API_BASE_URL);
-console.log('🔧 [ApiService] REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+console.log("🔧 [ApiService] API_BASE_URL:", API_BASE_URL);
+console.log(
+  "🔧 [ApiService] REACT_APP_API_URL:",
+  process.env.REACT_APP_API_URL
+);
 
 class ApiService {
   /**
@@ -77,21 +80,20 @@ class ApiService {
       // Priority fee level
       if (formData.priorityLevel) {
         form.append("priorityLevel", formData.priorityLevel);
-        console.log('🎯 [ApiService] Sending priority level to backend:', formData.priorityLevel);
+        console.log(
+          "🎯 [ApiService] Sending priority level to backend:",
+          formData.priorityLevel
+        );
       }
 
       const fullUrl = `${API_BASE_URL}/mint/create-transaction`;
-      console.log('🌐 [ApiService] Making POST request to:', fullUrl);
+      console.log("🌐 [ApiService] Making POST request to:", fullUrl);
 
-      const response = await axios.post(
-        fullUrl,
-        form,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(fullUrl, form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       return response.data;
     } catch (error) {
@@ -154,7 +156,11 @@ class ApiService {
       }
 
       // Token-2022 specific extensions (send as comma-separated string or array)
-      if (formData.extensions && Array.isArray(formData.extensions) && formData.extensions.length > 0) {
+      if (
+        formData.extensions &&
+        Array.isArray(formData.extensions) &&
+        formData.extensions.length > 0
+      ) {
         // Send as comma-separated string to match backend expectation
         form.append("extensions", formData.extensions.join(","));
       }
@@ -162,7 +168,10 @@ class ApiService {
       // Priority fee level
       if (formData.priorityLevel) {
         form.append("priorityLevel", formData.priorityLevel);
-        console.log('🎯 [ApiService] Sending priority level to backend:', formData.priorityLevel);
+        console.log(
+          "🎯 [ApiService] Sending priority level to backend:",
+          formData.priorityLevel
+        );
       }
 
       const response = await axios.post(
@@ -253,7 +262,9 @@ class ApiService {
    */
   async getToken2022Extensions() {
     try {
-      const response = await axios.get(`${API_BASE_URL}/token2022/token2022-extensions`);
+      const response = await axios.get(
+        `${API_BASE_URL}/token2022/token2022-extensions`
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching Token-2022 extensions:", error);
