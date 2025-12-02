@@ -24,7 +24,7 @@ jobs:
 
       - name: Run ESLint & Prettier checks
         run: |
-          npx eslint . --max-warnings 0
+          npx eslint . --config ./.eslintrc.cjs --max-warnings 0
           npx prettier --check .
 
   deploy:
