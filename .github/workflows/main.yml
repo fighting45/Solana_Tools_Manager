@@ -49,9 +49,8 @@ jobs:
           sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r . $SERVER_USER@$SERVER_IP:/tmp/sol_tool_manager
           sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
           echo '--- Copying sol_tool_manager to /mnt/sol_tool_manager ---'
-          rm -rf /mnt/sol_tool_manager
           mkdir -p /mnt/sol_tool_manager
-          cp -r /tmp/sol_manager_tool/* /mnt/sol_tool_manager
+          p -r /tmp/sol_tool_manager/* /mnt/sol_tool_manager
           BACKEND_DIR="/mnt/sol_tool_manager"
           FRONTEND_DIR="/mnt/sol_tool_manager/frontend"
           echo '--- Build docker image for Frontend ---'
