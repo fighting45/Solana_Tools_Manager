@@ -125,7 +125,11 @@
 }
 
 .priority-level-btn.active {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 153, 204, 0.1) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 212, 255, 0.15) 0%,
+    rgba(0, 153, 204, 0.1) 100%
+  );
   border-color: #00d4ff;
   box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
 }

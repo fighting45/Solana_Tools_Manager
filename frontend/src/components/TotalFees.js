@@ -1,5 +1,5 @@
-import React from 'react';
-import './TotalFees.css';
+import React from "react";
+import "./TotalFees.css";
 
 const TotalFees = ({ formData }) => {
   const calculateTotalFees = () => {
@@ -11,11 +11,15 @@ const TotalFees = ({ formData }) => {
     }
 
     // Multi-wallet fee
-    if (formData.useMultiWallet &&
-        formData.multiWalletDistributions &&
-        Array.isArray(formData.multiWalletDistributions) &&
-        formData.multiWalletDistributions.length > 0 &&
-        formData.multiWalletDistributions.some(dist => dist.wallet && dist.wallet.trim() !== '')) {
+    if (
+      formData.useMultiWallet &&
+      formData.multiWalletDistributions &&
+      Array.isArray(formData.multiWalletDistributions) &&
+      formData.multiWalletDistributions.length > 0 &&
+      formData.multiWalletDistributions.some(
+        (dist) => dist.wallet && dist.wallet.trim() !== "",
+      )
+    ) {
       total += 0.1;
     }
 

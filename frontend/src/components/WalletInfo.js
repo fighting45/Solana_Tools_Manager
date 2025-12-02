@@ -1,5 +1,5 @@
-import React from 'react';
-import './WalletInfo.css';
+import React from "react";
+import "./WalletInfo.css";
 
 const WalletInfo = ({ publicKey }) => {
   return (
@@ -13,4 +13,3 @@ const WalletInfo = ({ publicKey }) => {
 };
 
 export default WalletInfo;
-

@@ -1,7 +1,11 @@
 .multi-wallet-section {
   margin: 0;
   padding: 20px;
-  background: linear-gradient(135deg, rgba(26, 26, 46, 0.6) 0%, rgba(22, 22, 38, 0.4) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(26, 26, 46, 0.6) 0%,
+    rgba(22, 22, 38, 0.4) 100%
+  );
   border-radius: 12px;
   border: 1px solid #2d3748;
   transition: all 0.3s ease;

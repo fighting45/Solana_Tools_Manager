@@ -1,26 +1,29 @@
 # SPL Token Minter - Setup Guide
 
 ### FORM VALUES WITH WEB3 WALLET INTEGRATION
+
 ![Screenshot](./assets/Screenshot1.png)
 
-
-
 ### SUCCESSFUL TRANSACTION FOR TOKEN MINTING
+
 ![Screenshot](./assets/Screenshot2.png)
 
 ## Backend Setup
 
 1. Install backend dependencies:
+
 ```bash
 npm install
 ```
 
 2. Create a `.env` file in the root directory:
+
 ```
 PRIVATE_KEY=your_base58_encoded_private_key
 ```
 
 3. Start the backend server:
+
 ```bash
 npm start
 ```
@@ -30,21 +33,25 @@ The backend will run on `http://localhost:3000`
 ## Frontend Setup
 
 1. Navigate to the frontend directory:
+
 ```bash
 cd frontend
 ```
 
 2. Install frontend dependencies:
+
 ```bash
 npm install
 ```
 
 3. (Optional) Create a `.env` file in the frontend directory if you want to change the API URL:
+
 ```
 REACT_APP_API_URL=http://localhost:3000
 ```
 
 4. Start the frontend development server:
+
 ```bash
 npm start
 ```
@@ -81,4 +88,3 @@ The frontend will open at `http://localhost:3000` (or the next available port)
 - Make sure your wallet is set to Devnet mode
 - The backend creates the transaction and the frontend signs and sends it
 - All transactions are partially signed by the backend (mint keypair) and fully signed by the frontend (payer wallet)
-

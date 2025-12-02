@@ -91,7 +91,7 @@
 }
 
 .navbar-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -4px;
   left: 0;
@@ -116,7 +116,9 @@
   justify-content: center;
   cursor: pointer;
   font-size: 1.25rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
 }
 
@@ -202,7 +204,7 @@
   color: #ffffff;
   font-weight: 600;
   font-size: 0.9rem;
-  font-family: 'Monaco', 'Courier New', monospace;
+  font-family: "Monaco", "Courier New", monospace;
 }
 
 .navbar-wallet-button {
@@ -317,4 +319,3 @@
     font-size: 0.7rem !important;
   }
 }
-

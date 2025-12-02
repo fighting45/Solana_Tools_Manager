@@ -205,7 +205,7 @@
 
 .address-text {
   flex: 1;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.85rem;
   color: #475569;
   word-break: break-all;
@@ -599,7 +599,7 @@
 
 .info-value.address,
 .info-value.signature {
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.85rem;
   font-weight: 400;
   color: #475569;

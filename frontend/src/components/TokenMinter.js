@@ -14,13 +14,14 @@ const TokenMinter = () => {
   const [tokenType, setTokenType] = useState(TOKEN_TYPES.SPL);
   const splMint = useMintTransaction();
   const token2022Mint = useToken2022Transaction();
-  
+
   // Use the appropriate hook based on token type
-  const { mintTokens, loading, status } = tokenType === TOKEN_TYPES.SPL ? splMint : token2022Mint;
-  
+  const { mintTokens, loading, status } =
+    tokenType === TOKEN_TYPES.SPL ? splMint : token2022Mint;
+
   const [formData, setFormData] = useState({
     ...DEFAULT_FORM_VALUES,
-    extensions: [] // Add extensions to form data
+    extensions: [], // Add extensions to form data
   });
   const [result, setResult] = useState(null);
 
@@ -50,7 +51,7 @@ const TokenMinter = () => {
   const handleExtensionsChange = (extensions) => {
     setFormData((prev) => ({
       ...prev,
-      extensions: extensions
+      extensions: extensions,
     }));
   };
 
@@ -59,7 +60,7 @@ const TokenMinter = () => {
     setTokenType(newType);
     setFormData({
       ...DEFAULT_FORM_VALUES,
-      extensions: [] // Reset extensions when switching token types
+      extensions: [], // Reset extensions when switching token types
     });
     setResult(null);
     // Status will automatically switch to the active hook's status
@@ -77,7 +78,7 @@ const TokenMinter = () => {
     setResult(null);
     setFormData({
       ...DEFAULT_FORM_VALUES,
-      extensions: []
+      extensions: [],
     });
   };
 
@@ -85,33 +86,36 @@ const TokenMinter = () => {
     setResult(null);
     setFormData({
       ...DEFAULT_FORM_VALUES,
-      extensions: []
+      extensions: [],
     });
   };
 
   const handleGenerateCustomAddress = async (prefix, suffix) => {
     try {
-      console.log('🔍 Generating custom address...', { prefix, suffix });
-      const apiService = (await import('../services/apiService')).default;
+      console.log("🔍 Generating custom address...", { prefix, suffix });
+      const apiService = (await import("../services/apiService")).default;
       const result = await apiService.previewCustomAddress(prefix, suffix);
 
-      console.log('✅ Received result:', result);
+      console.log("✅ Received result:", result);
 
       if (!result.success || !result.sampleAddress) {
-        throw new Error(result.error || 'Failed to generate address');
+        throw new Error(result.error || "Failed to generate address");
       }
 
       // Update form with generated address
       setFormData((prev) => ({
         ...prev,
-        generatedAddress: result.sampleAddress
+        generatedAddress: result.sampleAddress,
       }));
 
-      console.log('✅ Custom address generated:', result.sampleAddress);
+      console.log("✅ Custom address generated:", result.sampleAddress);
       return result.sampleAddress;
     } catch (error) {
-      console.error('❌ Error generating custom address:', error);
-      const errorMessage = error.response?.data?.error || error.message || 'Failed to generate address. Please try again.';
+      console.error("❌ Error generating custom address:", error);
+      const errorMessage =
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to generate address. Please try again.";
       throw new Error(errorMessage);
     }
   };
@@ -120,7 +124,9 @@ const TokenMinter = () => {
     <div className="token-minter-wrapper">
       <Navbar />
       <div className="token-minter-container">
-        <div className={`token-minter-card ${result && result.success ? 'hidden' : ''}`}>
+        <div
+          className={`token-minter-card ${result && result.success ? "hidden" : ""}`}
+        >
           <div className="card-header">
             <h1 className="card-title">
               <span className="title-icon">🪙</span>
@@ -135,7 +141,7 @@ const TokenMinter = () => {
 
           <div className="token-type-selector">
             <button
-              className={`token-type-btn ${tokenType === TOKEN_TYPES.SPL ? 'active' : ''}`}
+              className={`token-type-btn ${tokenType === TOKEN_TYPES.SPL ? "active" : ""}`}
               onClick={() => handleTokenTypeChange(TOKEN_TYPES.SPL)}
               disabled={loading}
             >
@@ -143,14 +149,16 @@ const TokenMinter = () => {
               <span className="token-type-label">SPL Token</span>
             </button>
             <button
-              className={`token-type-btn ${tokenType === TOKEN_TYPES.TOKEN2022 ? 'active' : ''}`}
+              className={`token-type-btn ${tokenType === TOKEN_TYPES.TOKEN2022 ? "active" : ""}`}
               onClick={() => handleTokenTypeChange(TOKEN_TYPES.TOKEN2022)}
               disabled={loading}
             >
               <span className="token-type-icon">✨</span>
               <span className="token-type-label">Token-2022</span>
               {formData.extensions && formData.extensions.length > 0 && (
-                <span className="extension-badge">{formData.extensions.length}</span>
+                <span className="extension-badge">
+                  {formData.extensions.length}
+                </span>
               )}
             </button>
           </div>
@@ -175,7 +183,8 @@ const TokenMinter = () => {
               Built with Solana Wallet Adapter • Devnet
             </p>
             <p className="footer-text programmx-footer">
-              Made with ❤️ by <span className="programmx-brand-small">ProgrammX</span>
+              Made with ❤️ by{" "}
+              <span className="programmx-brand-small">ProgrammX</span>
             </p>
           </div>
         </div>
@@ -184,7 +193,7 @@ const TokenMinter = () => {
       {/* Success Modal */}
       <SuccessModal
         result={result}
-        tokenType={tokenType === TOKEN_TYPES.SPL ? 'SPL' : 'TOKEN2022'}
+        tokenType={tokenType === TOKEN_TYPES.SPL ? "SPL" : "TOKEN2022"}
         onClose={handleCloseModal}
         onNewMint={handleNewMint}
       />

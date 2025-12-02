@@ -62,10 +62,17 @@ export const useMintTransaction = () => {
 
         // Prepare multi-wallet distribution - filter out empty wallets
         let multiWalletDistribution = null;
-        if (formData.multiWalletDistributions && Array.isArray(formData.multiWalletDistributions)) {
-          console.log("📋 Original multi-wallet data:", formData.multiWalletDistributions);
+        if (
+          formData.multiWalletDistributions &&
+          Array.isArray(formData.multiWalletDistributions)
+        ) {
+          console.log(
+            "📋 Original multi-wallet data:",
+            formData.multiWalletDistributions,
+          );
           const validWallets = formData.multiWalletDistributions.filter(
-            (dist) => dist.wallet && dist.wallet.trim() !== "" && dist.percentage > 0
+            (dist) =>
+              dist.wallet && dist.wallet.trim() !== "" && dist.percentage > 0,
           );
           console.log("✅ Filtered valid wallets:", validWallets);
           if (validWallets.length > 0) {
@@ -74,7 +81,10 @@ export const useMintTransaction = () => {
         }
 
         // Get priority level from context
-        console.log('🎯 [Frontend] Priority level from context:', priorityLevel);
+        console.log(
+          "🎯 [Frontend] Priority level from context:",
+          priorityLevel,
+        );
 
         const transactionData = await apiService.createCombinedMintTransaction({
           payerAddress: publicKey.toString(),
@@ -124,7 +134,7 @@ export const useMintTransaction = () => {
           {
             blockhash: transactionData.blockhash,
             feePayer: publicKey,
-          }
+          },
         );
 
         // Step 3: Sign mint transaction
@@ -135,7 +145,7 @@ export const useMintTransaction = () => {
 
         const signedTransaction = await transactionService.signTransaction(
           transaction,
-          signTransaction
+          signTransaction,
         );
 
         // Step 4: Send mint transaction
@@ -150,7 +160,7 @@ export const useMintTransaction = () => {
           {
             skipPreflight: false,
             preflightCommitment: "confirmed",
-          }
+          },
         );
 
         console.log("Mint transaction signature:", signature);
@@ -165,7 +175,7 @@ export const useMintTransaction = () => {
           signature,
           connection,
           transactionData.blockhash,
-          transactionData.lastValidBlockHeight
+          transactionData.lastValidBlockHeight,
         );
 
         console.log("✅ Mint transaction confirmed!");
@@ -193,7 +203,7 @@ export const useMintTransaction = () => {
         setLoading(false);
       }
     },
-    [publicKey, connection, signTransaction, priorityLevel]
+    [publicKey, connection, signTransaction, priorityLevel],
   );
 
   return {

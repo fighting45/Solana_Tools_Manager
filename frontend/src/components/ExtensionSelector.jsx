@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import apiService from '../services/apiService';
-import './ExtensionSelector.css';
+import React, { useState, useEffect } from "react";
+import apiService from "../services/apiService";
+import "./ExtensionSelector.css";
 
 const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
   const [extensions, setExtensions] = useState([]);
@@ -10,7 +10,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
 
   // Fetch available extensions from backend
   useEffect(() => {
-    if (tokenType === 'TOKEN2022') {
+    if (tokenType === "TOKEN2022") {
       fetchExtensions();
     } else {
       // Reset when switching away from Token-2022
@@ -29,7 +29,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
       setExtensions(data.extensions || []);
       setLoading(false);
     } catch (error) {
-      console.error('Failed to fetch extensions:', error);
+      console.error("Failed to fetch extensions:", error);
       setLoading(false);
       // Set empty array on error
       setExtensions([]);
@@ -38,9 +38,9 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
 
   const handleExtensionToggle = (extensionName) => {
     const newSelection = selectedExtensions.includes(extensionName)
-      ? selectedExtensions.filter(ext => ext !== extensionName)
+      ? selectedExtensions.filter((ext) => ext !== extensionName)
       : [...selectedExtensions, extensionName];
-    
+
     setSelectedExtensions(newSelection);
     onExtensionsChange(newSelection);
   };
@@ -50,7 +50,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
       setSelectedExtensions([]);
       onExtensionsChange([]);
     } else {
-      const allExtensions = extensions.map(ext => ext.name);
+      const allExtensions = extensions.map((ext) => ext.name);
       setSelectedExtensions(allExtensions);
       onExtensionsChange(allExtensions);
     }
@@ -59,14 +59,15 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isDropdownOpen && !event.target.closest('.extension-dropdown')) {
+      if (isDropdownOpen && !event.target.closest(".extension-dropdown")) {
         setIsDropdownOpen(false);
       }
     };
 
     if (isDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [isDropdownOpen]);
 
@@ -94,7 +95,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
         Optional Token Extensions
         <span className="label-hint">(+0.1 SOL per extension)</span>
       </label>
-      
+
       <div className="extension-dropdown">
         <button
           type="button"
@@ -106,9 +107,11 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
             <span className="dropdown-text">
               {selectedExtensions.length === 0
                 ? "Select extensions..."
-                : `${selectedExtensions.length} extension${selectedExtensions.length > 1 ? 's' : ''} selected`}
+                : `${selectedExtensions.length} extension${selectedExtensions.length > 1 ? "s" : ""} selected`}
             </span>
-            <span className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}>▼</span>
+            <span className={`dropdown-arrow ${isDropdownOpen ? "open" : ""}`}>
+              ▼
+            </span>
           </div>
         </button>
 
@@ -120,10 +123,12 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
                 onClick={handleSelectAll}
                 className="select-all-btn"
               >
-                {selectedExtensions.length === extensions.length ? 'Deselect All' : 'Select All'}
+                {selectedExtensions.length === extensions.length
+                  ? "Deselect All"
+                  : "Select All"}
               </button>
             </div>
-            
+
             <div className="extension-list">
               {extensions.map((extension) => (
                 <div
@@ -141,13 +146,22 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
                     />
                     <div className="extension-content">
                       <div className="extension-header">
-                        <span className="extension-label">{extension.label}</span>
+                        <span className="extension-label">
+                          {extension.label}
+                        </span>
                         <span className="extension-fee">+0.1 SOL</span>
                         {extension.warning && (
-                          <span className="warning-icon" title={extension.warning}>⚠️</span>
+                          <span
+                            className="warning-icon"
+                            title={extension.warning}
+                          >
+                            ⚠️
+                          </span>
                         )}
                       </div>
-                      <p className="extension-description">{extension.description}</p>
+                      <p className="extension-description">
+                        {extension.description}
+                      </p>
                       {extension.warning && (
                         <div className="extension-warning">
                           <span className="warning-prefix">⚠️</span>
@@ -166,8 +180,8 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
       {selectedExtensions.length > 0 && (
         <div className="selected-extensions">
           <div className="extension-tags">
-            {selectedExtensions.map(ext => {
-              const extension = extensions.find(e => e.name === ext);
+            {selectedExtensions.map((ext) => {
+              const extension = extensions.find((e) => e.name === ext);
               return (
                 <span key={ext} className="extension-tag">
                   {extension?.label || ext}

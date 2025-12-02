@@ -28,7 +28,7 @@ app.use(
       }
     },
     credentials: true,
-  })
+  }),
 );
 
 // Middleware

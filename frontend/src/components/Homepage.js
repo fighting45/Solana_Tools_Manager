@@ -1,13 +1,13 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import Navbar from './Navbar';
-import './Homepage.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import Navbar from "./Navbar";
+import "./Homepage.css";
 
 const Homepage = () => {
   return (
     <div className="homepage">
       <Navbar />
-      
+
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
@@ -43,13 +43,17 @@ const Homepage = () => {
         <div className="features-container">
           <h2 className="section-title">Launching a token from 0?</h2>
           <p className="section-description">
-            It is normal that you think creating a web3 project is very complicated, but that's <strong>not the reality</strong>.
+            It is normal that you think creating a web3 project is very
+            complicated, but that's <strong>not the reality</strong>.
           </p>
           <p className="section-description">
-            With ProgrammX you can launch your own token from <strong>only $100</strong>. Yes, including <strong>all the fees</strong> you need.
+            With ProgrammX you can launch your own token from{" "}
+            <strong>only $100</strong>. Yes, including{" "}
+            <strong>all the fees</strong> you need.
           </p>
           <p className="section-description">
-            In fact there are hundreds of people launching their own tokens <strong>every day</strong> with our Solana Token Creator.
+            In fact there are hundreds of people launching their own tokens{" "}
+            <strong>every day</strong> with our Solana Token Creator.
           </p>
         </div>
       </section>
@@ -89,21 +93,23 @@ const Homepage = () => {
         <div className="contact-container">
           <h2 className="section-title">Get in Touch</h2>
           <p className="contact-description">
-            For personalized Blockchain solutions on Solana, Ethereum, Binance Smart Chain, TON and other chains, contact us as we have top developers in action at ProgrammX
+            For personalized Blockchain solutions on Solana, Ethereum, Binance
+            Smart Chain, TON and other chains, contact us as we have top
+            developers in action at ProgrammX
           </p>
           <div className="contact-links">
-            <a 
-              href="https://www.linkedin.com/company/programm-x/posts/?feedView=all" 
-              target="_blank" 
+            <a
+              href="https://www.linkedin.com/company/programm-x/posts/?feedView=all"
+              target="_blank"
               rel="noopener noreferrer"
               className="contact-link"
             >
               <span className="contact-icon">💼</span>
               LinkedIn
             </a>
-            <a 
-              href="https://programmx.com/" 
-              target="_blank" 
+            <a
+              href="https://programmx.com/"
+              target="_blank"
               rel="noopener noreferrer"
               className="contact-link"
             >
@@ -130,4 +136,3 @@ const Homepage = () => {
 };
 
 export default Homepage;
-

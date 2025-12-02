@@ -45,7 +45,9 @@ const OptionalMetadata = ({
       </div>
 
       {enabled && (
-        <div className={`optional-metadata-content ${isExpanded ? "expanded" : ""}`}>
+        <div
+          className={`optional-metadata-content ${isExpanded ? "expanded" : ""}`}
+        >
           {/* Social Links Section */}
           <div className="metadata-section">
             <h4 className="metadata-section-title">Social Links</h4>

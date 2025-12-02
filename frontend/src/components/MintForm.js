@@ -188,7 +188,11 @@ const MintForm = ({
       )}
 
       {/* Recipient Address - Only show when NOT using multi-wallet distribution */}
-      {!(formData.useMultiWallet && formData.multiWalletDistributions && formData.multiWalletDistributions.length > 0) && (
+      {!(
+        formData.useMultiWallet &&
+        formData.multiWalletDistributions &&
+        formData.multiWalletDistributions.length > 0
+      ) && (
         <div className="form-group">
           <label htmlFor="recipientAddress" className="form-label">
             Recipient Address <span className="required">*</span>
@@ -204,18 +208,24 @@ const MintForm = ({
             disabled={loading || disabled}
           />
           <p className="form-helper-text">
-            💡 When using Multi-Wallet Distribution, recipient addresses are specified in the distribution list
+            💡 When using Multi-Wallet Distribution, recipient addresses are
+            specified in the distribution list
           </p>
         </div>
       )}
 
       {/* Show info when multi-wallet is enabled */}
-      {formData.useMultiWallet && formData.multiWalletDistributions && formData.multiWalletDistributions.length > 0 && (
-        <div className="info-message">
-          <span className="info-icon">ℹ️</span>
-          <span>Tokens will be distributed to the wallets specified in Multi-Wallet Distribution</span>
-        </div>
-      )}
+      {formData.useMultiWallet &&
+        formData.multiWalletDistributions &&
+        formData.multiWalletDistributions.length > 0 && (
+          <div className="info-message">
+            <span className="info-icon">ℹ️</span>
+            <span>
+              Tokens will be distributed to the wallets specified in
+              Multi-Wallet Distribution
+            </span>
+          </div>
+        )}
 
       <div className="form-row">
         <div className="form-group">
@@ -327,11 +337,15 @@ const MintForm = ({
               </div>
               <div className="fee-line">
                 <span>Extensions ({formData.extensions.length}):</span>
-                <span className="fee-value">+{(formData.extensions.length * 0.1).toFixed(2)} SOL</span>
+                <span className="fee-value">
+                  +{(formData.extensions.length * 0.1).toFixed(2)} SOL
+                </span>
               </div>
               <div className="fee-line fee-total">
                 <span>Total Platform Fee:</span>
-                <span className="fee-value">{(0.05 + formData.extensions.length * 0.1).toFixed(2)} SOL</span>
+                <span className="fee-value">
+                  {(0.05 + formData.extensions.length * 0.1).toFixed(2)} SOL
+                </span>
               </div>
             </div>
           </div>

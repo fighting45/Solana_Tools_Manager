@@ -70,22 +70,27 @@ The app will open at `http://localhost:3000` (or the next available port).
 ## 🏗️ Architecture
 
 ### Components
+
 - **TokenMinter**: Main container component
 - **WalletInfo**: Displays connected wallet address
 - **MintForm**: Form for minting tokens
 - **StatusMessage**: Displays transaction status
 
 ### Services
+
 - **apiService**: Handles all backend API calls
 - **transactionService**: Manages Solana transaction operations
 
 ### Hooks
+
 - **useMintTransaction**: Custom hook for minting tokens with state management
 
 ### Utils
+
 - **validators**: Form validation utilities
 
 ### Config
+
 - **constants**: Centralized configuration and constants
 
 ## 📝 Usage

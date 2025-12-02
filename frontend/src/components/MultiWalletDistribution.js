@@ -9,7 +9,7 @@ const MultiWalletDistribution = ({
   disabled,
 }) => {
   const [wallets, setWallets] = useState(
-    distributions || [{ wallet: "", percentage: 100, avatar: "😎" }]
+    distributions || [{ wallet: "", percentage: 100, avatar: "😎" }],
   );
   const [error, setError] = useState("");
 
@@ -18,7 +18,7 @@ const MultiWalletDistribution = ({
   const validatePercentages = React.useCallback(() => {
     const total = wallets.reduce(
       (sum, w) => sum + (parseFloat(w.percentage) || 0),
-      0
+      0,
     );
     if (wallets.length > 0 && Math.abs(total - 100) > 0.01) {
       setError(`Percentages must total 100% (currently ${total.toFixed(2)}%)`);
@@ -82,7 +82,7 @@ const MultiWalletDistribution = ({
   const getDistributionBar = () => {
     const total = wallets.reduce(
       (sum, w) => sum + (parseFloat(w.percentage) || 0),
-      0
+      0,
     );
     if (total === 0) return [];
 

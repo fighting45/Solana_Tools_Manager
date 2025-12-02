@@ -127,7 +127,7 @@
 }
 
 .programmx-brand::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0;
@@ -247,7 +247,9 @@
   border-radius: 12px !important;
   font-weight: 600 !important;
   padding: 12px 24px !important;
-  transition: transform 0.2s, box-shadow 0.2s !important;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s !important;
 }
 
 .wallet-button:hover {
@@ -291,7 +293,7 @@
   color: #6366f1;
   font-size: 0.9rem;
   font-weight: 600;
-  font-family: 'Monaco', 'Courier New', monospace;
+  font-family: "Monaco", "Courier New", monospace;
   word-break: break-all;
   line-height: 1.5;
 }
@@ -372,7 +374,7 @@
 
 .result-value {
   color: #064e3b;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.875rem;
   word-break: break-all;
 }
@@ -426,4 +428,3 @@
     font-size: 1rem;
   }
 }
-

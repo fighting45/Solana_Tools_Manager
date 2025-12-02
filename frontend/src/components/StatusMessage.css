@@ -69,7 +69,7 @@
 }
 
 .status-value {
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.8125rem;
   opacity: 0.9;
   word-break: break-all;
@@ -81,4 +81,3 @@
   line-height: 1.5;
   word-break: break-word;
 }
-

@@ -66,7 +66,7 @@ class TransactionService {
           skipPreflight: options.skipPreflight || false,
           preflightCommitment: options.preflightCommitment || "confirmed",
           maxRetries: options.maxRetries || 3,
-        }
+        },
       );
       return signature;
     } catch (error) {
@@ -87,7 +87,7 @@ class TransactionService {
     signature,
     connection,
     blockhash = null,
-    lastValidBlockHeight = null
+    lastValidBlockHeight = null,
   ) {
     try {
       let confirmation;
@@ -102,17 +102,17 @@ class TransactionService {
       } else {
         // Fallback to legacy confirmation method
         console.warn(
-          "Using legacy confirmation method. Consider passing blockhash and lastValidBlockHeight."
+          "Using legacy confirmation method. Consider passing blockhash and lastValidBlockHeight.",
         );
         confirmation = await connection.confirmTransaction(
           signature,
-          "confirmed"
+          "confirmed",
         );
       }
 
       if (confirmation.value?.err) {
         throw new Error(
-          `Transaction failed: ${JSON.stringify(confirmation.value.err)}`
+          `Transaction failed: ${JSON.stringify(confirmation.value.err)}`,
         );
       }
 
@@ -135,7 +135,7 @@ class TransactionService {
     base64Transaction,
     transactionData,
     wallet,
-    connection
+    connection,
   ) {
     try {
       console.log("Executing transaction...");
@@ -155,7 +155,7 @@ class TransactionService {
       // Sign
       const signedTransaction = await this.signTransaction(
         transaction,
-        wallet.signTransaction
+        wallet.signTransaction,
       );
 
       // Send
@@ -165,7 +165,7 @@ class TransactionService {
         {
           skipPreflight: false,
           preflightCommitment: "confirmed",
-        }
+        },
       );
 
       console.log("Transaction sent! Signature:", signature);
@@ -175,7 +175,7 @@ class TransactionService {
         signature,
         connection,
         transactionData.blockhash,
-        transactionData.lastValidBlockHeight
+        transactionData.lastValidBlockHeight,
       );
 
       console.log("✅ Transaction confirmed!");

@@ -34,7 +34,8 @@ const CustomAddressGenerator = ({
         <div className="feature-title">
           <h4>Custom Address Generator (+0.1 SOL)</h4>
           <p className="feature-description">
-            Generate a custom token address with your desired suffix (max 3 characters). Address will be generated during token creation.
+            Generate a custom token address with your desired suffix (max 3
+            characters). Address will be generated during token creation.
           </p>
         </div>
         <label className="toggle-switch">
@@ -69,7 +70,8 @@ const CustomAddressGenerator = ({
           {error && <div className="error-message">{error}</div>}
 
           <div className="info-note">
-            Note: Custom address will be generated automatically during token minting
+            Note: Custom address will be generated automatically during token
+            minting
           </div>
         </div>
       )}

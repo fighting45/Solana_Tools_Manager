@@ -1,13 +1,13 @@
-import React from 'react';
-import './CustomCreator.css';
+import React from "react";
+import "./CustomCreator.css";
 
 const CustomCreator = ({ formData, onInputChange, disabled }) => {
   const handleToggle = () => {
     onInputChange({
       target: {
-        name: 'useCustomCreator',
-        value: !formData.useCustomCreator
-      }
+        name: "useCustomCreator",
+        value: !formData.useCustomCreator,
+      },
     });
   };
 
@@ -19,7 +19,8 @@ const CustomCreator = ({ formData, onInputChange, disabled }) => {
             Modify Creator Information (+0.1 SOL):
           </h4>
           <p className="custom-creator-description">
-            Change the information of the creator in the metadata, by default it is ProgrammX.
+            Change the information of the creator in the metadata, by default it
+            is ProgrammX.
           </p>
         </div>
         <label className="custom-creator-toggle">
@@ -44,7 +45,7 @@ const CustomCreator = ({ formData, onInputChange, disabled }) => {
                 type="text"
                 id="creatorName"
                 name="creatorName"
-                value={formData.creatorName || ''}
+                value={formData.creatorName || ""}
                 onChange={onInputChange}
                 placeholder="Enter name.."
                 className="form-input"
@@ -62,7 +63,7 @@ const CustomCreator = ({ formData, onInputChange, disabled }) => {
                   type="url"
                   id="creatorWebsite"
                   name="creatorWebsite"
-                  value={formData.creatorWebsite || ''}
+                  value={formData.creatorWebsite || ""}
                   onChange={onInputChange}
                   placeholder="https://programmx.com"
                   className="form-input with-icon"
