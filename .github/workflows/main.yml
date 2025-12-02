@@ -29,8 +29,8 @@ jobs:
           npx eslint . --max-warnings 0
           npx prettier --check .
 
-  deploy:
-    name: "Deploy to VPS"
+  deploy1:
+    name: "Deploy to VPS(CI)"
     needs: lint # ensures this job runs only if lint passes
     runs-on: ubuntu-latest
     steps:
@@ -40,7 +40,7 @@ jobs:
       - name: Install SSH Client
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
-      - name: Deploy to VPS
+      - name: Deploy to VPS(CI)
         env:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
@@ -59,4 +59,25 @@ jobs:
           docker network create sol_net || true
           echo '--- Build docker image for Backend ---'
           docker build --no-cache -t sol_tool_manager_backend "$BACKEND_DIR"
+          EOF
+  deploy2:
+    name: "Deploy to VPS(CD)"
+    needs: lint # ensures this job runs only if lint passes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install SSH Client
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: Deploy to VPS(CD)
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r . $SERVER_USER@$SERVER_IP:/tmp/sol_tool_manager
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+          docker images
           EOF
