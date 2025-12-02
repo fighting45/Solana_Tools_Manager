@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint:
-    name: 'Lint & Format Check'
+    name: "Lint & Format Check"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22' # adjust to your node version
+          node-version: "22" # adjust to your node version
 
       - name: Install dependencies
         run: npm ci # or npm install, as per your repo
@@ -28,7 +28,7 @@ jobs:
           npx prettier --check .
 
   deploy:
-    name: 'Deploy to VPS'
+    name: "Deploy to VPS"
     needs: lint # ensures this job runs only if lint passes
     runs-on: ubuntu-latest
     steps:
@@ -52,4 +52,9 @@ jobs:
           cp -r /tmp/sol_manager_tool/* /mnt/sol_tool_manager
           BACKEND_DIR="/mnt/sol_tool_manager"
           FRONTEND_DIR="/mnt/sol_tool_manager/frontend"
+          echo '--- Build docker image for Frontend ---'
+          docker build --no-cache -t sol_tool_manager_frontend "$FRONTEND_DIR"
+          docker network create sol_net || true
+          echo '--- Build docker image for Backend ---'
+          docker build --no-cache -t sol_tool_manager_backend "$BACKEND_DIR"
           EOF
