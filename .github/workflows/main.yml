@@ -76,11 +76,20 @@ jobs:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY: ${{ secrets.PINATA_GATEWAY }}
+          SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
+          PLATFORM_FEE: ${{ secrets.PLATFORM_FEE }}
+          PLATFORM_WALLET: ${{ secrets.PLATFORM_WALLET }}
         run: |
           sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r . $SERVER_USER@$SERVER_IP:/tmp/sol_tool_manager
           sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
           docker images
           docker stop sol_frontend || true
           docker rm sol_frontend || true
-          docker run -d --name sol_frontend -p 5000:3000 -e REACT_APP_API_URL="${{ secrets.FRONTEND_API_URL }}" sol_tool_manager_frontend
+          docker stop ssol_backend || true
+          docker rm sol_backend || true
+          docker run -d --restart always --name sol_frontend -p 5000:3000 -e REACT_APP_API_URL="${{ secrets.FRONTEND_API_URL }}" sol_tool_manager_frontend
+          docker run -d --restart always --name sol_backend -p 5001:3001 -e PINATA_JWT="${PINATA_JWT}" -e PINATA_GATEWAY="${PINATA_GATEWAY}" -e SOLANA_RPC_URL="${SOLANA_RPC_URL}" -e PLATFORM_FEE="${PLATFORM_FEE}" -e PLATFORM_WALLET="${PLATFORM_WALLET}" sol_tool_manager_backend 
+
           EOF
