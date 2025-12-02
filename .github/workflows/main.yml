@@ -62,7 +62,7 @@ jobs:
           EOF
   deploy2:
     name: "Deploy to VPS(CD)"
-    needs: lint # ensures this job runs only if lint passes
+    needs: deploy1 # ensures this job runs only if lint passes
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
