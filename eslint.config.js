@@ -1,5 +1,6 @@
 // eslint.config.js
 const { defineConfig } = require("eslint/config");
+const babelParser = require("@babel/eslint-parser");
 
 module.exports = defineConfig([
   // -------------------------
@@ -17,15 +18,19 @@ module.exports = defineConfig([
       "controllers/**/*.js",
       "models/**/*.js",
     ],
-    // ignore frontend and typical build folders
-    ignores: ["node_modules/**", "dist/**", "build/**", "frontend/build/**"],
+    ignores: [
+      "frontend/**",
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      "frontend/build/**",
+    ],
     languageOptions: {
       parserOptions: {
         ecmaVersion: 2021,
         sourceType: "script", // use "module" if your backend uses ESM imports
       },
       globals: {
-        // node globals
         process: "readonly",
         Buffer: "readonly",
         __dirname: "readonly",
@@ -47,9 +52,8 @@ module.exports = defineConfig([
   {
     files: ["frontend/**/*.{js,jsx}"],
     ignores: ["frontend/node_modules/**", "frontend/build/**"],
-    // use Babel parser so JSX and modern syntax parse correctly
     languageOptions: {
-      parser: require.resolve("@babel/eslint-parser"),
+      parser: babelParser,
       parserOptions: {
         ecmaVersion: 2021,
         sourceType: "module",
@@ -69,13 +73,12 @@ module.exports = defineConfig([
       },
     },
     plugins: {
-      // The flat config plugin registration is different; plugin linting rules
-      // can still be used by name if installed. Keep plugin installed via npm.
+      // Keep plugin installed via npm if you plan to use React or other rules
     },
     rules: {
       semi: "error",
       quotes: ["error", "single"],
-      // add React rules later, e.g., "react/jsx-uses-react": "error" if you enable plugin
+      // add React rules later, e.g. if you enable plugin
     },
   },
 ]);
