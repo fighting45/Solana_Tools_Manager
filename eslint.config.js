@@ -42,7 +42,7 @@ module.exports = defineConfig([
     },
     rules: {
       semi: "error",
-      quotes: ["error", "single"],
+      // quotes: ["error", "single"],
     },
   },
 
