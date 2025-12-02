@@ -36,7 +36,7 @@ require('dotenv').config();
 
 // Platform fee configuration from .env
 const PLATFORM_WALLET = new PublicKey(
-  process.env.PLATFORM_WALLET || 'A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz',
+  process.env.PLATFORM_WALLET || 'A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz'
 );
 const PLATFORM_FEE_SOL = parseFloat(process.env.PLATFORM_FEE || '0.05');
 const PLATFORM_FEE_LAMPORTS = Math.floor(PLATFORM_FEE_SOL * LAMPORTS_PER_SOL);
@@ -71,13 +71,13 @@ async function createToken2022WithMetadataAndExtensions(
   decimals,
   metadata,
   selectedExtensions = [],
-  priorityLevel = 'none',
+  priorityLevel = 'none'
 ) {
   const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
 
   console.log(`🔗 Connecting to Solana RPC for Token-2022: ${rpcUrl}`);
   console.log(
-    `🔧 Selected extensions: ${selectedExtensions.join(', ') || 'None'}`,
+    `🔧 Selected extensions: ${selectedExtensions.join(', ') || 'None'}`
   );
 
   const connection = new Connection(rpcUrl, {
@@ -94,7 +94,7 @@ async function createToken2022WithMetadataAndExtensions(
   const updateAuthority = mintAuthority;
 
   console.log(
-    `💰 Supply calculation: ${amount} tokens × 10^${decimals} = ${supply.toString()}`,
+    `💰 Supply calculation: ${amount} tokens × 10^${decimals} = ${supply.toString()}`
   );
 
   // Calculate total platform fee (base + extensions)
@@ -103,16 +103,16 @@ async function createToken2022WithMetadataAndExtensions(
   if (extensionCount > 0) {
     totalPlatformFee += EXTENSION_FEE_SOL * extensionCount;
     console.log(
-      `🔧 ${extensionCount} extension(s) enabled (+${EXTENSION_FEE_SOL * extensionCount} SOL)`,
+      `🔧 ${extensionCount} extension(s) enabled (+${EXTENSION_FEE_SOL * extensionCount} SOL)`
     );
   }
 
   const totalPlatformFeeLamports = Math.floor(
-    totalPlatformFee * LAMPORTS_PER_SOL,
+    totalPlatformFee * LAMPORTS_PER_SOL
   );
 
   console.log(
-    `💰 Total platform fee: ${totalPlatformFee} SOL (${totalPlatformFeeLamports} lamports)`,
+    `💰 Total platform fee: ${totalPlatformFee} SOL (${totalPlatformFeeLamports} lamports)`
   );
   console.log(`💰 Platform wallet: ${PLATFORM_WALLET.toBase58()}`);
 
@@ -132,11 +132,11 @@ async function createToken2022WithMetadataAndExtensions(
     recipient,
     false,
     TOKEN_2022_PROGRAM_ID,
-    ASSOCIATED_TOKEN_PROGRAM_ID,
+    ASSOCIATED_TOKEN_PROGRAM_ID
   );
 
   console.log(
-    `📦 Associated Token Account: ${associatedTokenAddress.toBase58()}`,
+    `📦 Associated Token Account: ${associatedTokenAddress.toBase58()}`
   );
 
   // Check if associated token account already exists
@@ -163,7 +163,7 @@ async function createToken2022WithMetadataAndExtensions(
       if (retries === 0) {
         throw new Error(`Failed to connect to Solana RPC: ${error.message}`);
       }
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
     }
   }
 
@@ -192,7 +192,7 @@ async function createToken2022WithMetadataAndExtensions(
     } catch (error) {
       console.warn(
         '⚠️ Failed to add priority fee, continuing without it:',
-        error.message,
+        error.message
       );
     }
   } else {
@@ -209,7 +209,7 @@ async function createToken2022WithMetadataAndExtensions(
       fromPubkey: payer,
       toPubkey: PLATFORM_WALLET,
       lamports: totalPlatformFeeLamports,
-    }),
+    })
   );
 
   // ========================================
@@ -219,7 +219,7 @@ async function createToken2022WithMetadataAndExtensions(
   // Convert selected extension names to ExtensionType array
   const extensions = [ExtensionType.MetadataPointer]; // Metadata is always included
 
-  selectedExtensions.forEach((ext) => {
+  selectedExtensions.forEach(ext => {
     if (EXTENSION_MAP[ext]) {
       extensions.push(EXTENSION_MAP[ext]);
     }
@@ -269,7 +269,7 @@ async function createToken2022WithMetadataAndExtensions(
       space: spaceWithoutMetadata,
       lamports: mintLamports,
       programId: TOKEN_2022_PROGRAM_ID,
-    }),
+    })
   );
 
   // 2. Initialize extensions (BEFORE InitializeMint)
@@ -281,26 +281,26 @@ async function createToken2022WithMetadataAndExtensions(
       mint,
       updateAuthority,
       mint,
-      TOKEN_2022_PROGRAM_ID,
-    ),
+      TOKEN_2022_PROGRAM_ID
+    )
   );
   console.log(
-    `✅ Instruction ${instructionIndex++}: MetadataPointer extension`,
+    `✅ Instruction ${instructionIndex++}: MetadataPointer extension`
   );
 
   // Add optional extensions based on user selection
-  selectedExtensions.forEach((ext) => {
+  selectedExtensions.forEach(ext => {
     switch (ext) {
       case 'mintCloseAuthority':
         transaction.add(
           createInitializeMintCloseAuthorityInstruction(
             mint,
             mintAuthority, // Close authority (can be different from mint authority)
-            TOKEN_2022_PROGRAM_ID,
-          ),
+            TOKEN_2022_PROGRAM_ID
+          )
         );
         console.log(
-          `✅ Instruction ${instructionIndex++}: MintCloseAuthority extension`,
+          `✅ Instruction ${instructionIndex++}: MintCloseAuthority extension`
         );
         break;
 
@@ -309,11 +309,11 @@ async function createToken2022WithMetadataAndExtensions(
           createInitializePermanentDelegateInstruction(
             mint,
             mintAuthority, // Permanent delegate (can be different)
-            TOKEN_2022_PROGRAM_ID,
-          ),
+            TOKEN_2022_PROGRAM_ID
+          )
         );
         console.log(
-          `✅ Instruction ${instructionIndex++}: PermanentDelegate extension`,
+          `✅ Instruction ${instructionIndex++}: PermanentDelegate extension`
         );
         break;
 
@@ -321,11 +321,11 @@ async function createToken2022WithMetadataAndExtensions(
         transaction.add(
           createInitializeNonTransferableMintInstruction(
             mint,
-            TOKEN_2022_PROGRAM_ID,
-          ),
+            TOKEN_2022_PROGRAM_ID
+          )
         );
         console.log(
-          `✅ Instruction ${instructionIndex++}: NonTransferable extension`,
+          `✅ Instruction ${instructionIndex++}: NonTransferable extension`
         );
         break;
     }
@@ -338,8 +338,8 @@ async function createToken2022WithMetadataAndExtensions(
       decimals,
       mintAuthority,
       null, // Freeze authority
-      TOKEN_2022_PROGRAM_ID,
-    ),
+      TOKEN_2022_PROGRAM_ID
+    )
   );
   console.log(`✅ Instruction ${instructionIndex++}: Initialize mint`);
 
@@ -354,7 +354,7 @@ async function createToken2022WithMetadataAndExtensions(
       name: metadata.name,
       symbol: metadata.symbol,
       uri: metadata.uri,
-    }),
+    })
   );
   console.log(`✅ Instruction ${instructionIndex++}: Initialize metadata`);
 
@@ -367,11 +367,11 @@ async function createToken2022WithMetadataAndExtensions(
         recipient,
         mint,
         TOKEN_2022_PROGRAM_ID,
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-      ),
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      )
     );
     console.log(
-      `✅ Instruction ${instructionIndex++}: Create associated token account`,
+      `✅ Instruction ${instructionIndex++}: Create associated token account`
     );
   }
 
@@ -384,11 +384,11 @@ async function createToken2022WithMetadataAndExtensions(
       mintAuthority,
       supplyNumber,
       [],
-      TOKEN_2022_PROGRAM_ID,
-    ),
+      TOKEN_2022_PROGRAM_ID
+    )
   );
   console.log(
-    `✅ Instruction ${instructionIndex++}: Mint ${supplyNumber.toLocaleString()} tokens`,
+    `✅ Instruction ${instructionIndex++}: Mint ${supplyNumber.toLocaleString()} tokens`
   );
 
   // Partially sign with mint keypair
@@ -445,7 +445,7 @@ async function createToken2022WithMetadata(
   mintAuthorityAddress,
   amount,
   decimals,
-  metadata,
+  metadata
 ) {
   return createToken2022WithMetadataAndExtensions(
     payerAddress,
@@ -454,7 +454,7 @@ async function createToken2022WithMetadata(
     amount,
     decimals,
     metadata,
-    [], // No additional extensions
+    [] // No additional extensions
   );
 }
 

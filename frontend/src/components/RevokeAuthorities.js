@@ -8,7 +8,7 @@ const RevokeAuthorities = ({ formData, onInputChange, disabled }) => {
       icon: '❄️',
       title: 'Revoke Freeze',
       description:
-        'No one will be able to freeze holders\' token accounts anymore',
+        'No one will be able to freeze holders token accounts anymore',
     },
     {
       key: 'revokeMintAuthority',
@@ -35,10 +35,12 @@ const RevokeAuthorities = ({ formData, onInputChange, disabled }) => {
       </div>
 
       <div className="revoke-authorities-grid">
-        {authorities.map((authority) => (
+        {authorities.map(authority => (
           <div
             key={authority.key}
-            className={`revoke-authority-card ${formData[authority.key] ? 'selected' : ''}`}
+            className={`revoke-authority-card ${
+              formData[authority.key] ? 'selected' : ''
+            }`}
             onClick={() =>
               !disabled &&
               onInputChange({
@@ -56,13 +58,13 @@ const RevokeAuthorities = ({ formData, onInputChange, disabled }) => {
                   type="checkbox"
                   name={authority.key}
                   checked={formData[authority.key] || false}
-                  onChange={(e) =>
+                  onChange={e =>
                     onInputChange({
                       target: { name: authority.key, value: e.target.checked },
                     })
                   }
                   disabled={disabled}
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={e => e.stopPropagation()}
                 />
               </div>
             </div>

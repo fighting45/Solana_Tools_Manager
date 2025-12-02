@@ -27,7 +27,7 @@ const Navbar = () => {
     setIsDark(!isDark);
   };
 
-  const handlePriorityLevelChange = (level) => {
+  const handlePriorityLevelChange = level => {
     console.log('🎯 [Navbar] Setting priority level to:', level);
     updatePriorityLevel(level);
     console.log('✅ [Navbar] Priority level updated via context');

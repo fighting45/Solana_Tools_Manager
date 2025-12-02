@@ -9,7 +9,7 @@ const MultiWalletDistribution = ({
   disabled,
 }) => {
   const [wallets, setWallets] = useState(
-    distributions || [{ wallet: '', percentage: 100, avatar: '😎' }],
+    distributions || [{ wallet: '', percentage: 100, avatar: '😎' }]
   );
   const [error, setError] = useState('');
 
@@ -18,7 +18,7 @@ const MultiWalletDistribution = ({
   const validatePercentages = React.useCallback(() => {
     const total = wallets.reduce(
       (sum, w) => sum + (parseFloat(w.percentage) || 0),
-      0,
+      0
     );
     if (wallets.length > 0 && Math.abs(total - 100) > 0.01) {
       setError(`Percentages must total 100% (currently ${total.toFixed(2)}%)`);
@@ -56,7 +56,7 @@ const MultiWalletDistribution = ({
     }
   };
 
-  const removeWallet = (index) => {
+  const removeWallet = index => {
     if (wallets.length > 1) {
       const newWallets = wallets.filter((_, i) => i !== index);
       setWallets(newWallets);
@@ -65,7 +65,7 @@ const MultiWalletDistribution = ({
   };
 
   const autoDistribute = () => {
-    const count = wallets.filter((w) => w.wallet).length || wallets.length;
+    const count = wallets.filter(w => w.wallet).length || wallets.length;
     const basePercentage = Math.floor(100 / count);
     const remainder = 100 - basePercentage * count;
 
@@ -82,7 +82,7 @@ const MultiWalletDistribution = ({
   const getDistributionBar = () => {
     const total = wallets.reduce(
       (sum, w) => sum + (parseFloat(w.percentage) || 0),
-      0,
+      0
     );
     if (total === 0) return [];
 
@@ -107,7 +107,7 @@ const MultiWalletDistribution = ({
           <input
             type="checkbox"
             checked={enabled}
-            onChange={(e) => onToggle(e.target.checked)}
+            onChange={e => onToggle(e.target.checked)}
             disabled={disabled}
           />
           <span className="toggle-slider"></span>
@@ -141,7 +141,7 @@ const MultiWalletDistribution = ({
                 <input
                   type="text"
                   value={wallet.wallet}
-                  onChange={(e) =>
+                  onChange={e =>
                     handleWalletChange(index, 'wallet', e.target.value)
                   }
                   placeholder="Type wallet address"
@@ -151,7 +151,7 @@ const MultiWalletDistribution = ({
                 <input
                   type="number"
                   value={wallet.percentage}
-                  onChange={(e) =>
+                  onChange={e =>
                     handleWalletChange(index, 'percentage', e.target.value)
                   }
                   className="percentage-input"
@@ -203,7 +203,7 @@ const MultiWalletDistribution = ({
             <strong>Distribution Summary:</strong>
             <ul>
               {wallets
-                .filter((w) => w.wallet && w.percentage > 0)
+                .filter(w => w.wallet && w.percentage > 0)
                 .map((w, index) => (
                   <li key={index}>
                     {w.avatar} Wallet {index + 1}: {w.percentage.toFixed(2)}% (

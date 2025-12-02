@@ -7,7 +7,7 @@ const token2022Service = require('../utils/MintToken2022');
 async function createToken2022Transaction(req, res) {
   try {
     // Helper function to clean form data values
-    const cleanFormValue = (value) => {
+    const cleanFormValue = value => {
       if (!value || value === 'null' || value === 'undefined' || value === '') {
         return null;
       }
@@ -28,7 +28,7 @@ async function createToken2022Transaction(req, res) {
     const priorityLevel = cleanFormValue(req.body.priorityLevel) || 'none';
     console.log(
       '🎯 [Controller] Received priority level from frontend:',
-      req.body.priorityLevel,
+      req.body.priorityLevel
     );
     console.log('🎯 [Controller] Cleaned priority level:', priorityLevel);
 
@@ -39,8 +39,8 @@ async function createToken2022Transaction(req, res) {
         // If it's a comma-separated string
         selectedExtensions = req.body.extensions
           .split(',')
-          .map((ext) => ext.trim())
-          .filter((ext) => ext);
+          .map(ext => ext.trim())
+          .filter(ext => ext);
       } else if (Array.isArray(req.body.extensions)) {
         // If it's already an array
         selectedExtensions = req.body.extensions;
@@ -110,7 +110,7 @@ async function createToken2022Transaction(req, res) {
           uri: ipfsResult.metadata.url,
         },
         selectedExtensions, // Pass the selected extensions
-        priorityLevel, // Pass the priority level
+        priorityLevel // Pass the priority level
       );
 
     console.log('✅ Token-2022 transaction created successfully!');
@@ -159,7 +159,7 @@ async function createToken2022Transaction(req, res) {
     console.log(
       'Transaction size:',
       Buffer.from(result.transaction, 'base64').length,
-      'bytes',
+      'bytes'
     );
 
     res.status(200).json(response);

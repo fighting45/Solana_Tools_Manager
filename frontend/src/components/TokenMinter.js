@@ -25,20 +25,20 @@ const TokenMinter = () => {
   });
   const [result, setResult] = useState(null);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = e => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData((prev) => ({
+        setFormData(prev => ({
           ...prev,
           image: file,
           imagePreview: reader.result,
@@ -48,14 +48,14 @@ const TokenMinter = () => {
     }
   };
 
-  const handleExtensionsChange = (extensions) => {
-    setFormData((prev) => ({
+  const handleExtensionsChange = extensions => {
+    setFormData(prev => ({
       ...prev,
       extensions: extensions,
     }));
   };
 
-  const handleTokenTypeChange = (newType) => {
+  const handleTokenTypeChange = newType => {
     if (loading) return; // Don't allow switching while loading
     setTokenType(newType);
     setFormData({
@@ -103,7 +103,7 @@ const TokenMinter = () => {
       }
 
       // Update form with generated address
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         generatedAddress: result.sampleAddress,
       }));

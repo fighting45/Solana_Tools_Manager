@@ -76,6 +76,6 @@ export const STATUS_MESSAGES = {
   APPROVE_TRANSACTION: 'Please approve the transaction in your wallet...',
   SENDING_TRANSACTION: 'Sending transaction to network...',
   CONFIRMING_TRANSACTION: 'Confirming transaction...',
-  TRANSACTION_SUCCESS: (signature) =>
+  TRANSACTION_SUCCESS: signature =>
     `Success! Transaction confirmed. Signature: ${signature}`,
 };

@@ -11,7 +11,7 @@
   --teal-light: #2dd4bf;
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --teal-primary: #2dd4bf;
   --teal-secondary: #14b8a6;
   --teal-dark: #0d9488;
@@ -21,8 +21,8 @@
 body {
   margin: 0;
   font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
@@ -30,11 +30,11 @@ body {
   transition: background 0.3s ease;
 }
 
-[data-theme="dark"] body {
+[data-theme='dark'] body {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
 code {
   font-family:
-    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

@@ -67,14 +67,14 @@ export const validators = {
       formData.multiWalletDistributions &&
       Array.isArray(formData.multiWalletDistributions) &&
       formData.multiWalletDistributions.some(
-        (dist) => dist.wallet && dist.wallet.trim() !== '',
+        dist => dist.wallet && dist.wallet.trim() !== ''
       );
 
     if (!hasMultiWallet) {
       // Only validate recipient address if NOT using multi-wallet
       if (!formData.recipientAddress) {
         errors.push(
-          'Recipient address is required (or use Multi-Wallet Distribution)',
+          'Recipient address is required (or use Multi-Wallet Distribution)'
         );
       } else if (!this.isValidSolanaAddress(formData.recipientAddress)) {
         errors.push(VALIDATION_MESSAGES.INVALID_ADDRESS);

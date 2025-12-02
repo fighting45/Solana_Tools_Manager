@@ -15,7 +15,7 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
     ? `https://explorer.solana.com/address/${mintAddress}?cluster=devnet`
     : null;
 
-  const handleCopyAddress = (address) => {
+  const handleCopyAddress = address => {
     navigator.clipboard.writeText(address);
     // You could add a toast notification here
   };
@@ -197,7 +197,7 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
 };
 
 // Helper function to get display names for extensions
-const getExtensionDisplayName = (extensionKey) => {
+const getExtensionDisplayName = extensionKey => {
   const displayNames = {
     mintCloseAuthority: 'Mint Close Authority',
     permanentDelegate: 'Permanent Delegate',

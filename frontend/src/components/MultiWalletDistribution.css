@@ -69,7 +69,7 @@
 
 .multi-wallet-section .toggle-slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 22px;
   width: 22px;
   left: 2px;
@@ -181,7 +181,7 @@
   border-radius: 8px;
   color: #ffffff;
   font-size: 14px;
-  font-family: "Monaco", "Courier New", monospace;
+  font-family: 'Monaco', 'Courier New', monospace;
   transition: all 0.3s ease;
 }
 
@@ -221,7 +221,7 @@
   margin: 0;
 }
 
-.percentage-input[type="number"] {
+.percentage-input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
@@ -325,7 +325,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   color: #ffffff;
   font-size: 13px;
-  font-family: "Monaco", "Courier New", monospace;
+  font-family: 'Monaco', 'Courier New', monospace;
 }
 
 .distribution-summary li:last-child {
@@ -376,50 +376,50 @@
 /* LIGHT MODE PROFESSIONAL OVERRIDES */
 /* ============================================ */
 
-:root:not([data-theme="dark"]) .multi-wallet-section {
+:root:not([data-theme='dark']) .multi-wallet-section {
   background: #ffffff;
   border: 2px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-:root:not([data-theme="dark"]) .multi-wallet-section:hover {
+:root:not([data-theme='dark']) .multi-wallet-section:hover {
   border-color: #cbd5e1;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-:root:not([data-theme="dark"]) .multi-wallet-section .feature-title h4 {
+:root:not([data-theme='dark']) .multi-wallet-section .feature-title h4 {
   color: #0ea5e9;
 }
 
-:root:not([data-theme="dark"]) .multi-wallet-section .feature-description {
+:root:not([data-theme='dark']) .multi-wallet-section .feature-description {
   color: #64748b;
 }
 
-:root:not([data-theme="dark"]) .wallet-address-input,
-:root:not([data-theme="dark"]) .percentage-input {
+:root:not([data-theme='dark']) .wallet-address-input,
+:root:not([data-theme='dark']) .percentage-input {
   background: #f8fafc;
   border: 2px solid #e2e8f0;
   color: #1e293b;
 }
 
-:root:not([data-theme="dark"]) .wallet-address-input:focus,
-:root:not([data-theme="dark"]) .percentage-input:focus {
+:root:not([data-theme='dark']) .wallet-address-input:focus,
+:root:not([data-theme='dark']) .percentage-input:focus {
   background: #ffffff;
   border-color: #0ea5e9;
   box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
 }
 
-:root:not([data-theme="dark"]) .percentage-label {
+:root:not([data-theme='dark']) .percentage-label {
   color: #475569;
 }
 
-:root:not([data-theme="dark"]) .add-wallet-btn,
-:root:not([data-theme="dark"]) .auto-distribute-btn {
+:root:not([data-theme='dark']) .add-wallet-btn,
+:root:not([data-theme='dark']) .auto-distribute-btn {
   background: #0ea5e9;
   color: #ffffff;
 }
 
-:root:not([data-theme="dark"]) .add-wallet-btn:hover,
-:root:not([data-theme="dark"]) .auto-distribute-btn:hover {
+:root:not([data-theme='dark']) .add-wallet-btn:hover,
+:root:not([data-theme='dark']) .auto-distribute-btn:hover {
   background: #0284c7;
 }

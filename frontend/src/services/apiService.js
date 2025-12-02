@@ -6,7 +6,7 @@ const API_BASE_URL =
 console.log('🔧 [ApiService] API_BASE_URL:', API_BASE_URL);
 console.log(
   '🔧 [ApiService] REACT_APP_API_URL:',
-  process.env.REACT_APP_API_URL,
+  process.env.REACT_APP_API_URL
 );
 
 class ApiService {
@@ -65,7 +65,7 @@ class ApiService {
       ) {
         form.append(
           'multiWalletDistribution',
-          JSON.stringify(formData.multiWalletDistribution),
+          JSON.stringify(formData.multiWalletDistribution)
         );
       }
 
@@ -82,7 +82,7 @@ class ApiService {
         form.append('priorityLevel', formData.priorityLevel);
         console.log(
           '🎯 [ApiService] Sending priority level to backend:',
-          formData.priorityLevel,
+          formData.priorityLevel
         );
       }
 
@@ -124,7 +124,7 @@ class ApiService {
     try {
       const response = await axios.post(
         `${API_BASE_URL}/mint/calculate-fees`,
-        features,
+        features
       );
       return response.data;
     } catch (error) {
@@ -170,7 +170,7 @@ class ApiService {
         form.append('priorityLevel', formData.priorityLevel);
         console.log(
           '🎯 [ApiService] Sending priority level to backend:',
-          formData.priorityLevel,
+          formData.priorityLevel
         );
       }
 
@@ -181,7 +181,7 @@ class ApiService {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-        },
+        }
       );
 
       return response.data;
@@ -219,7 +219,7 @@ class ApiService {
   async getTransactionStatus(signature) {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/transaction/status/${signature}`,
+        `${API_BASE_URL}/transaction/status/${signature}`
       );
       return response.data;
     } catch (error) {
@@ -235,7 +235,7 @@ class ApiService {
     try {
       const response = await axios.post(
         `${API_BASE_URL}/utils/validate-address`,
-        { address },
+        { address }
       );
       return response.data.valid;
     } catch (error) {
@@ -263,7 +263,7 @@ class ApiService {
   async getToken2022Extensions() {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/token2022/token2022-extensions`,
+        `${API_BASE_URL}/token2022/token2022-extensions`
       );
       return response.data;
     } catch (error) {

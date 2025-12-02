@@ -23,7 +23,7 @@ const CustomAddressGenerator = ({
     }
   }, [suffix]);
 
-  const handleSuffixChange = (e) => {
+  const handleSuffixChange = e => {
     const value = e.target.value.toUpperCase();
     onSuffixChange(value);
   };
@@ -42,7 +42,7 @@ const CustomAddressGenerator = ({
           <input
             type="checkbox"
             checked={enabled}
-            onChange={(e) => onToggle(e.target.checked)}
+            onChange={e => onToggle(e.target.checked)}
             disabled={disabled}
           />
           <span className="toggle-slider"></span>

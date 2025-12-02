@@ -23,7 +23,7 @@ function App() {
 
   const wallets = useMemo(
     () => [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
-    [],
+    []
   );
 
   return (

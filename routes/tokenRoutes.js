@@ -16,7 +16,7 @@ const upload = multer({
 router.post(
   '/create-transaction',
   upload.single('image'),
-  mintController.createCombinedMintTransaction,
+  mintController.createCombinedMintTransaction
 );
 
 // Custom address preview route
@@ -26,7 +26,7 @@ router.get('/preview-address', mintController.previewCustomAddress);
 router.post(
   '/create-token2022-transaction',
   upload.single('image'),
-  token2022Controller.createToken2022Transaction,
+  token2022Controller.createToken2022Transaction
 );
 
 // Get available Token-2022 extensions

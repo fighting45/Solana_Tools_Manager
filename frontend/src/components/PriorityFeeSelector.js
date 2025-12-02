@@ -34,7 +34,7 @@ const PriorityFeeSelector = ({
     },
   ];
 
-  const handleSelect = (levelId) => {
+  const handleSelect = levelId => {
     onSelectLevel(levelId);
     onClose();
   };
@@ -43,7 +43,7 @@ const PriorityFeeSelector = ({
 
   return (
     <div className="priority-fee-overlay" onClick={onClose}>
-      <div className="priority-fee-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="priority-fee-modal" onClick={e => e.stopPropagation()}>
         <div className="priority-fee-header">
           <h2 className="priority-fee-title">Use Priority Fees</h2>
           <button className="priority-fee-close" onClick={onClose}>
@@ -63,7 +63,7 @@ const PriorityFeeSelector = ({
           </div>
 
           <div className="priority-levels-grid">
-            {priorityLevels.map((level) => (
+            {priorityLevels.map(level => (
               <button
                 key={level.id}
                 className={`priority-level-btn ${

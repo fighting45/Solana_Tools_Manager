@@ -14,7 +14,7 @@
 }
 
 /* Light Mode Override */
-:root:not([data-theme="dark"]) .optional-metadata-container {
+:root:not([data-theme='dark']) .optional-metadata-container {
   background: #ffffff;
   border: 2px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -25,7 +25,7 @@
 }
 
 /* Light Mode Hover */
-:root:not([data-theme="dark"]) .optional-metadata-container:hover {
+:root:not([data-theme='dark']) .optional-metadata-container:hover {
   border-color: #cbd5e1;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
@@ -49,7 +49,7 @@
 }
 
 /* Light Mode Title */
-:root:not([data-theme="dark"]) .optional-metadata-title {
+:root:not([data-theme='dark']) .optional-metadata-title {
   color: #0ea5e9;
 }
 
@@ -61,7 +61,7 @@
 }
 
 /* Light Mode Subtitle */
-:root:not([data-theme="dark"]) .optional-metadata-subtitle {
+:root:not([data-theme='dark']) .optional-metadata-subtitle {
   color: #64748b;
 }
 
@@ -94,7 +94,7 @@
 
 .toggle-slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 22px;
   width: 22px;
   left: 2px;
@@ -266,35 +266,35 @@
 /* LIGHT MODE PROFESSIONAL OVERRIDES */
 /* ============================================ */
 
-:root:not([data-theme="dark"]) .social-input,
-:root:not([data-theme="dark"]) .tag-input {
+:root:not([data-theme='dark']) .social-input,
+:root:not([data-theme='dark']) .tag-input {
   background: #f8fafc;
   border: 2px solid #e2e8f0;
   color: #1e293b;
 }
 
-:root:not([data-theme="dark"]) .social-input:focus,
-:root:not([data-theme="dark"]) .tag-input:focus {
+:root:not([data-theme='dark']) .social-input:focus,
+:root:not([data-theme='dark']) .tag-input:focus {
   background: #ffffff;
   border-color: #0ea5e9;
   box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
 }
 
-:root:not([data-theme="dark"]) .social-input::placeholder,
-:root:not([data-theme="dark"]) .tag-input::placeholder {
+:root:not([data-theme='dark']) .social-input::placeholder,
+:root:not([data-theme='dark']) .tag-input::placeholder {
   color: #94a3b8;
 }
 
-:root:not([data-theme="dark"]) .social-label {
+:root:not([data-theme='dark']) .social-label {
   color: #475569;
 }
 
-:root:not([data-theme="dark"]) .toggle-slider {
+:root:not([data-theme='dark']) .toggle-slider {
   background-color: #cbd5e1;
   border-color: #94a3b8;
 }
 
-:root:not([data-theme="dark"])
+:root:not([data-theme='dark'])
   .optional-metadata-toggle
   input:checked
   + .toggle-slider {

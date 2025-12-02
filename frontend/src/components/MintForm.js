@@ -113,7 +113,7 @@ const MintForm = ({
               tag4: formData.tag4,
               tag5: formData.tag5,
             }}
-            onToggle={(enabled) =>
+            onToggle={enabled =>
               onInputChange({
                 target: { name: 'useOptionalMetadata', value: enabled },
               })
@@ -129,15 +129,15 @@ const MintForm = ({
             prefix={formData.addressPrefix || ''}
             suffix={formData.addressSuffix || ''}
             generatedAddress={formData.generatedAddress || ''}
-            onToggle={(enabled) =>
+            onToggle={enabled =>
               onInputChange({
                 target: { name: 'useCustomAddress', value: enabled },
               })
             }
-            onPrefixChange={(value) =>
+            onPrefixChange={value =>
               onInputChange({ target: { name: 'addressPrefix', value } })
             }
-            onSuffixChange={(value) =>
+            onSuffixChange={value =>
               onInputChange({ target: { name: 'addressSuffix', value } })
             }
             onGenerate={onGenerateCustomAddress}
@@ -153,12 +153,12 @@ const MintForm = ({
                 { wallet: '', percentage: 100, avatar: '😎' },
               ]
             }
-            onToggle={(enabled) =>
+            onToggle={enabled =>
               onInputChange({
                 target: { name: 'useMultiWallet', value: enabled },
               })
             }
-            onChange={(distributions) =>
+            onChange={distributions =>
               onInputChange({
                 target: {
                   name: 'multiWalletDistributions',

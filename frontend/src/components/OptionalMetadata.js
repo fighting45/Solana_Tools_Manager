@@ -121,7 +121,7 @@ const OptionalMetadata = ({
           <div className="metadata-section">
             <h4 className="metadata-section-title">Tags (Max 5)</h4>
             <div className="tags-grid">
-              {[1, 2, 3, 4, 5].map((num) => (
+              {[1, 2, 3, 4, 5].map(num => (
                 <input
                   key={num}
                   type="text"

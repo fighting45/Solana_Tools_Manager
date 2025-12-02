@@ -16,7 +16,7 @@ export const PriorityFeeProvider = ({ children }) => {
     const saved = localStorage.getItem('priorityLevel');
     console.log(
       '🎯 [Context] Initializing priority level from localStorage:',
-      saved,
+      saved
     );
     return saved || 'none';
   });
@@ -27,7 +27,7 @@ export const PriorityFeeProvider = ({ children }) => {
     localStorage.setItem('priorityLevel', priorityLevel);
   }, [priorityLevel]);
 
-  const updatePriorityLevel = (level) => {
+  const updatePriorityLevel = level => {
     console.log('🎯 [Context] Updating priority level to:', level);
     setPriorityLevel(level);
   };

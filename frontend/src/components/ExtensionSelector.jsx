@@ -36,9 +36,9 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
     }
   };
 
-  const handleExtensionToggle = (extensionName) => {
+  const handleExtensionToggle = extensionName => {
     const newSelection = selectedExtensions.includes(extensionName)
-      ? selectedExtensions.filter((ext) => ext !== extensionName)
+      ? selectedExtensions.filter(ext => ext !== extensionName)
       : [...selectedExtensions, extensionName];
 
     setSelectedExtensions(newSelection);
@@ -50,7 +50,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
       setSelectedExtensions([]);
       onExtensionsChange([]);
     } else {
-      const allExtensions = extensions.map((ext) => ext.name);
+      const allExtensions = extensions.map(ext => ext.name);
       setSelectedExtensions(allExtensions);
       onExtensionsChange(allExtensions);
     }
@@ -58,7 +58,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (isDropdownOpen && !event.target.closest('.extension-dropdown')) {
         setIsDropdownOpen(false);
       }
@@ -130,7 +130,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
             </div>
 
             <div className="extension-list">
-              {extensions.map((extension) => (
+              {extensions.map(extension => (
                 <div
                   key={extension.name}
                   className="extension-item"
@@ -142,7 +142,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
                       checked={selectedExtensions.includes(extension.name)}
                       onChange={() => {}}
                       className="extension-checkbox"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={e => e.stopPropagation()}
                     />
                     <div className="extension-content">
                       <div className="extension-header">
@@ -180,8 +180,8 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
       {selectedExtensions.length > 0 && (
         <div className="selected-extensions">
           <div className="extension-tags">
-            {selectedExtensions.map((ext) => {
-              const extension = extensions.find((e) => e.name === ext);
+            {selectedExtensions.map(ext => {
+              const extension = extensions.find(e => e.name === ext);
               return (
                 <span key={ext} className="extension-tag">
                   {extension?.label || ext}

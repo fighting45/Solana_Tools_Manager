@@ -23,10 +23,10 @@ const StatusMessage = ({ status }) => {
   };
 
   // Format message with line breaks for better readability
-  const formatMessage = (message) => {
+  const formatMessage = message => {
     if (!message) return '';
     // Split by newlines and create formatted structure
-    const lines = message.split('\n').filter((line) => line.trim());
+    const lines = message.split('\n').filter(line => line.trim());
     return lines.map((line, index) => {
       // Check if line contains key-value pairs (e.g., "Signature: xxx")
       if (line.includes(':')) {

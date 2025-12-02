@@ -21,7 +21,7 @@ export const useToken2022Transaction = () => {
   const [status, setStatus] = useState({ type: '', message: '' });
 
   const mintTokens = useCallback(
-    async (formData) => {
+    async formData => {
       // Validate wallet connection
       if (!publicKey) {
         setStatus({
@@ -57,7 +57,7 @@ export const useToken2022Transaction = () => {
         // Get priority level from context
         console.log(
           '🎯 [Frontend] Priority level from context:',
-          priorityLevel,
+          priorityLevel
         );
 
         const transactionData = await apiService.createToken2022Transaction({
@@ -80,7 +80,7 @@ export const useToken2022Transaction = () => {
         if (transactionData.tokenInfo && transactionData.tokenInfo.extensions) {
           console.log(
             'Token extensions enabled:',
-            transactionData.tokenInfo.extensions,
+            transactionData.tokenInfo.extensions
           );
         }
 
@@ -95,7 +95,7 @@ export const useToken2022Transaction = () => {
           {
             blockhash: transactionData.blockhash,
             feePayer: publicKey,
-          },
+          }
         );
 
         // Step 3: Sign mint transaction
@@ -106,7 +106,7 @@ export const useToken2022Transaction = () => {
 
         const signedTransaction = await transactionService.signTransaction(
           transaction,
-          signTransaction,
+          signTransaction
         );
 
         // Step 4: Send mint transaction
@@ -121,7 +121,7 @@ export const useToken2022Transaction = () => {
           {
             skipPreflight: false,
             preflightCommitment: 'confirmed',
-          },
+          }
         );
 
         console.log('Token-2022 transaction signature:', signature);
@@ -136,7 +136,7 @@ export const useToken2022Transaction = () => {
           signature,
           connection,
           transactionData.blockhash,
-          transactionData.lastValidBlockHeight,
+          transactionData.lastValidBlockHeight
         );
 
         console.log('✅ Token-2022 transaction confirmed!');
@@ -149,8 +149,8 @@ export const useToken2022Transaction = () => {
         ) {
           console.log(
             `✅ Token created with extensions: ${transactionData.tokenInfo.extensions.join(
-              ', ',
-            )}`,
+              ', '
+            )}`
           );
         }
 
@@ -179,7 +179,7 @@ export const useToken2022Transaction = () => {
         setLoading(false);
       }
     },
-    [publicKey, connection, signTransaction, priorityLevel],
+    [publicKey, connection, signTransaction, priorityLevel]
   );
 
   return {

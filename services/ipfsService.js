@@ -41,7 +41,7 @@ class IPFSService {
             'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
             Authorization: `Bearer ${this.pinataJWT}`,
           },
-        },
+        }
       );
 
       const ipfsHash = response.data.IpfsHash;
@@ -55,7 +55,7 @@ class IPFSService {
     } catch (error) {
       console.error(
         'Error uploading file to IPFS:',
-        error.response?.data || error.message,
+        error.response?.data || error.message
       );
       throw new Error(`Failed to upload file to IPFS: ${error.message}`);
     }
@@ -97,7 +97,7 @@ class IPFSService {
 
       console.log(
         '📝 Metadata JSON structure:',
-        JSON.stringify(metadataJson, null, 2),
+        JSON.stringify(metadataJson, null, 2)
       );
 
       const response = await axios.post(
@@ -108,7 +108,7 @@ class IPFSService {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${this.pinataJWT}`,
           },
-        },
+        }
       );
 
       const ipfsHash = response.data.IpfsHash;
@@ -127,7 +127,7 @@ class IPFSService {
     } catch (error) {
       console.error(
         'Error uploading metadata to IPFS:',
-        error.response?.data || error.message,
+        error.response?.data || error.message
       );
       throw new Error(`Failed to upload metadata to IPFS: ${error.message}`);
     }
@@ -145,17 +145,17 @@ class IPFSService {
       console.log('🔍 Verifying metadata structure...');
 
       if (!metadata.image) {
-        console.warn('⚠️ WARNING: Metadata missing \'image\' field!');
+        console.warn('⚠️ WARNING: Metadata missing "image" field!');
       } else {
         console.log('✅ Metadata has image field:', metadata.image);
       }
 
       if (!metadata.name) {
-        console.warn('⚠️ WARNING: Metadata missing \'name\' field!');
+        console.warn('⚠️ WARNING: Metadata missing "name" field!');
       }
 
       if (!metadata.symbol) {
-        console.warn('⚠️ WARNING: Metadata missing \'symbol\' field!');
+        console.warn('⚠️ WARNING: Metadata missing "symbol" field!');
       }
 
       return metadata;
@@ -185,7 +185,7 @@ class IPFSService {
       console.log('1️⃣ Uploading image to IPFS...');
       const imageResult = await this.uploadFile(
         params.imageBuffer,
-        params.imageName,
+        params.imageName
       );
 
       // Step 2: Upload metadata JSON with image reference

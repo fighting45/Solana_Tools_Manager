@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3001;
 
 // CORS Configuration
 const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim())
+  ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
   : ['http://localhost:3000'];
 
 console.log('🔒 CORS allowed origins:', allowedOrigins);
@@ -28,7 +28,7 @@ app.use(
       }
     },
     credentials: true,
-  }),
+  })
 );
 
 // Middleware
@@ -62,7 +62,7 @@ app.listen(PORT, () => {
 });
 
 // Better error handling - log but don't exit immediately during development
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   console.error('Uncaught Exception:', error);
 });
 

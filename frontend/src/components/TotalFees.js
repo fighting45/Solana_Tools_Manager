@@ -17,7 +17,7 @@ const TotalFees = ({ formData }) => {
       Array.isArray(formData.multiWalletDistributions) &&
       formData.multiWalletDistributions.length > 0 &&
       formData.multiWalletDistributions.some(
-        (dist) => dist.wallet && dist.wallet.trim() !== '',
+        dist => dist.wallet && dist.wallet.trim() !== ''
       )
     ) {
       total += 0.1;

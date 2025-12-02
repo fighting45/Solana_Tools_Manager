@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+frontend/node_modules
+
+# Build outputs
+build
+dist
+frontend/build
+*.min.js
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Git
+.git
+.gitignore

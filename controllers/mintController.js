@@ -7,7 +7,7 @@ const mintService = require('../utils/mintSPL');
 async function createCombinedMintTransaction(req, res) {
   try {
     // Helper function to clean form data values
-    const cleanFormValue = (value) => {
+    const cleanFormValue = value => {
       if (!value || value === 'null' || value === 'undefined' || value === '') {
         return null;
       }
@@ -40,14 +40,14 @@ async function createCombinedMintTransaction(req, res) {
         // If tags come as comma-separated string
         tags = req.body.tags
           .split(',')
-          .map((tag) => tag.trim())
-          .filter((tag) => tag)
+          .map(tag => tag.trim())
+          .filter(tag => tag)
           .slice(0, 5);
       } else if (Array.isArray(req.body.tags)) {
         // If tags come as array
         tags = req.body.tags
-          .map((tag) => String(tag).trim())
-          .filter((tag) => tag)
+          .map(tag => String(tag).trim())
+          .filter(tag => tag)
           .slice(0, 5);
       }
     }
@@ -70,7 +70,7 @@ async function createCombinedMintTransaction(req, res) {
     const priorityLevel = cleanFormValue(req.body.priorityLevel) || 'none';
     console.log(
       '🎯 [Controller] Received priority level from frontend:',
-      req.body.priorityLevel,
+      req.body.priorityLevel
     );
     console.log('🎯 [Controller] Cleaned priority level:', priorityLevel);
 
@@ -80,14 +80,14 @@ async function createCombinedMintTransaction(req, res) {
       try {
         console.log(
           '📥 Raw multiWalletDistribution received:',
-          req.body.multiWalletDistribution,
+          req.body.multiWalletDistribution
         );
         console.log('📥 Type:', typeof req.body.multiWalletDistribution);
 
         // Parse the distribution data
         if (typeof req.body.multiWalletDistribution === 'string') {
           multiWalletDistribution = JSON.parse(
-            req.body.multiWalletDistribution,
+            req.body.multiWalletDistribution
           );
         } else {
           multiWalletDistribution = req.body.multiWalletDistribution;
@@ -95,7 +95,7 @@ async function createCombinedMintTransaction(req, res) {
 
         console.log(
           '📥 Parsed multiWalletDistribution:',
-          multiWalletDistribution,
+          multiWalletDistribution
         );
 
         // Validate distribution
@@ -108,16 +108,16 @@ async function createCombinedMintTransaction(req, res) {
 
           // Validate each distribution entry
           multiWalletDistribution = multiWalletDistribution.filter(
-            (dist) => dist.wallet && dist.percentage > 0,
+            dist => dist.wallet && dist.percentage > 0
           );
 
           // Normalize percentages to total 100
           const totalPercentage = multiWalletDistribution.reduce(
             (sum, dist) => sum + parseFloat(dist.percentage),
-            0,
+            0
           );
           if (totalPercentage > 0 && Math.abs(totalPercentage - 100) > 0.01) {
-            multiWalletDistribution = multiWalletDistribution.map((dist) => ({
+            multiWalletDistribution = multiWalletDistribution.map(dist => ({
               wallet: dist.wallet,
               percentage: (parseFloat(dist.percentage) * 100) / totalPercentage,
             }));
@@ -181,7 +181,7 @@ async function createCombinedMintTransaction(req, res) {
     console.log('Use Custom Address:', useCustomAddress);
     console.log(
       'Multi-Wallet Distribution:',
-      multiWalletDistribution ? 'Yes' : 'No',
+      multiWalletDistribution ? 'Yes' : 'No'
     );
     console.log('Revoke Authorities:', JSON.stringify(revokeAuthorities));
 
@@ -377,7 +377,7 @@ async function createCombinedMintTransaction(req, res) {
     console.log(
       'Transaction size:',
       Buffer.from(result.transaction, 'base64').length,
-      'bytes',
+      'bytes'
     );
 
     res.status(200).json(response);
@@ -418,7 +418,7 @@ async function previewCustomAddress(req, res) {
     const keypair = await generateCustomAddress('', suffix);
 
     console.log(
-      `✅ Generated preview address: ${keypair.publicKey.toBase58()}`,
+      `✅ Generated preview address: ${keypair.publicKey.toBase58()}`
     );
 
     res.status(200).json({
@@ -484,7 +484,7 @@ async function calculateFees(req, res) {
       formatted: {
         platformFee: `${totalPlatformFee} SOL`,
         blockchainFee: `${(mintRent + metadataRent + transactionFees).toFixed(
-          6,
+          6
         )} SOL`,
         total: `${totalCost.toFixed(6)} SOL`,
       },

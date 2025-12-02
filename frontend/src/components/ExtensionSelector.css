@@ -312,57 +312,57 @@
 }
 
 /* Dark mode support */
-[data-theme="dark"] .extension-selector .form-label {
+[data-theme='dark'] .extension-selector .form-label {
   color: #f3f4f6;
 }
 
-[data-theme="dark"] .extension-dropdown-toggle {
+[data-theme='dark'] .extension-dropdown-toggle {
   background: #1f2937;
   border-color: #374151;
   color: #f3f4f6;
 }
 
-[data-theme="dark"] .extension-dropdown-toggle:hover:not(:disabled) {
+[data-theme='dark'] .extension-dropdown-toggle:hover:not(:disabled) {
   border-color: #2dd4bf;
   box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
 }
 
-[data-theme="dark"] .extension-dropdown-menu {
+[data-theme='dark'] .extension-dropdown-menu {
   background: #1f2937;
   border-color: #374151;
 }
 
-[data-theme="dark"] .dropdown-header {
+[data-theme='dark'] .dropdown-header {
   background: #111827;
   border-color: #374151;
 }
 
-[data-theme="dark"] .extension-item {
+[data-theme='dark'] .extension-item {
   border-color: #374151;
 }
 
-[data-theme="dark"] .extension-item:hover {
+[data-theme='dark'] .extension-item:hover {
   background: #111827;
 }
 
-[data-theme="dark"] .extension-label {
+[data-theme='dark'] .extension-label {
   color: #f3f4f6;
 }
 
-[data-theme="dark"] .extension-description {
+[data-theme='dark'] .extension-description {
   color: #9ca3af;
 }
 
-[data-theme="dark"] .extension-tag {
+[data-theme='dark'] .extension-tag {
   background: rgba(45, 212, 191, 0.1);
   color: #2dd4bf;
   border: 1px solid rgba(45, 212, 191, 0.2);
 }
 
-[data-theme="dark"] .tag-remove {
+[data-theme='dark'] .tag-remove {
   background: #2dd4bf;
 }
 
-[data-theme="dark"] .tag-remove:hover:not(:disabled) {
+[data-theme='dark'] .tag-remove:hover:not(:disabled) {
   background: #14b8a6;
 }
