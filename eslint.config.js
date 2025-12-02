@@ -18,13 +18,7 @@ module.exports = defineConfig([
       "models/**/*.js",
     ],
     // ignore frontend and typical build folders
-    ignores: [
-      "frontend/**",
-      "node_modules/**",
-      "dist/**",
-      "build/**",
-      "frontend/build/**",
-    ],
+    ignores: ["node_modules/**", "dist/**", "build/**", "frontend/build/**"],
     languageOptions: {
       parserOptions: {
         ecmaVersion: 2021,
