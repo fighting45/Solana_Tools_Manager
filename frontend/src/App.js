@@ -1,21 +1,21 @@
-import React, { useMemo } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useMemo } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import {
   ConnectionProvider,
   WalletProvider,
-} from "@solana/wallet-adapter-react";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+} from '@solana/wallet-adapter-react';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
-} from "@solana/wallet-adapter-wallets";
-import { clusterApiUrl } from "@solana/web3.js";
-import "@solana/wallet-adapter-react-ui/styles.css";
-import { PriorityFeeProvider } from "./context/PriorityFeeContext";
-import Homepage from "./components/Homepage";
-import TokenMinter from "./components/TokenMinter";
-import "./App.css";
+} from '@solana/wallet-adapter-wallets';
+import { clusterApiUrl } from '@solana/web3.js';
+import '@solana/wallet-adapter-react-ui/styles.css';
+import { PriorityFeeProvider } from './context/PriorityFeeContext';
+import Homepage from './components/Homepage';
+import TokenMinter from './components/TokenMinter';
+import './App.css';
 
 function App() {
   const network = WalletAdapterNetwork.Devnet;

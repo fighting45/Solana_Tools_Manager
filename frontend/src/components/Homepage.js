@@ -1,7 +1,7 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import Navbar from "./Navbar";
-import "./Homepage.css";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Navbar from './Navbar';
+import './Homepage.css';
 
 const Homepage = () => {
   return (
@@ -47,12 +47,12 @@ const Homepage = () => {
             complicated, but that's <strong>not the reality</strong>.
           </p>
           <p className="section-description">
-            With ProgrammX you can launch your own token from{" "}
-            <strong>only $100</strong>. Yes, including{" "}
+            With ProgrammX you can launch your own token from{' '}
+            <strong>only $100</strong>. Yes, including{' '}
             <strong>all the fees</strong> you need.
           </p>
           <p className="section-description">
-            In fact there are hundreds of people launching their own tokens{" "}
+            In fact there are hundreds of people launching their own tokens{' '}
             <strong>every day</strong> with our Solana Token Creator.
           </p>
         </div>

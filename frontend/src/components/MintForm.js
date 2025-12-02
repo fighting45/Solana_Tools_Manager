@@ -1,12 +1,12 @@
-import React from "react";
-import ExtensionSelector from "./ExtensionSelector";
-import CustomAddressGenerator from "./CustomAddressGenerator";
-import MultiWalletDistribution from "./MultiWalletDistribution";
-import OptionalMetadata from "./OptionalMetadata";
-import RevokeAuthorities from "./RevokeAuthorities";
-import CustomCreator from "./CustomCreator";
-import TotalFees from "./TotalFees";
-import "./MintForm.css";
+import React from 'react';
+import ExtensionSelector from './ExtensionSelector';
+import CustomAddressGenerator from './CustomAddressGenerator';
+import MultiWalletDistribution from './MultiWalletDistribution';
+import OptionalMetadata from './OptionalMetadata';
+import RevokeAuthorities from './RevokeAuthorities';
+import CustomCreator from './CustomCreator';
+import TotalFees from './TotalFees';
+import './MintForm.css';
 
 const MintForm = ({
   formData,
@@ -84,7 +84,7 @@ const MintForm = ({
           <textarea
             id="description"
             name="description"
-            value={formData.description || ""}
+            value={formData.description || ''}
             onChange={onInputChange}
             placeholder="Describe your token..."
             className="form-input form-textarea"
@@ -95,7 +95,7 @@ const MintForm = ({
       </div>
 
       {/* Optional Components Grid - Only show for SPL tokens */}
-      {tokenType !== "TOKEN2022" && (
+      {tokenType !== 'TOKEN2022' && (
         <div className="optional-components-grid">
           {/* Social Links & Tags */}
           <OptionalMetadata
@@ -115,7 +115,7 @@ const MintForm = ({
             }}
             onToggle={(enabled) =>
               onInputChange({
-                target: { name: "useOptionalMetadata", value: enabled },
+                target: { name: 'useOptionalMetadata', value: enabled },
               })
             }
             onSocialLinkChange={onInputChange}
@@ -126,19 +126,19 @@ const MintForm = ({
           {/* Custom Address Generator */}
           <CustomAddressGenerator
             enabled={formData.useCustomAddress || false}
-            prefix={formData.addressPrefix || ""}
-            suffix={formData.addressSuffix || ""}
-            generatedAddress={formData.generatedAddress || ""}
+            prefix={formData.addressPrefix || ''}
+            suffix={formData.addressSuffix || ''}
+            generatedAddress={formData.generatedAddress || ''}
             onToggle={(enabled) =>
               onInputChange({
-                target: { name: "useCustomAddress", value: enabled },
+                target: { name: 'useCustomAddress', value: enabled },
               })
             }
             onPrefixChange={(value) =>
-              onInputChange({ target: { name: "addressPrefix", value } })
+              onInputChange({ target: { name: 'addressPrefix', value } })
             }
             onSuffixChange={(value) =>
-              onInputChange({ target: { name: "addressSuffix", value } })
+              onInputChange({ target: { name: 'addressSuffix', value } })
             }
             onGenerate={onGenerateCustomAddress}
             disabled={loading || disabled}
@@ -150,18 +150,18 @@ const MintForm = ({
             enabled={formData.useMultiWallet || false}
             distributions={
               formData.multiWalletDistributions || [
-                { wallet: "", percentage: 100, avatar: "😎" },
+                { wallet: '', percentage: 100, avatar: '😎' },
               ]
             }
             onToggle={(enabled) =>
               onInputChange({
-                target: { name: "useMultiWallet", value: enabled },
+                target: { name: 'useMultiWallet', value: enabled },
               })
             }
             onChange={(distributions) =>
               onInputChange({
                 target: {
-                  name: "multiWalletDistributions",
+                  name: 'multiWalletDistributions',
                   value: distributions,
                 },
               })
@@ -179,7 +179,7 @@ const MintForm = ({
       )}
 
       {/* Extension Selector - Only show for Token-2022 */}
-      {tokenType === "TOKEN2022" && (
+      {tokenType === 'TOKEN2022' && (
         <ExtensionSelector
           onExtensionsChange={onExtensionsChange}
           disabled={loading || disabled}
@@ -282,7 +282,7 @@ const MintForm = ({
       </div>
 
       {/* Revoke Authorities Section */}
-      {tokenType !== "TOKEN2022" && (
+      {tokenType !== 'TOKEN2022' && (
         <RevokeAuthorities
           formData={formData}
           onInputChange={onInputChange}
@@ -306,25 +306,25 @@ const MintForm = ({
         ) : (
           <>
             <span>✨</span>
-            {tokenType === "TOKEN2022" &&
+            {tokenType === 'TOKEN2022' &&
             formData.extensions &&
             formData.extensions.length > 0
               ? `Mint with ${formData.extensions.length} Extension${
-                  formData.extensions.length > 1 ? "s" : ""
+                  formData.extensions.length > 1 ? 's' : ''
                 }`
-              : "Mint Tokens"}
+              : 'Mint Tokens'}
           </>
         )}
       </button>
 
       {/* Show selected extensions info and fees */}
-      {tokenType === "TOKEN2022" &&
+      {tokenType === 'TOKEN2022' &&
         formData.extensions &&
         formData.extensions.length > 0 && (
           <div className="extensions-info-box">
             <p className="extensions-info-title">
-              🔧 Token will be created with {formData.extensions.length}{" "}
-              extension{formData.extensions.length > 1 ? "s" : ""}
+              🔧 Token will be created with {formData.extensions.length}{' '}
+              extension{formData.extensions.length > 1 ? 's' : ''}
             </p>
             <p className="extensions-info-subtitle">
               Extensions are permanent and cannot be removed after token

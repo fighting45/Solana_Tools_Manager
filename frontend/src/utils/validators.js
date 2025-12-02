@@ -1,5 +1,5 @@
-import { PublicKey } from "@solana/web3.js";
-import { VALIDATION_MESSAGES } from "../config/constants";
+import { PublicKey } from '@solana/web3.js';
+import { VALIDATION_MESSAGES } from '../config/constants';
 
 /**
  * Validation utilities
@@ -11,7 +11,7 @@ export const validators = {
    * @returns {boolean} True if valid
    */
   isValidSolanaAddress(address) {
-    if (!address || typeof address !== "string") {
+    if (!address || typeof address !== 'string') {
       return false;
     }
     try {
@@ -50,16 +50,16 @@ export const validators = {
   validateMintForm(formData) {
     const errors = [];
 
-    if (!formData.name || formData.name.trim() === "") {
-      errors.push("Token name is required");
+    if (!formData.name || formData.name.trim() === '') {
+      errors.push('Token name is required');
     }
 
-    if (!formData.symbol || formData.symbol.trim() === "") {
-      errors.push("Token symbol is required");
+    if (!formData.symbol || formData.symbol.trim() === '') {
+      errors.push('Token symbol is required');
     }
 
     if (!formData.image) {
-      errors.push("Token image is required");
+      errors.push('Token image is required');
     }
 
     // Recipient address is required UNLESS multi-wallet distribution is enabled
@@ -67,14 +67,14 @@ export const validators = {
       formData.multiWalletDistributions &&
       Array.isArray(formData.multiWalletDistributions) &&
       formData.multiWalletDistributions.some(
-        (dist) => dist.wallet && dist.wallet.trim() !== "",
+        (dist) => dist.wallet && dist.wallet.trim() !== '',
       );
 
     if (!hasMultiWallet) {
       // Only validate recipient address if NOT using multi-wallet
       if (!formData.recipientAddress) {
         errors.push(
-          "Recipient address is required (or use Multi-Wallet Distribution)",
+          'Recipient address is required (or use Multi-Wallet Distribution)',
         );
       } else if (!this.isValidSolanaAddress(formData.recipientAddress)) {
         errors.push(VALIDATION_MESSAGES.INVALID_ADDRESS);
@@ -88,13 +88,13 @@ export const validators = {
     }
 
     if (!formData.amount) {
-      errors.push("Amount is required");
+      errors.push('Amount is required');
     } else if (!this.isValidAmount(formData.amount)) {
       errors.push(VALIDATION_MESSAGES.INVALID_AMOUNT);
     }
 
     if (!formData.decimals) {
-      errors.push("Decimals is required");
+      errors.push('Decimals is required');
     } else if (!this.isValidDecimals(formData.decimals)) {
       errors.push(VALIDATION_MESSAGES.INVALID_DECIMALS);
     }
@@ -103,7 +103,7 @@ export const validators = {
       formData.mintAuthorityAddress &&
       !this.isValidSolanaAddress(formData.mintAuthorityAddress)
     ) {
-      errors.push("Invalid mint authority address");
+      errors.push('Invalid mint authority address');
     }
 
     return {

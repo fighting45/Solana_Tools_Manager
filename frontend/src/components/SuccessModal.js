@@ -1,5 +1,5 @@
-import React from "react";
-import "./SuccessModal.css";
+import React from 'react';
+import './SuccessModal.css';
 
 const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
   if (!result || !result.success) return null;
@@ -7,7 +7,7 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
   const { signature, transactionData } = result;
   const mintAddress = transactionData?.mintAddress;
   const decimals = transactionData?.tokenInfo?.decimals || 0;
-  const supply = transactionData?.tokenInfo?.supply || "0";
+  const supply = transactionData?.tokenInfo?.supply || '0';
   const extensions = transactionData?.tokenInfo?.extensions || [];
 
   const explorerUrl = `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
@@ -61,7 +61,7 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
           </div>
 
           {/* Show enabled extensions for Token-2022 */}
-          {tokenType === "TOKEN2022" && extensions.length > 0 && (
+          {tokenType === 'TOKEN2022' && extensions.length > 0 && (
             <div className="detail-section">
               <h3 className="detail-title">Enabled Extensions</h3>
               <div className="extensions-list">
@@ -199,9 +199,9 @@ const SuccessModal = ({ result, tokenType, onClose, onNewMint }) => {
 // Helper function to get display names for extensions
 const getExtensionDisplayName = (extensionKey) => {
   const displayNames = {
-    mintCloseAuthority: "Mint Close Authority",
-    permanentDelegate: "Permanent Delegate",
-    nonTransferable: "Non-Transferable",
+    mintCloseAuthority: 'Mint Close Authority',
+    permanentDelegate: 'Permanent Delegate',
+    nonTransferable: 'Non-Transferable',
   };
   return displayNames[extensionKey] || extensionKey;
 };

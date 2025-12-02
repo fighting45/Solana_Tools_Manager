@@ -1,14 +1,14 @@
-import { useState, useCallback } from "react";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { usePriorityFee } from "../context/PriorityFeeContext";
-import apiService from "../services/apiService";
-import transactionService from "../services/transactionService";
+import { useState, useCallback } from 'react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { usePriorityFee } from '../context/PriorityFeeContext';
+import apiService from '../services/apiService';
+import transactionService from '../services/transactionService';
 import {
   STATUS_TYPES,
   STATUS_MESSAGES,
   VALIDATION_MESSAGES,
-} from "../config/constants";
-import { validators } from "../utils/validators";
+} from '../config/constants';
+import { validators } from '../utils/validators';
 
 /**
  * Custom hook for minting Token-2022 tokens with extensions
@@ -18,7 +18,7 @@ export const useToken2022Transaction = () => {
   const { publicKey, signTransaction } = useWallet();
   const { priorityLevel } = usePriorityFee();
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState({ type: "", message: "" });
+  const [status, setStatus] = useState({ type: '', message: '' });
 
   const mintTokens = useCallback(
     async (formData) => {
@@ -36,13 +36,13 @@ export const useToken2022Transaction = () => {
       if (!validation.isValid) {
         setStatus({
           type: STATUS_TYPES.ERROR,
-          message: validation.errors.join(", "),
+          message: validation.errors.join(', '),
         });
         return { success: false };
       }
 
       setLoading(true);
-      setStatus({ type: "", message: "" });
+      setStatus({ type: '', message: '' });
 
       try {
         // Step 1: Create transaction from backend
@@ -56,7 +56,7 @@ export const useToken2022Transaction = () => {
 
         // Get priority level from context
         console.log(
-          "🎯 [Frontend] Priority level from context:",
+          '🎯 [Frontend] Priority level from context:',
           priorityLevel,
         );
 
@@ -76,10 +76,10 @@ export const useToken2022Transaction = () => {
           priorityLevel: priorityLevel, // Priority fee
         });
 
-        console.log("Backend response:", transactionData);
+        console.log('Backend response:', transactionData);
         if (transactionData.tokenInfo && transactionData.tokenInfo.extensions) {
           console.log(
-            "Token extensions enabled:",
+            'Token extensions enabled:',
             transactionData.tokenInfo.extensions,
           );
         }
@@ -87,7 +87,7 @@ export const useToken2022Transaction = () => {
         // Step 2: Deserialize mint transaction with blockhash and feePayer
         setStatus({
           type: STATUS_TYPES.INFO,
-          message: "Preparing Token-2022 transaction...",
+          message: 'Preparing Token-2022 transaction...',
         });
 
         const transaction = transactionService.deserializeTransaction(
@@ -120,11 +120,11 @@ export const useToken2022Transaction = () => {
           connection,
           {
             skipPreflight: false,
-            preflightCommitment: "confirmed",
+            preflightCommitment: 'confirmed',
           },
         );
 
-        console.log("Token-2022 transaction signature:", signature);
+        console.log('Token-2022 transaction signature:', signature);
 
         // Step 5: Confirm mint transaction
         setStatus({
@@ -139,7 +139,7 @@ export const useToken2022Transaction = () => {
           transactionData.lastValidBlockHeight,
         );
 
-        console.log("✅ Token-2022 transaction confirmed!");
+        console.log('✅ Token-2022 transaction confirmed!');
 
         // Log enabled extensions
         if (
@@ -149,15 +149,15 @@ export const useToken2022Transaction = () => {
         ) {
           console.log(
             `✅ Token created with extensions: ${transactionData.tokenInfo.extensions.join(
-              ", ",
+              ', ',
             )}`,
           );
         }
 
         // Clear status message - detailed info will be shown in result box
         setStatus({
-          type: "",
-          message: "",
+          type: '',
+          message: '',
         });
 
         return {
@@ -166,13 +166,13 @@ export const useToken2022Transaction = () => {
           transactionData,
         };
       } catch (error) {
-        console.error("Token-2022 transaction error:", error);
-        console.error("Error details:", error.stack);
+        console.error('Token-2022 transaction error:', error);
+        console.error('Error details:', error.stack);
         setStatus({
           type: STATUS_TYPES.ERROR,
           message:
             error.message ||
-            "An error occurred while minting Token-2022 tokens",
+            'An error occurred while minting Token-2022 tokens',
         });
         return { success: false, error: error.message };
       } finally {

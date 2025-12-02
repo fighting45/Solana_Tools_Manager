@@ -5,7 +5,7 @@ const {
   Transaction,
   SystemProgram,
   LAMPORTS_PER_SOL,
-} = require("@solana/web3.js");
+} = require('@solana/web3.js');
 const {
   TOKEN_2022_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -21,24 +21,24 @@ const {
   createInitializeNonTransferableMintInstruction,
   TYPE_SIZE,
   LENGTH_SIZE,
-} = require("@solana/spl-token");
+} = require('@solana/spl-token');
 const {
   createInitializeInstruction,
   pack,
-} = require("@solana/spl-token-metadata");
-const bs58 = require("bs58");
+} = require('@solana/spl-token-metadata');
+const bs58 = require('bs58');
 const {
   getPriorityFee,
   addPriorityFeeToTransaction,
   mapPriorityLevel,
-} = require("./priorityFee");
-require("dotenv").config();
+} = require('./priorityFee');
+require('dotenv').config();
 
 // Platform fee configuration from .env
 const PLATFORM_WALLET = new PublicKey(
-  process.env.PLATFORM_WALLET || "A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz",
+  process.env.PLATFORM_WALLET || 'A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz',
 );
-const PLATFORM_FEE_SOL = parseFloat(process.env.PLATFORM_FEE || "0.05");
+const PLATFORM_FEE_SOL = parseFloat(process.env.PLATFORM_FEE || '0.05');
 const PLATFORM_FEE_LAMPORTS = Math.floor(PLATFORM_FEE_SOL * LAMPORTS_PER_SOL);
 const EXTENSION_FEE_SOL = 0.1; // 0.1 SOL per extension
 const EXTENSION_FEE_LAMPORTS = Math.floor(EXTENSION_FEE_SOL * LAMPORTS_PER_SOL);
@@ -71,17 +71,17 @@ async function createToken2022WithMetadataAndExtensions(
   decimals,
   metadata,
   selectedExtensions = [],
-  priorityLevel = "none",
+  priorityLevel = 'none',
 ) {
-  const rpcUrl = process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
+  const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
 
   console.log(`🔗 Connecting to Solana RPC for Token-2022: ${rpcUrl}`);
   console.log(
-    `🔧 Selected extensions: ${selectedExtensions.join(", ") || "None"}`,
+    `🔧 Selected extensions: ${selectedExtensions.join(', ') || 'None'}`,
   );
 
   const connection = new Connection(rpcUrl, {
-    commitment: "confirmed",
+    commitment: 'confirmed',
     confirmTransactionInitialTimeout: 60000,
   });
 
@@ -154,7 +154,7 @@ async function createToken2022WithMetadataAndExtensions(
 
   while (retries > 0) {
     try {
-      const result = await connection.getLatestBlockhash("confirmed");
+      const result = await connection.getLatestBlockhash('confirmed');
       blockhash = result.blockhash;
       lastValidBlockHeight = result.lastValidBlockHeight;
       break;
@@ -177,7 +177,7 @@ async function createToken2022WithMetadataAndExtensions(
   // ========================================
   // PRIORITY FEE (if enabled)
   // ========================================
-  if (priorityLevel && priorityLevel !== "none") {
+  if (priorityLevel && priorityLevel !== 'none') {
     try {
       console.log(`🚀 Processing priority fee (UI level: ${priorityLevel})...`);
       const apiLevel = mapPriorityLevel(priorityLevel);
@@ -191,7 +191,7 @@ async function createToken2022WithMetadataAndExtensions(
       }
     } catch (error) {
       console.warn(
-        "⚠️ Failed to add priority fee, continuing without it:",
+        '⚠️ Failed to add priority fee, continuing without it:',
         error.message,
       );
     }
@@ -202,7 +202,7 @@ async function createToken2022WithMetadataAndExtensions(
   // ========================================
   // PLATFORM FEE TRANSFER
   // ========================================
-  console.log("💸 Adding platform fee transfer instruction...");
+  console.log('💸 Adding platform fee transfer instruction...');
 
   transaction.add(
     SystemProgram.transfer({
@@ -225,7 +225,7 @@ async function createToken2022WithMetadataAndExtensions(
     }
   });
 
-  console.log("📝 Calculating space for Token-2022 with extensions...");
+  console.log('📝 Calculating space for Token-2022 with extensions...');
 
   // Calculate space WITHOUT metadata data (for account creation)
   const spaceWithoutMetadata = getMintLen(extensions);
@@ -247,7 +247,7 @@ async function createToken2022WithMetadataAndExtensions(
   const spaceWithMetadata =
     spaceWithoutMetadata + TYPE_SIZE + LENGTH_SIZE + metadataLen;
 
-  console.log("📊 Space breakdown:");
+  console.log('📊 Space breakdown:');
   console.log(`   Base + extensions: ${spaceWithoutMetadata} bytes`);
   console.log(`   Metadata data: ${metadataLen} bytes`);
   console.log(`   Total: ${spaceWithMetadata} bytes`);
@@ -259,7 +259,7 @@ async function createToken2022WithMetadataAndExtensions(
   // ========================================
   // BUILD TRANSACTION
   // ========================================
-  console.log("📝 Building Token-2022 transaction with extensions...");
+  console.log('📝 Building Token-2022 transaction with extensions...');
 
   // 1. Create the mint account
   transaction.add(
@@ -291,7 +291,7 @@ async function createToken2022WithMetadataAndExtensions(
   // Add optional extensions based on user selection
   selectedExtensions.forEach((ext) => {
     switch (ext) {
-      case "mintCloseAuthority":
+      case 'mintCloseAuthority':
         transaction.add(
           createInitializeMintCloseAuthorityInstruction(
             mint,
@@ -304,7 +304,7 @@ async function createToken2022WithMetadataAndExtensions(
         );
         break;
 
-      case "permanentDelegate":
+      case 'permanentDelegate':
         transaction.add(
           createInitializePermanentDelegateInstruction(
             mint,
@@ -317,7 +317,7 @@ async function createToken2022WithMetadataAndExtensions(
         );
         break;
 
-      case "nonTransferable":
+      case 'nonTransferable':
         transaction.add(
           createInitializeNonTransferableMintInstruction(
             mint,
@@ -400,11 +400,11 @@ async function createToken2022WithMetadataAndExtensions(
     verifySignatures: false,
   });
 
-  console.log("✅ Token-2022 transaction created successfully!");
+  console.log('✅ Token-2022 transaction created successfully!');
   console.log(`📊 Transaction size: ${serializedTransaction.length} bytes`);
 
   return {
-    transaction: serializedTransaction.toString("base64"),
+    transaction: serializedTransaction.toString('base64'),
     mintAddress: mint.toBase58(),
     recipientAddress: recipient.toBase58(),
     associatedTokenAddress: associatedTokenAddress.toBase58(),

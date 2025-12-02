@@ -1,14 +1,14 @@
-import { useState, useCallback } from "react";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { usePriorityFee } from "../context/PriorityFeeContext";
-import apiService from "../services/apiService";
-import transactionService from "../services/transactionService";
+import { useState, useCallback } from 'react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { usePriorityFee } from '../context/PriorityFeeContext';
+import apiService from '../services/apiService';
+import transactionService from '../services/transactionService';
 import {
   STATUS_TYPES,
   STATUS_MESSAGES,
   VALIDATION_MESSAGES,
-} from "../config/constants";
-import { validators } from "../utils/validators";
+} from '../config/constants';
+import { validators } from '../utils/validators';
 
 /**
  * Custom hook for minting SPL tokens
@@ -18,7 +18,7 @@ export const useMintTransaction = () => {
   const { publicKey, signTransaction } = useWallet();
   const { priorityLevel } = usePriorityFee();
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState({ type: "", message: "" });
+  const [status, setStatus] = useState({ type: '', message: '' });
 
   const mintTokens = useCallback(
     async (formData) => {
@@ -36,13 +36,13 @@ export const useMintTransaction = () => {
       if (!validation.isValid) {
         setStatus({
           type: STATUS_TYPES.ERROR,
-          message: validation.errors.join(", "),
+          message: validation.errors.join(', '),
         });
         return { success: false };
       }
 
       setLoading(true);
-      setStatus({ type: "", message: "" });
+      setStatus({ type: '', message: '' });
 
       try {
         // Step 1: Create transaction from backend
@@ -58,7 +58,7 @@ export const useMintTransaction = () => {
           formData.tag3,
           formData.tag4,
           formData.tag5,
-        ].filter((tag) => tag && tag.trim() !== "");
+        ].filter((tag) => tag && tag.trim() !== '');
 
         // Prepare multi-wallet distribution - filter out empty wallets
         let multiWalletDistribution = null;
@@ -67,14 +67,14 @@ export const useMintTransaction = () => {
           Array.isArray(formData.multiWalletDistributions)
         ) {
           console.log(
-            "📋 Original multi-wallet data:",
+            '📋 Original multi-wallet data:',
             formData.multiWalletDistributions,
           );
           const validWallets = formData.multiWalletDistributions.filter(
             (dist) =>
-              dist.wallet && dist.wallet.trim() !== "" && dist.percentage > 0,
+              dist.wallet && dist.wallet.trim() !== '' && dist.percentage > 0,
           );
-          console.log("✅ Filtered valid wallets:", validWallets);
+          console.log('✅ Filtered valid wallets:', validWallets);
           if (validWallets.length > 0) {
             multiWalletDistribution = validWallets;
           }
@@ -82,7 +82,7 @@ export const useMintTransaction = () => {
 
         // Get priority level from context
         console.log(
-          "🎯 [Frontend] Priority level from context:",
+          '🎯 [Frontend] Priority level from context:',
           priorityLevel,
         );
 
@@ -121,12 +121,12 @@ export const useMintTransaction = () => {
           priorityLevel: priorityLevel,
         });
 
-        console.log("Backend response:", transactionData);
+        console.log('Backend response:', transactionData);
 
         // Step 2: Deserialize mint transaction with blockhash and feePayer
         setStatus({
           type: STATUS_TYPES.INFO,
-          message: "Preparing mint transaction...",
+          message: 'Preparing mint transaction...',
         });
 
         const transaction = transactionService.deserializeTransaction(
@@ -159,11 +159,11 @@ export const useMintTransaction = () => {
           connection,
           {
             skipPreflight: false,
-            preflightCommitment: "confirmed",
+            preflightCommitment: 'confirmed',
           },
         );
 
-        console.log("Mint transaction signature:", signature);
+        console.log('Mint transaction signature:', signature);
 
         // Step 5: Confirm mint transaction
         setStatus({
@@ -178,12 +178,12 @@ export const useMintTransaction = () => {
           transactionData.lastValidBlockHeight,
         );
 
-        console.log("✅ Mint transaction confirmed!");
+        console.log('✅ Mint transaction confirmed!');
 
         // Clear status message - detailed info will be shown in result box
         setStatus({
-          type: "",
-          message: "",
+          type: '',
+          message: '',
         });
 
         return {
@@ -192,11 +192,11 @@ export const useMintTransaction = () => {
           transactionData,
         };
       } catch (error) {
-        console.error("Mint transaction error:", error);
-        console.error("Error details:", error.stack);
+        console.error('Mint transaction error:', error);
+        console.error('Error details:', error.stack);
         setStatus({
           type: STATUS_TYPES.ERROR,
-          message: error.message || "An error occurred while minting tokens",
+          message: error.message || 'An error occurred while minting tokens',
         });
         return { success: false, error: error.message };
       } finally {

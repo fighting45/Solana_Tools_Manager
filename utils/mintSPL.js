@@ -5,7 +5,7 @@ const {
   Transaction,
   SystemProgram,
   LAMPORTS_PER_SOL,
-} = require("@solana/web3.js");
+} = require('@solana/web3.js');
 const {
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -17,40 +17,40 @@ const {
   createSetAuthorityInstruction,
   AuthorityType,
   MINT_SIZE,
-} = require("@solana/spl-token");
-const { createUmi } = require("@metaplex-foundation/umi-bundle-defaults");
-const { mplTokenMetadata } = require("@metaplex-foundation/mpl-token-metadata");
+} = require('@solana/spl-token');
+const { createUmi } = require('@metaplex-foundation/umi-bundle-defaults');
+const { mplTokenMetadata } = require('@metaplex-foundation/mpl-token-metadata');
 const {
   createV1,
   updateV1,
   findMetadataPda,
   TokenStandard,
-} = require("@metaplex-foundation/mpl-token-metadata");
+} = require('@metaplex-foundation/mpl-token-metadata');
 
 const {
   publicKey,
   percentAmount,
   createNoopSigner,
   signerIdentity,
-} = require("@metaplex-foundation/umi");
+} = require('@metaplex-foundation/umi');
 const {
   toWeb3JsInstruction,
-} = require("@metaplex-foundation/umi-web3js-adapters");
-const { TransactionInstruction } = require("@solana/web3.js");
-const bs58 = require("bs58");
-const crypto = require("crypto");
+} = require('@metaplex-foundation/umi-web3js-adapters');
+const { TransactionInstruction } = require('@solana/web3.js');
+const bs58 = require('bs58');
+const crypto = require('crypto');
 const {
   getPriorityFee,
   addPriorityFeeToTransaction,
   mapPriorityLevel,
-} = require("./priorityFee");
-require("dotenv").config();
+} = require('./priorityFee');
+require('dotenv').config();
 
 // Platform fee configuration from .env
 const PLATFORM_WALLET = new PublicKey(
-  process.env.PLATFORM_WALLET || "A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz",
+  process.env.PLATFORM_WALLET || 'A1YrqK6SUgr1mKDLx88sy992BCx4EAGSkbAsre34tgPz',
 );
-const PLATFORM_FEE_SOL = parseFloat(process.env.PLATFORM_FEE || "0.05"); // Default 0.05 SOL
+const PLATFORM_FEE_SOL = parseFloat(process.env.PLATFORM_FEE || '0.05'); // Default 0.05 SOL
 const PLATFORM_FEE_LAMPORTS = Math.floor(PLATFORM_FEE_SOL * LAMPORTS_PER_SOL);
 
 // Additional feature fees
@@ -67,8 +67,8 @@ const CUSTOM_CREATOR_FEE_SOL = 0.1; // +0.1 SOL for custom creator information
  * @returns {Keypair} - Keypair with custom address
  */
 async function generateCustomAddress(
-  prefix = "",
-  suffix = "",
+  prefix = '',
+  suffix = '',
   maxAttempts = 1000000,
 ) {
   console.log(
@@ -76,7 +76,7 @@ async function generateCustomAddress(
   );
 
   if ((prefix + suffix).length > 4) {
-    throw new Error("Combined prefix and suffix cannot exceed 4 characters");
+    throw new Error('Combined prefix and suffix cannot exceed 4 characters');
   }
 
   let attempts = 0;
@@ -128,8 +128,8 @@ async function createCombinedMintWithMetadata(params) {
     tags = [],
     // Custom address parameters
     useCustomAddress = false,
-    addressPrefix = "",
-    addressSuffix = "",
+    addressPrefix = '',
+    addressSuffix = '',
     // Custom creator parameters
     useCustomCreator = false,
     // Multi-wallet distribution
@@ -141,16 +141,16 @@ async function createCombinedMintWithMetadata(params) {
       updateAuthority: false,
     },
     // Priority fee level
-    priorityLevel = "none",
+    priorityLevel = 'none',
   } = params;
 
   // Use RPC from environment or fallback to reliable public RPCs
-  const rpcUrl = process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
+  const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
 
   console.log(`🔗 Connecting to Solana RPC: ${rpcUrl}`);
 
   const connection = new Connection(rpcUrl, {
-    commitment: "confirmed",
+    commitment: 'confirmed',
     confirmTransactionInitialTimeout: 60000,
   });
 
@@ -174,8 +174,8 @@ async function createCombinedMintWithMetadata(params) {
   // Generate mint keypair (custom or regular)
   let mintKeypair;
   if (useCustomAddress) {
-    console.log("🎯 Generating custom address with suffix...");
-    mintKeypair = await generateCustomAddress("", addressSuffix); // Only use suffix
+    console.log('🎯 Generating custom address with suffix...');
+    mintKeypair = await generateCustomAddress('', addressSuffix); // Only use suffix
   } else {
     mintKeypair = Keypair.generate();
   }
@@ -219,15 +219,15 @@ async function createCombinedMintWithMetadata(params) {
   // Process multi-wallet distribution
   let walletDistributions = [];
   if (multiWalletDistribution && multiWalletDistribution.length > 0) {
-    console.log("📊 Processing multi-wallet distribution...");
+    console.log('📊 Processing multi-wallet distribution...');
     console.log(
-      "📋 Received distribution data:",
+      '📋 Received distribution data:',
       JSON.stringify(multiWalletDistribution, null, 2),
     );
 
     // Filter out empty/invalid wallet addresses and trim whitespace
     const validDistributions = multiWalletDistribution.filter((dist) => {
-      if (!dist.wallet || typeof dist.wallet !== "string") {
+      if (!dist.wallet || typeof dist.wallet !== 'string') {
         console.warn(
           `⚠️ Skipping invalid wallet entry: ${JSON.stringify(dist)}`,
         );
@@ -235,7 +235,7 @@ async function createCombinedMintWithMetadata(params) {
       }
       const trimmedWallet = dist.wallet.trim();
       if (trimmedWallet.length === 0) {
-        console.warn("⚠️ Skipping empty wallet address");
+        console.warn('⚠️ Skipping empty wallet address');
         return false;
       }
       // Basic Solana address validation (should be 32-44 characters)
@@ -250,7 +250,7 @@ async function createCombinedMintWithMetadata(params) {
 
     if (validDistributions.length === 0) {
       throw new Error(
-        "No valid wallet addresses provided in multi-wallet distribution",
+        'No valid wallet addresses provided in multi-wallet distribution',
       );
     }
 
@@ -299,7 +299,7 @@ async function createCombinedMintWithMetadata(params) {
       console.log(
         `⏳ Fetching latest blockhash (attempts remaining: ${retries})...`,
       );
-      const result = await connection.getLatestBlockhash("confirmed");
+      const result = await connection.getLatestBlockhash('confirmed');
       blockhash = result.blockhash;
       lastValidBlockHeight = result.lastValidBlockHeight;
       console.log(`✅ Got blockhash: ${blockhash}`);
@@ -307,7 +307,7 @@ async function createCombinedMintWithMetadata(params) {
     } catch (error) {
       retries--;
       if (retries === 0) {
-        console.error("❌ Failed to get blockhash after all retries");
+        console.error('❌ Failed to get blockhash after all retries');
         throw new Error(
           `Failed to connect to Solana RPC (${rpcUrl}). Error: ${error.message}`,
         );
@@ -329,7 +329,7 @@ async function createCombinedMintWithMetadata(params) {
   // ========================================
   // PRIORITY FEE (if enabled)
   // ========================================
-  if (priorityLevel && priorityLevel !== "none") {
+  if (priorityLevel && priorityLevel !== 'none') {
     try {
       console.log(`🚀 Processing priority fee (UI level: ${priorityLevel})...`);
       const apiLevel = mapPriorityLevel(priorityLevel);
@@ -343,7 +343,7 @@ async function createCombinedMintWithMetadata(params) {
       }
     } catch (error) {
       console.warn(
-        "⚠️ Failed to add priority fee, continuing without it:",
+        '⚠️ Failed to add priority fee, continuing without it:',
         error.message,
       );
     }
@@ -354,7 +354,7 @@ async function createCombinedMintWithMetadata(params) {
   // ========================================
   // INSTRUCTION 0: PLATFORM FEE TRANSFER
   // ========================================
-  console.log("💸 Adding platform fee transfer instruction...");
+  console.log('💸 Adding platform fee transfer instruction...');
 
   transaction.add(
     SystemProgram.transfer({
@@ -372,7 +372,7 @@ async function createCombinedMintWithMetadata(params) {
   // PART 1: SPL TOKEN CREATION INSTRUCTIONS
   // ========================================
 
-  console.log("📝 Adding SPL token instructions...");
+  console.log('📝 Adding SPL token instructions...');
 
   // Instruction 1: Create the mint account
   const mintRent = await getMinimumBalanceForRentExemptMint(connection);
@@ -432,13 +432,13 @@ async function createCombinedMintWithMetadata(params) {
     );
   }
 
-  console.log("✅ SPL token instructions added");
+  console.log('✅ SPL token instructions added');
 
   // ========================================
   // PART 2: METADATA CREATION INSTRUCTIONS
   // ========================================
 
-  console.log("📝 Adding metadata instructions...");
+  console.log('📝 Adding metadata instructions...');
 
   try {
     // Create Umi instance for metadata
@@ -459,7 +459,7 @@ async function createCombinedMintWithMetadata(params) {
       mint: umiMint,
     });
 
-    console.log("Metadata Account:", metadataAccountAddress.toString());
+    console.log('Metadata Account:', metadataAccountAddress.toString());
 
     // Build metadata with additional fields
     const metadataData = {
@@ -496,7 +496,7 @@ async function createCombinedMintWithMetadata(params) {
         const web3Ix = toWeb3JsInstruction(umiIx);
         transaction.add(web3Ix);
       } catch (adapterError) {
-        console.log("Using manual instruction conversion...");
+        console.log('Using manual instruction conversion...');
 
         const keys = (umiIx.keys || []).map((key) => ({
           pubkey: new PublicKey(key.pubkey.toString()),
@@ -514,14 +514,14 @@ async function createCombinedMintWithMetadata(params) {
       }
     }
 
-    console.log("✅ Metadata instructions added");
+    console.log('✅ Metadata instructions added');
 
     // ========================================
     // PART 3: REVOKE AUTHORITIES (if requested)
     // ========================================
 
     if (revokeAuthorities.freezeAuthority) {
-      console.log("🔒 Revoking freeze authority...");
+      console.log('🔒 Revoking freeze authority...');
       transaction.add(
         createSetAuthorityInstruction(
           mint,
@@ -535,7 +535,7 @@ async function createCombinedMintWithMetadata(params) {
     }
 
     if (revokeAuthorities.mintAuthority) {
-      console.log("🔒 Revoking mint authority...");
+      console.log('🔒 Revoking mint authority...');
       transaction.add(
         createSetAuthorityInstruction(
           mint,
@@ -550,7 +550,7 @@ async function createCombinedMintWithMetadata(params) {
 
     // Revoke update authority for metadata
     if (revokeAuthorities.updateAuthority) {
-      console.log("🔒 Revoking update authority...");
+      console.log('🔒 Revoking update authority...');
       try {
         const updateBuilder = updateV1(umi, {
           mint: umiMint,
@@ -581,10 +581,10 @@ async function createCombinedMintWithMetadata(params) {
           }
         }
 
-        console.log("✅ Update authority will be revoked");
+        console.log('✅ Update authority will be revoked');
       } catch (error) {
         console.warn(
-          "⚠️ Could not add update authority revoke instruction:",
+          '⚠️ Could not add update authority revoke instruction:',
           error.message,
         );
       }
@@ -620,11 +620,11 @@ async function createCombinedMintWithMetadata(params) {
       verifySignatures: false,
     });
 
-    console.log("✅ Combined transaction created successfully!");
-    console.log("Transaction size:", serializedTransaction.length, "bytes");
+    console.log('✅ Combined transaction created successfully!');
+    console.log('Transaction size:', serializedTransaction.length, 'bytes');
 
     return {
-      transaction: serializedTransaction.toString("base64"),
+      transaction: serializedTransaction.toString('base64'),
       mintAddress: mint.toBase58(),
       recipientAddress: recipient.toBase58(),
       walletDistributions: walletDistributions.map((dist) => ({
@@ -639,13 +639,13 @@ async function createCombinedMintWithMetadata(params) {
       payerPublicKey: payer.toBase58(),
       mintAuthority: mintAuthority.toBase58(),
       updateAuthority: revokeAuthorities.updateAuthority
-        ? "revoked"
+        ? 'revoked'
         : updateAuthority.toString(),
       freezeAuthority: revokeAuthorities.freezeAuthority
-        ? "revoked"
+        ? 'revoked'
         : freezeAuthority
           ? freezeAuthority.toBase58()
-          : "none",
+          : 'none',
       blockhash: blockhash,
       lastValidBlockHeight: lastValidBlockHeight,
       metadata: {
@@ -673,7 +673,7 @@ async function createCombinedMintWithMetadata(params) {
       },
     };
   } catch (error) {
-    console.error("❌ Error adding metadata instructions:", error);
+    console.error('❌ Error adding metadata instructions:', error);
     throw new Error(`Failed to create combined transaction: ${error.message}`);
   }
 }

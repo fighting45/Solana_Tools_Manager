@@ -1,5 +1,5 @@
-const ipfsService = require("../services/ipfsService");
-const mintService = require("../utils/mintSPL");
+const ipfsService = require('../services/ipfsService');
+const mintService = require('../utils/mintSPL');
 
 /**
  * Create COMBINED mint transaction with metadata and enhanced features
@@ -8,7 +8,7 @@ async function createCombinedMintTransaction(req, res) {
   try {
     // Helper function to clean form data values
     const cleanFormValue = (value) => {
-      if (!value || value === "null" || value === "undefined" || value === "") {
+      if (!value || value === 'null' || value === 'undefined' || value === '') {
         return null;
       }
       return value;
@@ -36,10 +36,10 @@ async function createCombinedMintTransaction(req, res) {
     // Tags (optional - up to 5)
     let tags = [];
     if (req.body.tags) {
-      if (typeof req.body.tags === "string") {
+      if (typeof req.body.tags === 'string') {
         // If tags come as comma-separated string
         tags = req.body.tags
-          .split(",")
+          .split(',')
           .map((tag) => tag.trim())
           .filter((tag) => tag)
           .slice(0, 5);
@@ -54,38 +54,38 @@ async function createCombinedMintTransaction(req, res) {
 
     // Custom address features
     const useCustomAddress =
-      req.body.useCustomAddress === "true" ||
+      req.body.useCustomAddress === 'true' ||
       req.body.useCustomAddress === true;
-    const addressPrefix = cleanFormValue(req.body.addressPrefix) || "";
-    const addressSuffix = cleanFormValue(req.body.addressSuffix) || "";
+    const addressPrefix = cleanFormValue(req.body.addressPrefix) || '';
+    const addressSuffix = cleanFormValue(req.body.addressSuffix) || '';
 
     // Custom creator features
     const useCustomCreator =
-      req.body.useCustomCreator === "true" ||
+      req.body.useCustomCreator === 'true' ||
       req.body.useCustomCreator === true;
     const creatorName = cleanFormValue(req.body.creatorName);
     const creatorWebsite = cleanFormValue(req.body.creatorWebsite);
 
     // Priority fee level
-    const priorityLevel = cleanFormValue(req.body.priorityLevel) || "none";
+    const priorityLevel = cleanFormValue(req.body.priorityLevel) || 'none';
     console.log(
-      "🎯 [Controller] Received priority level from frontend:",
+      '🎯 [Controller] Received priority level from frontend:',
       req.body.priorityLevel,
     );
-    console.log("🎯 [Controller] Cleaned priority level:", priorityLevel);
+    console.log('🎯 [Controller] Cleaned priority level:', priorityLevel);
 
     // Multi-wallet distribution
     let multiWalletDistribution = null;
     if (req.body.multiWalletDistribution) {
       try {
         console.log(
-          "📥 Raw multiWalletDistribution received:",
+          '📥 Raw multiWalletDistribution received:',
           req.body.multiWalletDistribution,
         );
-        console.log("📥 Type:", typeof req.body.multiWalletDistribution);
+        console.log('📥 Type:', typeof req.body.multiWalletDistribution);
 
         // Parse the distribution data
-        if (typeof req.body.multiWalletDistribution === "string") {
+        if (typeof req.body.multiWalletDistribution === 'string') {
           multiWalletDistribution = JSON.parse(
             req.body.multiWalletDistribution,
           );
@@ -94,7 +94,7 @@ async function createCombinedMintTransaction(req, res) {
         }
 
         console.log(
-          "📥 Parsed multiWalletDistribution:",
+          '📥 Parsed multiWalletDistribution:',
           multiWalletDistribution,
         );
 
@@ -126,7 +126,7 @@ async function createCombinedMintTransaction(req, res) {
           multiWalletDistribution = null;
         }
       } catch (e) {
-        console.error("Error parsing multi-wallet distribution:", e);
+        console.error('Error parsing multi-wallet distribution:', e);
         multiWalletDistribution = null;
       }
     }
@@ -134,65 +134,65 @@ async function createCombinedMintTransaction(req, res) {
     // Revoke authorities
     const revokeAuthorities = {
       freezeAuthority:
-        req.body.revokeFreezeAuthority === "true" ||
+        req.body.revokeFreezeAuthority === 'true' ||
         req.body.revokeFreezeAuthority === true,
       mintAuthority:
-        req.body.revokeMintAuthority === "true" ||
+        req.body.revokeMintAuthority === 'true' ||
         req.body.revokeMintAuthority === true,
       updateAuthority:
-        req.body.revokeUpdateAuthority === "true" ||
+        req.body.revokeUpdateAuthority === 'true' ||
         req.body.revokeUpdateAuthority === true,
     };
 
     // Validate required fields
     if (!payerAddress) {
-      return res.status(400).json({ error: "payerAddress is required" });
+      return res.status(400).json({ error: 'payerAddress is required' });
     }
     if (!recipientAddress && !multiWalletDistribution) {
       return res.status(400).json({
-        error: "recipientAddress or multiWalletDistribution is required",
+        error: 'recipientAddress or multiWalletDistribution is required',
       });
     }
     if (!name) {
-      return res.status(400).json({ error: "name is required" });
+      return res.status(400).json({ error: 'name is required' });
     }
     if (!symbol) {
-      return res.status(400).json({ error: "symbol is required" });
+      return res.status(400).json({ error: 'symbol is required' });
     }
 
     // Validate custom address parameters (suffix only, max 3 characters)
     if (useCustomAddress) {
       if (!addressSuffix) {
         return res.status(400).json({
-          error: "Suffix is required for custom address",
+          error: 'Suffix is required for custom address',
         });
       }
       if (addressSuffix.length > 3) {
         return res.status(400).json({
-          error: "Suffix cannot exceed 3 characters",
+          error: 'Suffix cannot exceed 3 characters',
         });
       }
     }
 
-    console.log("📦 Processing COMBINED mint transaction request...");
-    console.log("Token Name:", name);
-    console.log("Token Symbol:", symbol);
-    console.log("Payer Address:", payerAddress);
-    console.log("Use Custom Address:", useCustomAddress);
+    console.log('📦 Processing COMBINED mint transaction request...');
+    console.log('Token Name:', name);
+    console.log('Token Symbol:', symbol);
+    console.log('Payer Address:', payerAddress);
+    console.log('Use Custom Address:', useCustomAddress);
     console.log(
-      "Multi-Wallet Distribution:",
-      multiWalletDistribution ? "Yes" : "No",
+      'Multi-Wallet Distribution:',
+      multiWalletDistribution ? 'Yes' : 'No',
     );
-    console.log("Revoke Authorities:", JSON.stringify(revokeAuthorities));
+    console.log('Revoke Authorities:', JSON.stringify(revokeAuthorities));
 
     // Get image file from request
     const imageFile = req.file;
 
     if (!imageFile) {
-      return res.status(400).json({ error: "Image file is required" });
+      return res.status(400).json({ error: 'Image file is required' });
     }
 
-    console.log("Image:", imageFile.originalname);
+    console.log('Image:', imageFile.originalname);
 
     // Build social links object
     const socialLinks = {};
@@ -202,20 +202,20 @@ async function createCombinedMintTransaction(req, res) {
     if (twitterUrl) socialLinks.twitter = twitterUrl;
 
     // Step 1: Upload image and metadata to IPFS
-    console.log("⬆️ Uploading to IPFS...");
+    console.log('⬆️ Uploading to IPFS...');
 
     // Build attributes for metadata
     const attributes = [];
 
     // Add social links as attributes
     if (telegramUrl)
-      attributes.push({ trait_type: "Telegram", value: telegramUrl });
+      attributes.push({ trait_type: 'Telegram', value: telegramUrl });
     if (websiteUrl)
-      attributes.push({ trait_type: "Website", value: websiteUrl });
+      attributes.push({ trait_type: 'Website', value: websiteUrl });
     if (discordUrl)
-      attributes.push({ trait_type: "Discord", value: discordUrl });
+      attributes.push({ trait_type: 'Discord', value: discordUrl });
     if (twitterUrl)
-      attributes.push({ trait_type: "Twitter", value: twitterUrl });
+      attributes.push({ trait_type: 'Twitter', value: twitterUrl });
 
     // Add tags as attributes
     tags.forEach((tag, index) => {
@@ -224,29 +224,29 @@ async function createCombinedMintTransaction(req, res) {
 
     // Add feature flags as attributes
     if (useCustomAddress) {
-      attributes.push({ trait_type: "Custom Address", value: "true" });
+      attributes.push({ trait_type: 'Custom Address', value: 'true' });
       if (addressPrefix)
-        attributes.push({ trait_type: "Address Prefix", value: addressPrefix });
+        attributes.push({ trait_type: 'Address Prefix', value: addressPrefix });
       if (addressSuffix)
-        attributes.push({ trait_type: "Address Suffix", value: addressSuffix });
+        attributes.push({ trait_type: 'Address Suffix', value: addressSuffix });
     }
 
     if (multiWalletDistribution) {
       attributes.push({
-        trait_type: "Multi-Wallet Distribution",
+        trait_type: 'Multi-Wallet Distribution',
         value: `${multiWalletDistribution.length} wallets`,
       });
     }
 
     // Add revoke status as attributes
     if (revokeAuthorities.freezeAuthority) {
-      attributes.push({ trait_type: "Freeze Authority", value: "Revoked" });
+      attributes.push({ trait_type: 'Freeze Authority', value: 'Revoked' });
     }
     if (revokeAuthorities.mintAuthority) {
-      attributes.push({ trait_type: "Mint Authority", value: "Revoked" });
+      attributes.push({ trait_type: 'Mint Authority', value: 'Revoked' });
     }
     if (revokeAuthorities.updateAuthority) {
-      attributes.push({ trait_type: "Update Authority", value: "Revoked" });
+      attributes.push({ trait_type: 'Update Authority', value: 'Revoked' });
     }
 
     // Build creators array
@@ -255,13 +255,13 @@ async function createCombinedMintTransaction(req, res) {
       // Use custom creator information
       creators.push({
         name: creatorName,
-        website: creatorWebsite || "",
+        website: creatorWebsite || '',
       });
     } else {
       // Default to ProgrammX
       creators.push({
-        name: "ProgrammX",
-        website: "https://programmx.com",
+        name: 'ProgrammX',
+        website: 'https://programmx.com',
       });
     }
 
@@ -273,10 +273,10 @@ async function createCombinedMintTransaction(req, res) {
       symbol: symbol,
       description: description || `${name} - ${symbol} Token`,
       attributes: attributes,
-      externalUrl: websiteUrl || "",
+      externalUrl: websiteUrl || '',
       // Additional metadata fields
       properties: {
-        category: "fungible",
+        category: 'fungible',
         creators: creators,
         files: [],
       },
@@ -284,12 +284,12 @@ async function createCombinedMintTransaction(req, res) {
       extensions: socialLinks,
     });
 
-    console.log("✅ IPFS Upload Complete:");
-    console.log("Image URL:", ipfsResult.image.url);
-    console.log("Metadata URL:", ipfsResult.metadata.url);
+    console.log('✅ IPFS Upload Complete:');
+    console.log('Image URL:', ipfsResult.image.url);
+    console.log('Metadata URL:', ipfsResult.metadata.url);
 
     // Step 2: Create COMBINED transaction (mint + metadata in one!)
-    console.log("🔨 Creating COMBINED transaction...");
+    console.log('🔨 Creating COMBINED transaction...');
 
     const result = await mintService.createCombinedMintWithMetadata({
       payerAddress,
@@ -316,9 +316,9 @@ async function createCombinedMintTransaction(req, res) {
       priorityLevel,
     });
 
-    console.log("✅ Combined transaction created successfully!");
-    console.log("Mint Address:", result.mintAddress);
-    console.log("Metadata Account:", result.metadataAccount);
+    console.log('✅ Combined transaction created successfully!');
+    console.log('Mint Address:', result.mintAddress);
+    console.log('Metadata Account:', result.metadataAccount);
 
     // Step 3: Return response
     const response = {
@@ -357,7 +357,7 @@ async function createCombinedMintTransaction(req, res) {
       // Authority status
       authorities: {
         mint:
-          result.mintAuthority === "revoked" ? "revoked" : result.mintAuthority,
+          result.mintAuthority === 'revoked' ? 'revoked' : result.mintAuthority,
         freeze: result.freezeAuthority,
         update: result.updateAuthority,
       },
@@ -373,18 +373,18 @@ async function createCombinedMintTransaction(req, res) {
       recipientAddress: result.recipientAddress,
     };
 
-    console.log("✅ Response ready!");
+    console.log('✅ Response ready!');
     console.log(
-      "Transaction size:",
-      Buffer.from(result.transaction, "base64").length,
-      "bytes",
+      'Transaction size:',
+      Buffer.from(result.transaction, 'base64').length,
+      'bytes',
     );
 
     res.status(200).json(response);
   } catch (error) {
-    console.error("❌ Error creating combined mint transaction:", error);
+    console.error('❌ Error creating combined mint transaction:', error);
     res.status(500).json({
-      error: error.message || "Failed to create combined mint transaction",
+      error: error.message || 'Failed to create combined mint transaction',
       details: error.stack,
     });
   }
@@ -395,18 +395,18 @@ async function createCombinedMintTransaction(req, res) {
  */
 async function previewCustomAddress(req, res) {
   try {
-    const { suffix = "" } = req.query;
+    const { suffix = '' } = req.query;
 
     // Validate input (suffix only, max 3 characters)
     if (!suffix) {
       return res.status(400).json({
-        error: "Suffix is required",
+        error: 'Suffix is required',
       });
     }
 
     if (suffix.length > 3) {
       return res.status(400).json({
-        error: "Suffix cannot exceed 3 characters",
+        error: 'Suffix cannot exceed 3 characters',
       });
     }
 
@@ -415,7 +415,7 @@ async function previewCustomAddress(req, res) {
     // Generate a sample address with more attempts for better success rate
     const { generateCustomAddress } = mintService;
 
-    const keypair = await generateCustomAddress("", suffix);
+    const keypair = await generateCustomAddress('', suffix);
 
     console.log(
       `✅ Generated preview address: ${keypair.publicKey.toBase58()}`,
@@ -425,10 +425,10 @@ async function previewCustomAddress(req, res) {
       success: true,
       sampleAddress: keypair.publicKey.toBase58(),
       suffix,
-      note: "This is a preview. The actual mint will use a different address with these characteristics.",
+      note: 'This is a preview. The actual mint will use a different address with these characteristics.',
     });
   } catch (error) {
-    console.error("❌ Error generating custom address preview:", error);
+    console.error('❌ Error generating custom address preview:', error);
     res.status(500).json({
       success: false,
       error: `Could not generate address with suffix="${suffix}" after multiple attempts. Try a simpler combination or fewer characters.`,
@@ -448,7 +448,7 @@ async function calculateFees(req, res) {
       walletCount = 1,
     } = req.body;
 
-    const baseFee = parseFloat(process.env.PLATFORM_FEE || "0.05");
+    const baseFee = parseFloat(process.env.PLATFORM_FEE || '0.05');
     const customAddressFee = useCustomAddress
       ? mintService.CUSTOM_ADDRESS_FEE_SOL
       : 0;
@@ -491,7 +491,7 @@ async function calculateFees(req, res) {
     });
   } catch (error) {
     res.status(500).json({
-      error: "Failed to calculate fees",
+      error: 'Failed to calculate fees',
       details: error.message,
     });
   }

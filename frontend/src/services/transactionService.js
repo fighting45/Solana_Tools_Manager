@@ -1,4 +1,4 @@
-import { Transaction } from "@solana/web3.js";
+import { Transaction } from '@solana/web3.js';
 
 /**
  * Transaction Service for handling Solana transactions
@@ -31,8 +31,8 @@ class TransactionService {
 
       return transaction;
     } catch (error) {
-      console.error("Error deserializing transaction:", error);
-      throw new Error("Failed to deserialize transaction");
+      console.error('Error deserializing transaction:', error);
+      throw new Error('Failed to deserialize transaction');
     }
   }
 
@@ -46,8 +46,8 @@ class TransactionService {
     try {
       return await signTransaction(transaction);
     } catch (error) {
-      console.error("Error signing transaction:", error);
-      throw new Error("Transaction signing failed. Please try again.");
+      console.error('Error signing transaction:', error);
+      throw new Error('Transaction signing failed. Please try again.');
     }
   }
 
@@ -64,13 +64,13 @@ class TransactionService {
         signedTransaction.serialize(),
         {
           skipPreflight: options.skipPreflight || false,
-          preflightCommitment: options.preflightCommitment || "confirmed",
+          preflightCommitment: options.preflightCommitment || 'confirmed',
           maxRetries: options.maxRetries || 3,
         },
       );
       return signature;
     } catch (error) {
-      console.error("Error sending transaction:", error);
+      console.error('Error sending transaction:', error);
       throw new Error(`Failed to send transaction: ${error.message}`);
     }
   }
@@ -102,11 +102,11 @@ class TransactionService {
       } else {
         // Fallback to legacy confirmation method
         console.warn(
-          "Using legacy confirmation method. Consider passing blockhash and lastValidBlockHeight.",
+          'Using legacy confirmation method. Consider passing blockhash and lastValidBlockHeight.',
         );
         confirmation = await connection.confirmTransaction(
           signature,
-          "confirmed",
+          'confirmed',
         );
       }
 
@@ -118,7 +118,7 @@ class TransactionService {
 
       return confirmation;
     } catch (error) {
-      console.error("Error confirming transaction:", error);
+      console.error('Error confirming transaction:', error);
       throw new Error(`Transaction confirmation failed: ${error.message}`);
     }
   }
@@ -138,7 +138,7 @@ class TransactionService {
     connection,
   ) {
     try {
-      console.log("Executing transaction...");
+      console.log('Executing transaction...');
 
       // Deserialize with blockhash and feePayer
       const transaction = this.deserializeTransaction(base64Transaction, {
@@ -146,7 +146,7 @@ class TransactionService {
         feePayer: wallet.publicKey,
       });
 
-      console.log("Transaction details:", {
+      console.log('Transaction details:', {
         instructions: transaction.instructions.length,
         feePayer: transaction.feePayer?.toString(),
         recentBlockhash: transaction.recentBlockhash,
@@ -164,11 +164,11 @@ class TransactionService {
         connection,
         {
           skipPreflight: false,
-          preflightCommitment: "confirmed",
+          preflightCommitment: 'confirmed',
         },
       );
 
-      console.log("Transaction sent! Signature:", signature);
+      console.log('Transaction sent! Signature:', signature);
 
       // Confirm
       await this.confirmTransaction(
@@ -178,10 +178,10 @@ class TransactionService {
         transactionData.lastValidBlockHeight,
       );
 
-      console.log("✅ Transaction confirmed!");
+      console.log('✅ Transaction confirmed!');
       return signature;
     } catch (error) {
-      console.error("Transaction execution failed:", error);
+      console.error('Transaction execution failed:', error);
       throw error;
     }
   }

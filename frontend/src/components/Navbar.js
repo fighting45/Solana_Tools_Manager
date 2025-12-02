@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { usePriorityFee } from "../context/PriorityFeeContext";
-import PriorityFeeSelector from "./PriorityFeeSelector";
-import "./Navbar.css";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { usePriorityFee } from '../context/PriorityFeeContext';
+import PriorityFeeSelector from './PriorityFeeSelector';
+import './Navbar.css';
 
 const Navbar = () => {
   const { priorityLevel, updatePriorityLevel } = usePriorityFee();
   const [isDark, setIsDark] = useState(() => {
-    const saved = localStorage.getItem("theme");
-    return saved ? saved === "dark" : false;
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : false;
   });
   const [isPriorityFeeOpen, setIsPriorityFeeOpen] = useState(false);
 
   useEffect(() => {
     if (isDark) {
-      document.documentElement.setAttribute("data-theme", "dark");
-      localStorage.setItem("theme", "dark");
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
     } else {
-      document.documentElement.setAttribute("data-theme", "light");
-      localStorage.setItem("theme", "light");
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
     }
   }, [isDark]);
 
@@ -28,20 +28,20 @@ const Navbar = () => {
   };
 
   const handlePriorityLevelChange = (level) => {
-    console.log("🎯 [Navbar] Setting priority level to:", level);
+    console.log('🎯 [Navbar] Setting priority level to:', level);
     updatePriorityLevel(level);
-    console.log("✅ [Navbar] Priority level updated via context");
+    console.log('✅ [Navbar] Priority level updated via context');
   };
 
   // Get display label for current priority level
   const getPriorityLabel = () => {
     const labels = {
-      none: "None",
-      fast: "Fast 1x",
-      turbo: "Turbo 2x",
-      ultra: "Ultra 3x",
+      none: 'None',
+      fast: 'Fast 1x',
+      turbo: 'Turbo 2x',
+      ultra: 'Ultra 3x',
     };
-    return labels[priorityLevel] || "Fast 1x";
+    return labels[priorityLevel] || 'Fast 1x';
   };
 
   return (
@@ -90,7 +90,7 @@ const Navbar = () => {
               onClick={toggleTheme}
               aria-label="Toggle theme"
             >
-              {isDark ? "☀️" : "🌙"}
+              {isDark ? '☀️' : '🌙'}
             </button>
 
             <button

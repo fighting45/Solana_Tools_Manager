@@ -1,6 +1,6 @@
-const axios = require("axios");
-const FormData = require("form-data");
-require("dotenv").config();
+const axios = require('axios');
+const FormData = require('form-data');
+require('dotenv').config();
 
 /**
  * IPFS Service for uploading files and metadata to Pinata
@@ -9,10 +9,10 @@ class IPFSService {
   constructor() {
     this.pinataJWT = process.env.PINATA_JWT;
     this.pinataGateway =
-      process.env.PINATA_GATEWAY || "https://gateway.pinata.cloud";
+      process.env.PINATA_GATEWAY || 'https://gateway.pinata.cloud';
 
     if (!this.pinataJWT) {
-      console.warn("⚠️ Pinata JWT not found in environment variables");
+      console.warn('⚠️ Pinata JWT not found in environment variables');
     }
   }
 
@@ -25,20 +25,20 @@ class IPFSService {
   async uploadFile(fileBuffer, fileName) {
     try {
       const formData = new FormData();
-      formData.append("file", fileBuffer, fileName);
+      formData.append('file', fileBuffer, fileName);
 
       const pinataMetadata = JSON.stringify({
         name: fileName,
       });
-      formData.append("pinataMetadata", pinataMetadata);
+      formData.append('pinataMetadata', pinataMetadata);
 
       const response = await axios.post(
-        "https://api.pinata.cloud/pinning/pinFileToIPFS",
+        'https://api.pinata.cloud/pinning/pinFileToIPFS',
         formData,
         {
-          maxBodyLength: "Infinity",
+          maxBodyLength: 'Infinity',
           headers: {
-            "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
+            'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
             Authorization: `Bearer ${this.pinataJWT}`,
           },
         },
@@ -54,7 +54,7 @@ class IPFSService {
       };
     } catch (error) {
       console.error(
-        "Error uploading file to IPFS:",
+        'Error uploading file to IPFS:',
         error.response?.data || error.message,
       );
       throw new Error(`Failed to upload file to IPFS: ${error.message}`);
@@ -81,31 +81,31 @@ class IPFSService {
         symbol: metadata.symbol,
         description: metadata.description || `${metadata.name} Token`,
         image: metadata.imageUrl, // CRITICAL: This must be present for image to show
-        external_url: metadata.externalUrl || "",
+        external_url: metadata.externalUrl || '',
         attributes: metadata.attributes || [],
         properties: {
           files: [
             {
               uri: metadata.imageUrl,
-              type: metadata.imageType || "image/png",
+              type: metadata.imageType || 'image/png',
             },
           ],
-          category: "image",
+          category: 'image',
           creators: metadata.creators || [],
         },
       };
 
       console.log(
-        "📝 Metadata JSON structure:",
+        '📝 Metadata JSON structure:',
         JSON.stringify(metadataJson, null, 2),
       );
 
       const response = await axios.post(
-        "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+        'https://api.pinata.cloud/pinning/pinJSONToIPFS',
         metadataJson,
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${this.pinataJWT}`,
           },
         },
@@ -126,7 +126,7 @@ class IPFSService {
       };
     } catch (error) {
       console.error(
-        "Error uploading metadata to IPFS:",
+        'Error uploading metadata to IPFS:',
         error.response?.data || error.message,
       );
       throw new Error(`Failed to upload metadata to IPFS: ${error.message}`);
@@ -142,25 +142,25 @@ class IPFSService {
       const response = await axios.get(metadataUrl, { timeout: 10000 });
       const metadata = response.data;
 
-      console.log("🔍 Verifying metadata structure...");
+      console.log('🔍 Verifying metadata structure...');
 
       if (!metadata.image) {
-        console.warn("⚠️ WARNING: Metadata missing 'image' field!");
+        console.warn('⚠️ WARNING: Metadata missing \'image\' field!');
       } else {
-        console.log("✅ Metadata has image field:", metadata.image);
+        console.log('✅ Metadata has image field:', metadata.image);
       }
 
       if (!metadata.name) {
-        console.warn("⚠️ WARNING: Metadata missing 'name' field!");
+        console.warn('⚠️ WARNING: Metadata missing \'name\' field!');
       }
 
       if (!metadata.symbol) {
-        console.warn("⚠️ WARNING: Metadata missing 'symbol' field!");
+        console.warn('⚠️ WARNING: Metadata missing \'symbol\' field!');
       }
 
       return metadata;
     } catch (error) {
-      console.error("⚠️ Could not verify metadata:", error.message);
+      console.error('⚠️ Could not verify metadata:', error.message);
       // Don't throw - verification is optional
     }
   }
@@ -179,17 +179,17 @@ class IPFSService {
    */
   async uploadTokenPackage(params) {
     try {
-      console.log("📦 Starting token package upload...");
+      console.log('📦 Starting token package upload...');
 
       // Step 1: Upload image
-      console.log("1️⃣ Uploading image to IPFS...");
+      console.log('1️⃣ Uploading image to IPFS...');
       const imageResult = await this.uploadFile(
         params.imageBuffer,
         params.imageName,
       );
 
       // Step 2: Upload metadata JSON with image reference
-      console.log("2️⃣ Uploading metadata to IPFS...");
+      console.log('2️⃣ Uploading metadata to IPFS...');
       const metadataResult = await this.uploadMetadata({
         name: params.name,
         symbol: params.symbol,
@@ -201,14 +201,14 @@ class IPFSService {
         creators: params.creators,
       });
 
-      console.log("✅ Token package uploaded successfully!");
+      console.log('✅ Token package uploaded successfully!');
 
       return {
         image: imageResult,
         metadata: metadataResult,
       };
     } catch (error) {
-      console.error("Error uploading token package:", error);
+      console.error('Error uploading token package:', error);
       throw error;
     }
   }
@@ -220,12 +220,12 @@ class IPFSService {
    */
   getFileType(buffer) {
     // Check magic numbers for common image types
-    if (buffer[0] === 0x89 && buffer[1] === 0x50) return "image/png";
-    if (buffer[0] === 0xff && buffer[1] === 0xd8) return "image/jpeg";
-    if (buffer[0] === 0x47 && buffer[1] === 0x49) return "image/gif";
-    if (buffer[0] === 0x52 && buffer[1] === 0x49) return "image/webp";
+    if (buffer[0] === 0x89 && buffer[1] === 0x50) return 'image/png';
+    if (buffer[0] === 0xff && buffer[1] === 0xd8) return 'image/jpeg';
+    if (buffer[0] === 0x47 && buffer[1] === 0x49) return 'image/gif';
+    if (buffer[0] === 0x52 && buffer[1] === 0x49) return 'image/webp';
 
-    return "image/png"; // Default fallback
+    return 'image/png'; // Default fallback
   }
 }
 

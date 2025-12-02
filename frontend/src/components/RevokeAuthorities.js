@@ -1,26 +1,26 @@
-import React from "react";
-import "./RevokeAuthorities.css";
+import React from 'react';
+import './RevokeAuthorities.css';
 
 const RevokeAuthorities = ({ formData, onInputChange, disabled }) => {
   const authorities = [
     {
-      key: "revokeFreezeAuthority",
-      icon: "❄️",
-      title: "Revoke Freeze",
+      key: 'revokeFreezeAuthority',
+      icon: '❄️',
+      title: 'Revoke Freeze',
       description:
-        "No one will be able to freeze holders' token accounts anymore",
+        'No one will be able to freeze holders\' token accounts anymore',
     },
     {
-      key: "revokeMintAuthority",
-      icon: "🪙",
-      title: "Revoke Mint",
-      description: "No one will be able to create more tokens anymore",
+      key: 'revokeMintAuthority',
+      icon: '🪙',
+      title: 'Revoke Mint',
+      description: 'No one will be able to create more tokens anymore',
     },
     {
-      key: "revokeUpdateAuthority",
-      icon: "✏️",
-      title: "Revoke Update",
-      description: "No one will be able to modify token metadata anymore",
+      key: 'revokeUpdateAuthority',
+      icon: '✏️',
+      title: 'Revoke Update',
+      description: 'No one will be able to modify token metadata anymore',
     },
   ];
 
@@ -38,7 +38,7 @@ const RevokeAuthorities = ({ formData, onInputChange, disabled }) => {
         {authorities.map((authority) => (
           <div
             key={authority.key}
-            className={`revoke-authority-card ${formData[authority.key] ? "selected" : ""}`}
+            className={`revoke-authority-card ${formData[authority.key] ? 'selected' : ''}`}
             onClick={() =>
               !disabled &&
               onInputChange({

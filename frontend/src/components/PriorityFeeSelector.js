@@ -1,5 +1,5 @@
-import React from "react";
-import "./PriorityFeeSelector.css";
+import React from 'react';
+import './PriorityFeeSelector.css';
 
 const PriorityFeeSelector = ({
   isOpen,
@@ -9,28 +9,28 @@ const PriorityFeeSelector = ({
 }) => {
   const priorityLevels = [
     {
-      id: "none",
-      label: "None",
-      description: "No priority fee (standard transaction)",
-      icon: "🔵",
+      id: 'none',
+      label: 'None',
+      description: 'No priority fee (standard transaction)',
+      icon: '🔵',
     },
     {
-      id: "fast",
-      label: "Fast 1x",
-      description: "Standard priority for normal network conditions",
-      icon: "⚡",
+      id: 'fast',
+      label: 'Fast 1x',
+      description: 'Standard priority for normal network conditions',
+      icon: '⚡',
     },
     {
-      id: "turbo",
-      label: "Turbo 2x",
-      description: "Higher priority for faster confirmation",
-      icon: "🚀",
+      id: 'turbo',
+      label: 'Turbo 2x',
+      description: 'Higher priority for faster confirmation',
+      icon: '🚀',
     },
     {
-      id: "ultra",
-      label: "Ultra 3x",
-      description: "Highest priority for immediate confirmation",
-      icon: "⚡⚡",
+      id: 'ultra',
+      label: 'Ultra 3x',
+      description: 'Highest priority for immediate confirmation',
+      icon: '⚡⚡',
     },
   ];
 
@@ -67,7 +67,7 @@ const PriorityFeeSelector = ({
               <button
                 key={level.id}
                 className={`priority-level-btn ${
-                  selectedLevel === level.id ? "active" : ""
+                  selectedLevel === level.id ? 'active' : ''
                 }`}
                 onClick={() => handleSelect(level.id)}
               >

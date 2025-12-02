@@ -1,4 +1,4 @@
-const { ComputeBudgetProgram } = require("@solana/web3.js");
+const { ComputeBudgetProgram } = require('@solana/web3.js');
 
 /**
  * Get priority fee based on level (using fixed values)
@@ -43,13 +43,13 @@ function mapPriorityLevel(uiLevel) {
   console.log(`🔄 Mapping UI level: "${uiLevel}"`);
 
   const mapping = {
-    none: "None",
-    fast: "Medium",
-    turbo: "High",
-    ultra: "VeryHigh",
+    none: 'None',
+    fast: 'Medium',
+    turbo: 'High',
+    ultra: 'VeryHigh',
   };
 
-  const mapped = mapping[uiLevel?.toLowerCase()] || "None";
+  const mapped = mapping[uiLevel?.toLowerCase()] || 'None';
   console.log(`✅ Mapped to internal level: "${mapped}"`);
   return mapped;
 }

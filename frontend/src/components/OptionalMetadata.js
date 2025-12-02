@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import "./OptionalMetadata.css";
+import React, { useState } from 'react';
+import './OptionalMetadata.css';
 
 const OptionalMetadata = ({
   enabled,
@@ -46,7 +46,7 @@ const OptionalMetadata = ({
 
       {enabled && (
         <div
-          className={`optional-metadata-content ${isExpanded ? "expanded" : ""}`}
+          className={`optional-metadata-content ${isExpanded ? 'expanded' : ''}`}
         >
           {/* Social Links Section */}
           <div className="metadata-section">
@@ -60,7 +60,7 @@ const OptionalMetadata = ({
                   type="text"
                   id="telegramUrl"
                   name="telegramUrl"
-                  value={socialLinks.telegramUrl || ""}
+                  value={socialLinks.telegramUrl || ''}
                   onChange={onSocialLinkChange}
                   placeholder="https://t.me/yourgroup"
                   className="form-input"
@@ -75,7 +75,7 @@ const OptionalMetadata = ({
                   type="text"
                   id="websiteUrl"
                   name="websiteUrl"
-                  value={socialLinks.websiteUrl || ""}
+                  value={socialLinks.websiteUrl || ''}
                   onChange={onSocialLinkChange}
                   placeholder="https://yourwebsite.com"
                   className="form-input"
@@ -92,7 +92,7 @@ const OptionalMetadata = ({
                   type="text"
                   id="discordUrl"
                   name="discordUrl"
-                  value={socialLinks.discordUrl || ""}
+                  value={socialLinks.discordUrl || ''}
                   onChange={onSocialLinkChange}
                   placeholder="https://discord.gg/yourinvite"
                   className="form-input"
@@ -107,7 +107,7 @@ const OptionalMetadata = ({
                   type="text"
                   id="twitterUrl"
                   name="twitterUrl"
-                  value={socialLinks.twitterUrl || ""}
+                  value={socialLinks.twitterUrl || ''}
                   onChange={onSocialLinkChange}
                   placeholder="https://twitter.com/yourhandle"
                   className="form-input"
@@ -126,7 +126,7 @@ const OptionalMetadata = ({
                   key={num}
                   type="text"
                   name={`tag${num}`}
-                  value={tags[`tag${num}`] || ""}
+                  value={tags[`tag${num}`] || ''}
                   onChange={onTagChange}
                   placeholder={`Tag ${num}`}
                   className="tag-input"

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import "./CustomAddressGenerator.css";
+import React, { useState, useEffect } from 'react';
+import './CustomAddressGenerator.css';
 
 const CustomAddressGenerator = ({
   enabled,
@@ -8,7 +8,7 @@ const CustomAddressGenerator = ({
   onSuffixChange,
   disabled,
 }) => {
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const maxSuffixLength = 3;
   const isValid = suffix.length > 0 && suffix.length <= maxSuffixLength;
@@ -17,9 +17,9 @@ const CustomAddressGenerator = ({
     if (suffix.length > maxSuffixLength) {
       setError(`Suffix must not exceed ${maxSuffixLength} characters.`);
     } else if (suffix.length === 0) {
-      setError("Suffix must be provided.");
+      setError('Suffix must be provided.');
     } else {
-      setError("");
+      setError('');
     }
   }, [suffix]);
 
@@ -63,7 +63,7 @@ const CustomAddressGenerator = ({
             />
           </div>
 
-          <div className={`character-counter ${isValid ? "valid" : "invalid"}`}>
+          <div className={`character-counter ${isValid ? 'valid' : 'invalid'}`}>
             {suffix.length}/{maxSuffixLength} characters used
           </div>
 

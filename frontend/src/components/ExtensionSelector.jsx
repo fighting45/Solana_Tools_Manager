@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import apiService from "../services/apiService";
-import "./ExtensionSelector.css";
+import React, { useState, useEffect } from 'react';
+import apiService from '../services/apiService';
+import './ExtensionSelector.css';
 
 const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
   const [extensions, setExtensions] = useState([]);
@@ -10,7 +10,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
 
   // Fetch available extensions from backend
   useEffect(() => {
-    if (tokenType === "TOKEN2022") {
+    if (tokenType === 'TOKEN2022') {
       fetchExtensions();
     } else {
       // Reset when switching away from Token-2022
@@ -29,7 +29,7 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
       setExtensions(data.extensions || []);
       setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch extensions:", error);
+      console.error('Failed to fetch extensions:', error);
       setLoading(false);
       // Set empty array on error
       setExtensions([]);
@@ -59,15 +59,15 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isDropdownOpen && !event.target.closest(".extension-dropdown")) {
+      if (isDropdownOpen && !event.target.closest('.extension-dropdown')) {
         setIsDropdownOpen(false);
       }
     };
 
     if (isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
       return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isDropdownOpen]);
 
@@ -106,10 +106,10 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
           <div className="dropdown-toggle-content">
             <span className="dropdown-text">
               {selectedExtensions.length === 0
-                ? "Select extensions..."
-                : `${selectedExtensions.length} extension${selectedExtensions.length > 1 ? "s" : ""} selected`}
+                ? 'Select extensions...'
+                : `${selectedExtensions.length} extension${selectedExtensions.length > 1 ? 's' : ''} selected`}
             </span>
-            <span className={`dropdown-arrow ${isDropdownOpen ? "open" : ""}`}>
+            <span className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}>
               ▼
             </span>
           </div>
@@ -124,8 +124,8 @@ const ExtensionSelector = ({ onExtensionsChange, disabled, tokenType }) => {
                 className="select-all-btn"
               >
                 {selectedExtensions.length === extensions.length
-                  ? "Deselect All"
-                  : "Select All"}
+                  ? 'Deselect All'
+                  : 'Select All'}
               </button>
             </div>
 

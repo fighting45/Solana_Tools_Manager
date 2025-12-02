@@ -1,11 +1,11 @@
-import React from "react";
-import "./CustomCreator.css";
+import React from 'react';
+import './CustomCreator.css';
 
 const CustomCreator = ({ formData, onInputChange, disabled }) => {
   const handleToggle = () => {
     onInputChange({
       target: {
-        name: "useCustomCreator",
+        name: 'useCustomCreator',
         value: !formData.useCustomCreator,
       },
     });
@@ -45,7 +45,7 @@ const CustomCreator = ({ formData, onInputChange, disabled }) => {
                 type="text"
                 id="creatorName"
                 name="creatorName"
-                value={formData.creatorName || ""}
+                value={formData.creatorName || ''}
                 onChange={onInputChange}
                 placeholder="Enter name.."
                 className="form-input"
@@ -63,7 +63,7 @@ const CustomCreator = ({ formData, onInputChange, disabled }) => {
                   type="url"
                   id="creatorWebsite"
                   name="creatorWebsite"
-                  value={formData.creatorWebsite || ""}
+                  value={formData.creatorWebsite || ''}
                   onChange={onInputChange}
                   placeholder="https://programmx.com"
                   className="form-input with-icon"

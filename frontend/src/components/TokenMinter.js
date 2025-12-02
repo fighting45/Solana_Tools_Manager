@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useMintTransaction } from "../hooks/useMintTransaction";
-import { useToken2022Transaction } from "../hooks/useToken2022Transaction";
-import { DEFAULT_FORM_VALUES, TOKEN_TYPES } from "../config/constants";
-import Navbar from "./Navbar";
-import StatusMessage from "./StatusMessage";
-import MintForm from "./MintForm";
-import SuccessModal from "./SuccessModal";
-import "./TokenMinter.css";
+import React, { useState } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useMintTransaction } from '../hooks/useMintTransaction';
+import { useToken2022Transaction } from '../hooks/useToken2022Transaction';
+import { DEFAULT_FORM_VALUES, TOKEN_TYPES } from '../config/constants';
+import Navbar from './Navbar';
+import StatusMessage from './StatusMessage';
+import MintForm from './MintForm';
+import SuccessModal from './SuccessModal';
+import './TokenMinter.css';
 
 const TokenMinter = () => {
   const { publicKey } = useWallet();
@@ -92,14 +92,14 @@ const TokenMinter = () => {
 
   const handleGenerateCustomAddress = async (prefix, suffix) => {
     try {
-      console.log("🔍 Generating custom address...", { prefix, suffix });
-      const apiService = (await import("../services/apiService")).default;
+      console.log('🔍 Generating custom address...', { prefix, suffix });
+      const apiService = (await import('../services/apiService')).default;
       const result = await apiService.previewCustomAddress(prefix, suffix);
 
-      console.log("✅ Received result:", result);
+      console.log('✅ Received result:', result);
 
       if (!result.success || !result.sampleAddress) {
-        throw new Error(result.error || "Failed to generate address");
+        throw new Error(result.error || 'Failed to generate address');
       }
 
       // Update form with generated address
@@ -108,14 +108,14 @@ const TokenMinter = () => {
         generatedAddress: result.sampleAddress,
       }));
 
-      console.log("✅ Custom address generated:", result.sampleAddress);
+      console.log('✅ Custom address generated:', result.sampleAddress);
       return result.sampleAddress;
     } catch (error) {
-      console.error("❌ Error generating custom address:", error);
+      console.error('❌ Error generating custom address:', error);
       const errorMessage =
         error.response?.data?.error ||
         error.message ||
-        "Failed to generate address. Please try again.";
+        'Failed to generate address. Please try again.';
       throw new Error(errorMessage);
     }
   };
@@ -125,7 +125,7 @@ const TokenMinter = () => {
       <Navbar />
       <div className="token-minter-container">
         <div
-          className={`token-minter-card ${result && result.success ? "hidden" : ""}`}
+          className={`token-minter-card ${result && result.success ? 'hidden' : ''}`}
         >
           <div className="card-header">
             <h1 className="card-title">
@@ -141,7 +141,7 @@ const TokenMinter = () => {
 
           <div className="token-type-selector">
             <button
-              className={`token-type-btn ${tokenType === TOKEN_TYPES.SPL ? "active" : ""}`}
+              className={`token-type-btn ${tokenType === TOKEN_TYPES.SPL ? 'active' : ''}`}
               onClick={() => handleTokenTypeChange(TOKEN_TYPES.SPL)}
               disabled={loading}
             >
@@ -149,7 +149,7 @@ const TokenMinter = () => {
               <span className="token-type-label">SPL Token</span>
             </button>
             <button
-              className={`token-type-btn ${tokenType === TOKEN_TYPES.TOKEN2022 ? "active" : ""}`}
+              className={`token-type-btn ${tokenType === TOKEN_TYPES.TOKEN2022 ? 'active' : ''}`}
               onClick={() => handleTokenTypeChange(TOKEN_TYPES.TOKEN2022)}
               disabled={loading}
             >
@@ -183,7 +183,7 @@ const TokenMinter = () => {
               Built with Solana Wallet Adapter • Devnet
             </p>
             <p className="footer-text programmx-footer">
-              Made with ❤️ by{" "}
+              Made with ❤️ by{' '}
               <span className="programmx-brand-small">ProgrammX</span>
             </p>
           </div>
@@ -193,7 +193,7 @@ const TokenMinter = () => {
       {/* Success Modal */}
       <SuccessModal
         result={result}
-        tokenType={tokenType === TOKEN_TYPES.SPL ? "SPL" : "TOKEN2022"}
+        tokenType={tokenType === TOKEN_TYPES.SPL ? 'SPL' : 'TOKEN2022'}
         onClose={handleCloseModal}
         onNewMint={handleNewMint}
       />

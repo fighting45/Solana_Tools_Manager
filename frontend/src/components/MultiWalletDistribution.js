@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import "./MultiWalletDistribution.css";
+import React, { useState, useEffect } from 'react';
+import './MultiWalletDistribution.css';
 
 const MultiWalletDistribution = ({
   enabled,
@@ -9,11 +9,11 @@ const MultiWalletDistribution = ({
   disabled,
 }) => {
   const [wallets, setWallets] = useState(
-    distributions || [{ wallet: "", percentage: 100, avatar: "😎" }],
+    distributions || [{ wallet: '', percentage: 100, avatar: '😎' }],
   );
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
-  const avatars = ["😎", "🦊", "🐻", "🐼", "🐵", "🦁", "🐸", "🦄", "🐙", "🦋"];
+  const avatars = ['😎', '🦊', '🐻', '🐼', '🐵', '🦁', '🐸', '🦄', '🐙', '🦋'];
 
   const validatePercentages = React.useCallback(() => {
     const total = wallets.reduce(
@@ -23,7 +23,7 @@ const MultiWalletDistribution = ({
     if (wallets.length > 0 && Math.abs(total - 100) > 0.01) {
       setError(`Percentages must total 100% (currently ${total.toFixed(2)}%)`);
     } else {
-      setError("");
+      setError('');
     }
   }, [wallets]);
 
@@ -33,7 +33,7 @@ const MultiWalletDistribution = ({
 
   const handleWalletChange = (index, field, value) => {
     const newWallets = [...wallets];
-    if (field === "percentage") {
+    if (field === 'percentage') {
       value = Math.max(0, Math.min(100, parseFloat(value) || 0));
     }
     newWallets[index] = { ...newWallets[index], [field]: value };
@@ -46,7 +46,7 @@ const MultiWalletDistribution = ({
       const newWallets = [
         ...wallets,
         {
-          wallet: "",
+          wallet: '',
           percentage: 0,
           avatar: avatars[wallets.length % avatars.length],
         },
@@ -142,7 +142,7 @@ const MultiWalletDistribution = ({
                   type="text"
                   value={wallet.wallet}
                   onChange={(e) =>
-                    handleWalletChange(index, "wallet", e.target.value)
+                    handleWalletChange(index, 'wallet', e.target.value)
                   }
                   placeholder="Type wallet address"
                   className="wallet-address-input"
@@ -152,7 +152,7 @@ const MultiWalletDistribution = ({
                   type="number"
                   value={wallet.percentage}
                   onChange={(e) =>
-                    handleWalletChange(index, "percentage", e.target.value)
+                    handleWalletChange(index, 'percentage', e.target.value)
                   }
                   className="percentage-input"
                   disabled={disabled}

@@ -1,11 +1,11 @@
-import axios from "axios";
+import axios from 'axios';
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "http://localhost:3001/api";
+  process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
-console.log("🔧 [ApiService] API_BASE_URL:", API_BASE_URL);
+console.log('🔧 [ApiService] API_BASE_URL:', API_BASE_URL);
 console.log(
-  "🔧 [ApiService] REACT_APP_API_URL:",
+  '🔧 [ApiService] REACT_APP_API_URL:',
   process.env.REACT_APP_API_URL,
 );
 
@@ -18,44 +18,44 @@ class ApiService {
       const form = new FormData();
 
       // Basic token information
-      form.append("payerAddress", formData.payerAddress);
-      form.append("recipientAddress", formData.recipientAddress);
-      form.append("name", formData.name);
-      form.append("symbol", formData.symbol);
-      form.append("description", formData.description || "");
-      form.append("amount", formData.amount);
-      form.append("decimals", formData.decimals);
-      form.append("image", formData.image);
+      form.append('payerAddress', formData.payerAddress);
+      form.append('recipientAddress', formData.recipientAddress);
+      form.append('name', formData.name);
+      form.append('symbol', formData.symbol);
+      form.append('description', formData.description || '');
+      form.append('amount', formData.amount);
+      form.append('decimals', formData.decimals);
+      form.append('image', formData.image);
 
       // Mint authority (optional)
       if (formData.mintAuthorityAddress) {
-        form.append("mintAuthorityAddress", formData.mintAuthorityAddress);
+        form.append('mintAuthorityAddress', formData.mintAuthorityAddress);
       }
 
       // Seller fee (royalties)
       if (formData.sellerFeeBasisPoints) {
-        form.append("sellerFeeBasisPoints", formData.sellerFeeBasisPoints);
+        form.append('sellerFeeBasisPoints', formData.sellerFeeBasisPoints);
       }
 
       // Social links (optional)
       if (formData.telegramUrl)
-        form.append("telegramUrl", formData.telegramUrl);
-      if (formData.websiteUrl) form.append("websiteUrl", formData.websiteUrl);
-      if (formData.discordUrl) form.append("discordUrl", formData.discordUrl);
-      if (formData.twitterUrl) form.append("twitterUrl", formData.twitterUrl);
+        form.append('telegramUrl', formData.telegramUrl);
+      if (formData.websiteUrl) form.append('websiteUrl', formData.websiteUrl);
+      if (formData.discordUrl) form.append('discordUrl', formData.discordUrl);
+      if (formData.twitterUrl) form.append('twitterUrl', formData.twitterUrl);
 
       // Tags (optional - up to 5)
       if (formData.tags && formData.tags.length > 0) {
-        form.append("tags", formData.tags.join(","));
+        form.append('tags', formData.tags.join(','));
       }
 
       // Custom address feature
       if (formData.useCustomAddress) {
-        form.append("useCustomAddress", "true");
+        form.append('useCustomAddress', 'true');
         if (formData.addressPrefix)
-          form.append("addressPrefix", formData.addressPrefix);
+          form.append('addressPrefix', formData.addressPrefix);
         if (formData.addressSuffix)
-          form.append("addressSuffix", formData.addressSuffix);
+          form.append('addressSuffix', formData.addressSuffix);
       }
 
       // Multi-wallet distribution
@@ -64,40 +64,40 @@ class ApiService {
         formData.multiWalletDistribution.length > 0
       ) {
         form.append(
-          "multiWalletDistribution",
+          'multiWalletDistribution',
           JSON.stringify(formData.multiWalletDistribution),
         );
       }
 
       // Revoke authorities
       if (formData.revokeFreezeAuthority)
-        form.append("revokeFreezeAuthority", "true");
+        form.append('revokeFreezeAuthority', 'true');
       if (formData.revokeMintAuthority)
-        form.append("revokeMintAuthority", "true");
+        form.append('revokeMintAuthority', 'true');
       if (formData.revokeUpdateAuthority)
-        form.append("revokeUpdateAuthority", "true");
+        form.append('revokeUpdateAuthority', 'true');
 
       // Priority fee level
       if (formData.priorityLevel) {
-        form.append("priorityLevel", formData.priorityLevel);
+        form.append('priorityLevel', formData.priorityLevel);
         console.log(
-          "🎯 [ApiService] Sending priority level to backend:",
+          '🎯 [ApiService] Sending priority level to backend:',
           formData.priorityLevel,
         );
       }
 
       const fullUrl = `${API_BASE_URL}/mint/create-transaction`;
-      console.log("🌐 [ApiService] Making POST request to:", fullUrl);
+      console.log('🌐 [ApiService] Making POST request to:', fullUrl);
 
       const response = await axios.post(fullUrl, form, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       return response.data;
     } catch (error) {
-      console.error("Error creating combined mint transaction:", error);
+      console.error('Error creating combined mint transaction:', error);
       throw error;
     }
   }
@@ -112,7 +112,7 @@ class ApiService {
       });
       return response.data;
     } catch (error) {
-      console.error("Error previewing custom address:", error);
+      console.error('Error previewing custom address:', error);
       throw error;
     }
   }
@@ -128,7 +128,7 @@ class ApiService {
       );
       return response.data;
     } catch (error) {
-      console.error("Error calculating fees:", error);
+      console.error('Error calculating fees:', error);
       throw error;
     }
   }
@@ -141,18 +141,18 @@ class ApiService {
       const form = new FormData();
 
       // Basic token information
-      form.append("payerAddress", formData.payerAddress);
-      form.append("recipientAddress", formData.recipientAddress);
-      form.append("name", formData.name);
-      form.append("symbol", formData.symbol);
-      form.append("description", formData.description || "");
-      form.append("amount", formData.amount);
-      form.append("decimals", formData.decimals);
-      form.append("image", formData.image);
+      form.append('payerAddress', formData.payerAddress);
+      form.append('recipientAddress', formData.recipientAddress);
+      form.append('name', formData.name);
+      form.append('symbol', formData.symbol);
+      form.append('description', formData.description || '');
+      form.append('amount', formData.amount);
+      form.append('decimals', formData.decimals);
+      form.append('image', formData.image);
 
       // Mint authority (optional)
       if (formData.mintAuthorityAddress) {
-        form.append("mintAuthorityAddress", formData.mintAuthorityAddress);
+        form.append('mintAuthorityAddress', formData.mintAuthorityAddress);
       }
 
       // Token-2022 specific extensions (send as comma-separated string or array)
@@ -162,14 +162,14 @@ class ApiService {
         formData.extensions.length > 0
       ) {
         // Send as comma-separated string to match backend expectation
-        form.append("extensions", formData.extensions.join(","));
+        form.append('extensions', formData.extensions.join(','));
       }
 
       // Priority fee level
       if (formData.priorityLevel) {
-        form.append("priorityLevel", formData.priorityLevel);
+        form.append('priorityLevel', formData.priorityLevel);
         console.log(
-          "🎯 [ApiService] Sending priority level to backend:",
+          '🎯 [ApiService] Sending priority level to backend:',
           formData.priorityLevel,
         );
       }
@@ -179,14 +179,14 @@ class ApiService {
         form,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
         },
       );
 
       return response.data;
     } catch (error) {
-      console.error("Error creating Token-2022 transaction:", error);
+      console.error('Error creating Token-2022 transaction:', error);
       throw error;
     }
   }
@@ -197,18 +197,18 @@ class ApiService {
   async uploadToIPFS(imageFile, metadata) {
     try {
       const form = new FormData();
-      form.append("image", imageFile);
-      form.append("metadata", JSON.stringify(metadata));
+      form.append('image', imageFile);
+      form.append('metadata', JSON.stringify(metadata));
 
       const response = await axios.post(`${API_BASE_URL}/ipfs/upload`, form, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       return response.data;
     } catch (error) {
-      console.error("Error uploading to IPFS:", error);
+      console.error('Error uploading to IPFS:', error);
       throw error;
     }
   }
@@ -223,7 +223,7 @@ class ApiService {
       );
       return response.data;
     } catch (error) {
-      console.error("Error getting transaction status:", error);
+      console.error('Error getting transaction status:', error);
       throw error;
     }
   }
@@ -239,7 +239,7 @@ class ApiService {
       );
       return response.data.valid;
     } catch (error) {
-      console.error("Error validating address:", error);
+      console.error('Error validating address:', error);
       return false;
     }
   }
@@ -252,7 +252,7 @@ class ApiService {
       const response = await axios.get(`${API_BASE_URL}/network/status`);
       return response.data;
     } catch (error) {
-      console.error("Error getting network status:", error);
+      console.error('Error getting network status:', error);
       throw error;
     }
   }
@@ -267,7 +267,7 @@ class ApiService {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching Token-2022 extensions:", error);
+      console.error('Error fetching Token-2022 extensions:', error);
       throw error;
     }
   }
