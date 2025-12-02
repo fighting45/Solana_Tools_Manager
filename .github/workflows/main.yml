@@ -80,4 +80,7 @@ jobs:
           sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r . $SERVER_USER@$SERVER_IP:/tmp/sol_tool_manager
           sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
           docker images
+          docker stop sol_frontend || true
+          docker rm sol_frontend || true
+          docker run -d --name sol_frontend -p 5000:3000 -e REACT_APP_API_URL="${{ secrets.FRONTEND_API_URL }}" sol_tool_manager_frontend
           EOF
