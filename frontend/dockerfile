@@ -3,6 +3,10 @@ FROM node:18-slim AS builder
 
 WORKDIR /usr/src/app
 
+# Accept build-time API URL for the backend and expose it to the React build
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=${REACT_APP_API_URL}
+
 # Install OS dependencies for building
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \

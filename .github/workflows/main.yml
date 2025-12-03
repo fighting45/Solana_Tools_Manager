@@ -33,24 +33,11 @@ jobs:
     name: "Deploy to VPS(CI)"
     needs: lint
     runs-on: ubuntu-latest
+    env:
+      REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Setup Node.js (for frontend build)
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      - name: Build frontend with REACT_APP_API_URL
-        env:
-          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
-        run: |
-          echo "Building frontend with REACT_APP_API_URL=$REACT_APP_API_URL"
-          cd frontend
-          npm ci
-          REACT_APP_API_URL="${REACT_APP_API_URL}" npm run build
-          cd ..
 
       - name: Install rsync & sshpass
         run: sudo apt-get update -y && sudo apt-get install -y rsync sshpass
@@ -100,8 +87,10 @@ jobs:
           ls -la "\$FRONTEND_DIR" || true
           ls -la "\$FRONTEND_DIR/build" || true
 
-          echo '--- Build docker image for Frontend ---'
-          docker build --no-cache -t sol_tool_manager_frontend:latest "\$FRONTEND_DIR"
+          echo '--- Build docker image for Frontend (with REACT_APP_API_URL) ---'
+          docker build --no-cache \
+            --build-arg REACT_APP_API_URL="${REACT_APP_API_URL}" \
+            -t sol_tool_manager_frontend:latest "\$FRONTEND_DIR"
 
           docker network create sol_net || true
 
@@ -136,7 +125,7 @@ jobs:
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
         run: |
           sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r . $SERVER_USER@$SERVER_IP:/tmp/sol_tool_manager
-          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << EOF
           docker images
           docker stop sol_frontend || true
           docker rm sol_frontend || true
