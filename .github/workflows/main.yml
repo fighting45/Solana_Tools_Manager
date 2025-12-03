@@ -88,9 +88,9 @@ jobs:
           docker images
           docker stop sol_frontend || true
           docker rm sol_frontend || true
-          docker stop ssol_backend || true
+          docker stop sol_backend || true
           docker rm sol_backend || true
           docker run -d --restart always --name sol_frontend -p 5000:3000 -e REACT_APP_API_URL="${REACT_APP_API_URL}" sol_tool_manager_frontend
           docker run -d --restart always --name sol_backend -p 5001:3001 -e PINATA_JWT="${PINATA_JWT}" -e PINATA_GATEWAY="${PINATA_GATEWAY}" -e SOLANA_RPC_URL="${SOLANA_RPC_URL}" -e PLATFORM_FEE="${PLATFORM_FEE}" -e PLATFORM_WALLET="${PLATFORM_WALLET}" sol_tool_manager_backend 
-
+          docker logs --tail 150 sol_backend 
           EOF
