@@ -31,11 +31,12 @@ jobs:
 
   deploy1:
     name: "Deploy to VPS(CI)"
-    needs: lint # ensures this job runs only if lint passes
+    needs: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
       - name: Setup Node.js (for frontend build)
         uses: actions/setup-node@v4
         with:
@@ -48,12 +49,11 @@ jobs:
           echo "Building frontend with REACT_APP_API_URL=$REACT_APP_API_URL"
           cd frontend
           npm ci
-          # CRA reads REACT_APP_* at build time
           REACT_APP_API_URL="${REACT_APP_API_URL}" npm run build
-          # move back to repo root
           cd ..
-      - name: Install SSH Client
-        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: Install rsync & sshpass
+        run: sudo apt-get update -y && sudo apt-get install -y rsync sshpass
 
       - name: Deploy to VPS(CI)
         env:
@@ -61,20 +61,57 @@ jobs:
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
-          sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r . $SERVER_USER@$SERVER_IP:/tmp/sol_tool_manager
-          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
-          echo '--- Copying sol_tool_manager to /mnt/sol_tool_manager ---'
-          rm -rf /mnt/sol_tool_manager
-          mkdir -p /mnt/sol_tool_manager
-          cp -r /tmp/sol_tool_manager/* /mnt/sol_tool_manager
+          set -euo pipefail
+
+          # 1) create remote tmp and rsync only needed files (exclude node_modules, .git)
+          echo "Ensuring remote tmp dir..."
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 $SERVER_USER@$SERVER_IP "mkdir -p /tmp/sol_tool_manager"
+
+          RSYNC_EXCLUDES=(
+            --exclude='.git'
+            --exclude='node_modules'
+            --exclude='.github'
+            --exclude='*.log'
+            --exclude='frontend/node_modules'
+            --exclude='frontend/.env'
+            --exclude='.vscode'
+          )
+
+          # Use rsync over sshpass/ssh to remote /tmp
+          RSYNC_RSH="sshpass -p \"$SERVER_PASSWORD\" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10"
+          export RSYNC_RSH
+
+          echo "Rsyncing repo (excludes applied)..."
+          rsync -avzP "${RSYNC_EXCLUDES[@]}" -e "$RSYNC_RSH" . $SERVER_USER@$SERVER_IP:/tmp/sol_tool_manager
+
+          # 2) run remote commands: move files to /mnt, build docker images
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 $SERVER_USER@$SERVER_IP << EOF
+          set -e
+
+          echo '--- Remote: Copying sol_tool_manager to /mnt/sol_tool_manager ---'
+          sudo rm -rf /mnt/sol_tool_manager
+          sudo mkdir -p /mnt/sol_tool_manager
+          sudo cp -r /tmp/sol_tool_manager/* /mnt/sol_tool_manager
+
           BACKEND_DIR="/mnt/sol_tool_manager"
           FRONTEND_DIR="/mnt/sol_tool_manager/frontend"
+
+          echo "Verify frontend folder and build:"
+          ls -la "\$FRONTEND_DIR" || true
+          ls -la "\$FRONTEND_DIR/build" || true
+
           echo '--- Build docker image for Frontend ---'
-          docker build --no-cache -t sol_tool_manager_frontend "$FRONTEND_DIR"
+          docker build --no-cache -t sol_tool_manager_frontend:latest "\$FRONTEND_DIR"
+
           docker network create sol_net || true
+
           echo '--- Build docker image for Backend ---'
-          docker build --no-cache -t sol_tool_manager_backend "$BACKEND_DIR"
+          docker build --no-cache -t sol_tool_manager_backend:latest "\$BACKEND_DIR"
+
+          echo '--- Images after build ---'
+          docker images | grep sol_tool_manager || true
           EOF
+
   deploy2:
     name: "Deploy to VPS(CD)"
     needs: deploy1 # ensures this job runs only if lint passes
