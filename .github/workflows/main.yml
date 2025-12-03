@@ -36,7 +36,22 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+      - name: Setup Node.js (for frontend build)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
 
+      - name: Build frontend with REACT_APP_API_URL
+        env:
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+        run: |
+          echo "Building frontend with REACT_APP_API_URL=$REACT_APP_API_URL"
+          cd frontend
+          npm ci
+          # CRA reads REACT_APP_* at build time
+          REACT_APP_API_URL="${REACT_APP_API_URL}" npm run build
+          # move back to repo root
+          cd ..
       - name: Install SSH Client
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
