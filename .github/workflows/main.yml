@@ -123,7 +123,7 @@ jobs:
           PLATFORM_FEE: ${{ secrets.PLATFORM_FEE }}
           PLATFORM_WALLET: ${{ secrets.PLATFORM_WALLET }}
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
-          ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGIN }}
+          ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
         run: |
           sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r . $SERVER_USER@$SERVER_IP:/tmp/sol_tool_manager
           sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << EOF
