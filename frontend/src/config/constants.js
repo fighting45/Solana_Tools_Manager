@@ -1,7 +1,5 @@
-// API Configuration
-export const API_BASE_URL = 'http://localhost:3001';
-
 // API Endpoints - Updated to match backend routes
+// Note: API_BASE_URL is now configured via REACT_APP_API_URL env variable in apiService.js
 export const API_ENDPOINTS = {
   // Original endpoints - keeping for backward compatibility
   CREATE_MINT: '/mint/createCombinedMint',
