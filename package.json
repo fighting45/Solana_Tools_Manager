@@ -1,7 +1,7 @@
 {
   "name": "spl_project",
   "version": "1.0.0",
-  "description": "",
+  "description": "![Screenshot](./assets/Screenshot1.png)",
   "main": "mintSPL.js",
   "scripts": {
     "start": "node app.js",
@@ -31,9 +31,18 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.5",
     "@babel/preset-react": "^7.28.5",
+    "@playwright/test": "^1.65.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "nodemon": "^3.1.11"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ptechfusion19/Solana_Tools_Manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ptechfusion19/Solana_Tools_Manager/issues"
+  },
+  "homepage": "https://github.com/ptechfusion19/Solana_Tools_Manager#readme"
 }
